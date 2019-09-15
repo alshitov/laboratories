@@ -1,2 +1,1 @@
-# Data generation module of FindTicket applicatiom.
-## Hardcoded for database imitation
+# Data generation module of FindTicket application.

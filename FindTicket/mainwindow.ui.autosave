@@ -1,0 +1,700 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>642</width>
+    <height>686</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>642</width>
+    <height>686</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+     <horstretch>1</horstretch>
+     <verstretch>1</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>642</width>
+     <height>636</height>
+    </size>
+   </property>
+   <widget class="QWidget" name="verticalLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>641</width>
+      <height>631</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout" stretch="0">
+     <property name="sizeConstraint">
+      <enum>QLayout::SetDefaultConstraint</enum>
+     </property>
+     <property name="leftMargin">
+      <number>5</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>5</number>
+     </property>
+     <item>
+      <widget class="QTabWidget" name="tabWidget">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>1</horstretch>
+         <verstretch>1</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="currentIndex">
+        <number>1</number>
+       </property>
+       <widget class="QWidget" name="aviaTab">
+        <property name="maximumSize">
+         <size>
+          <width>625</width>
+          <height>595</height>
+         </size>
+        </property>
+        <attribute name="title">
+         <string>Авиабилеты</string>
+        </attribute>
+        <widget class="QWidget" name="gridLayoutWidget">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>621</width>
+           <height>591</height>
+          </rect>
+         </property>
+         <layout class="QGridLayout" name="aviaMainGridLayout" rowstretch="0,0,0,1,0">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetNoConstraint</enum>
+          </property>
+          <property name="leftMargin">
+           <number>5</number>
+          </property>
+          <property name="rightMargin">
+           <number>5</number>
+          </property>
+          <item row="4" column="0">
+           <widget class="QProgressBar" name="aviaSearchProgressBar">
+            <property name="value">
+             <number>24</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <layout class="QGridLayout" name="aviaChoiceGridLayout_7" rowstretch="0,0">
+            <property name="sizeConstraint">
+             <enum>QLayout::SetNoConstraint</enum>
+            </property>
+            <item row="0" column="3">
+             <layout class="QVBoxLayout" name="aviaArrivalVertLayout_7">
+              <item>
+               <widget class="QLabel" name="aviaArrivalLabel_7">
+                <property name="text">
+                 <string>Обратно</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QDateEdit" name="aviaArrivalComboBox_7"/>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="0">
+             <layout class="QVBoxLayout" name="aviaFromVertLayout_7">
+              <item>
+               <widget class="QLabel" name="aviaFromLabel_7">
+                <property name="text">
+                 <string>Откуда</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="aviaFromComboBox_7"/>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="2">
+             <layout class="QVBoxLayout" name="aviaDepartVertLayout_7">
+              <item>
+               <widget class="QLabel" name="aviaDepartLabel_7">
+                <property name="text">
+                 <string>Дата Вылета</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QDateEdit" name="aviaDepartComboBox_7"/>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="1">
+             <layout class="QVBoxLayout" name="aviaToVertLaytout_5">
+              <item>
+               <widget class="QLabel" name="aviaToLabel_7">
+                <property name="text">
+                 <string>Куда</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="aviaToComboBox_7"/>
+              </item>
+             </layout>
+            </item>
+            <item row="1" column="3">
+             <layout class="QVBoxLayout" name="aviaTypeVertLayout_7">
+              <item>
+               <widget class="QLabel" name="aviaTypeLabel_5">
+                <property name="text">
+                 <string>Класс</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="aviaTypeComboBox_5">
+                <item>
+                 <property name="text">
+                  <string>Эконом</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Бизнес</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Первый</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="1" column="2">
+             <layout class="QVBoxLayout" name="aviaBabyVertLayout_7">
+              <item>
+               <widget class="QLabel" name="aviaBabyLabel_5">
+                <property name="text">
+                 <string>Дети (до 2 лет)</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="aviaBabySpinBox_5"/>
+              </item>
+             </layout>
+            </item>
+            <item row="1" column="1">
+             <layout class="QVBoxLayout" name="aviaChildrenVertLayout_7">
+              <item>
+               <widget class="QLabel" name="aviaChildrenLabel_5">
+                <property name="text">
+                 <string>Дети (до 12 лет)</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="aviaChildrenSpinBox_5"/>
+              </item>
+             </layout>
+            </item>
+            <item row="1" column="0">
+             <layout class="QVBoxLayout" name="aviaAdultVertLayout_7">
+              <item>
+               <widget class="QLabel" name="aviaAdultLabel_5">
+                <property name="text">
+                 <string>Взрослые</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="aviaAdultSpinBox_5"/>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item row="3" column="0">
+           <layout class="QVBoxLayout" name="aviaResultsVertLayout">
+            <item>
+             <widget class="QListWidget" name="aviaTicketsListWidget"/>
+            </item>
+           </layout>
+          </item>
+          <item row="2" column="0">
+           <widget class="QPushButton" name="aviaSearchPushButton">
+            <property name="text">
+             <string>Найти Билеты</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+       <widget class="QWidget" name="railwayTab">
+        <property name="maximumSize">
+         <size>
+          <width>625</width>
+          <height>595</height>
+         </size>
+        </property>
+        <attribute name="title">
+         <string>Ж/Д билеты</string>
+        </attribute>
+        <widget class="QWidget" name="gridLayoutWidget_3">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>621</width>
+           <height>591</height>
+          </rect>
+         </property>
+         <layout class="QGridLayout" name="railwayMainGridLayout" rowstretch="0,0,0,1,0">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetNoConstraint</enum>
+          </property>
+          <property name="leftMargin">
+           <number>5</number>
+          </property>
+          <property name="rightMargin">
+           <number>5</number>
+          </property>
+          <item row="4" column="0">
+           <widget class="QProgressBar" name="railwaySearchProgressBar">
+            <property name="value">
+             <number>24</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <layout class="QGridLayout" name="railwayChoiceGridLayout" rowstretch="0">
+            <property name="sizeConstraint">
+             <enum>QLayout::SetDefaultConstraint</enum>
+            </property>
+            <item row="0" column="0">
+             <layout class="QVBoxLayout" name="railwayFromVertLayout">
+              <item>
+               <widget class="QLabel" name="railwayFromLabel">
+                <property name="text">
+                 <string>Откуда</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="railwayFromComboBox"/>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="2">
+             <layout class="QVBoxLayout" name="railwayDepartVertLayout">
+              <item>
+               <widget class="QLabel" name="railwayDepartLabel">
+                <property name="text">
+                 <string>Дата Выезда</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QDateEdit" name="railwayDepartComboBox"/>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="3">
+             <layout class="QVBoxLayout" name="railwayArrivalVertLayout">
+              <item>
+               <widget class="QLabel" name="railwayArrivalLabel">
+                <property name="text">
+                 <string>Обратно</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QDateEdit" name="railwayArrivalComboBox"/>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="1">
+             <layout class="QVBoxLayout" name="railwayToVertLaytout">
+              <item>
+               <widget class="QLabel" name="railwayToLabel">
+                <property name="text">
+                 <string>Куда</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="railwayToComboBox"/>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item row="3" column="0">
+           <layout class="QVBoxLayout" name="railwayResultsVertLayout">
+            <item>
+             <widget class="QListView" name="railwayTocketsListView"/>
+            </item>
+           </layout>
+          </item>
+          <item row="2" column="0">
+           <widget class="QPushButton" name="railwaySearchPushButton">
+            <property name="text">
+             <string>Найти Билеты</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+       <widget class="QWidget" name="busTab">
+        <property name="maximumSize">
+         <size>
+          <width>625</width>
+          <height>595</height>
+         </size>
+        </property>
+        <attribute name="title">
+         <string>Автобусы</string>
+        </attribute>
+        <widget class="QWidget" name="gridLayoutWidget_4">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>621</width>
+           <height>591</height>
+          </rect>
+         </property>
+         <layout class="QGridLayout" name="busMainGridLayout" rowstretch="0,0,0,1,0">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetNoConstraint</enum>
+          </property>
+          <property name="leftMargin">
+           <number>5</number>
+          </property>
+          <property name="rightMargin">
+           <number>5</number>
+          </property>
+          <item row="4" column="0">
+           <widget class="QProgressBar" name="busSearchProgressBar">
+            <property name="value">
+             <number>24</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <layout class="QGridLayout" name="busChoiceGridLayout" rowstretch="0">
+            <property name="sizeConstraint">
+             <enum>QLayout::SetDefaultConstraint</enum>
+            </property>
+            <item row="0" column="0">
+             <layout class="QVBoxLayout" name="busFromVertLayout">
+              <item>
+               <widget class="QLabel" name="busFromLabel">
+                <property name="text">
+                 <string>Откуда</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="busFromComboBox"/>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="2">
+             <layout class="QVBoxLayout" name="busDepartVertLayout">
+              <item>
+               <widget class="QLabel" name="busDepartLabel">
+                <property name="text">
+                 <string>Дата Выезда</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QDateEdit" name="busDepartComboBox"/>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="3">
+             <layout class="QVBoxLayout" name="busPassengersVertLayout">
+              <item>
+               <widget class="QLabel" name="busPassengersLabel">
+                <property name="text">
+                 <string>Пассажиры</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="busPassengersSpinBox"/>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="1">
+             <layout class="QVBoxLayout" name="busToVertLaytout">
+              <item>
+               <widget class="QLabel" name="busToLabel">
+                <property name="text">
+                 <string>Куда</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="busToComboBox"/>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item row="3" column="0">
+           <layout class="QVBoxLayout" name="busResultsVertLayout">
+            <item>
+             <widget class="QListView" name="busTicketsListView"/>
+            </item>
+           </layout>
+          </item>
+          <item row="2" column="0">
+           <widget class="QPushButton" name="busSearchPushButton">
+            <property name="text">
+             <string>Найти Билеты</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+       <widget class="QWidget" name="trainTab">
+        <attribute name="title">
+         <string>Электрички</string>
+        </attribute>
+        <widget class="QWidget" name="gridLayoutWidget_5">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>621</width>
+           <height>591</height>
+          </rect>
+         </property>
+         <layout class="QGridLayout" name="trainMainGridLayout" rowstretch="0,0,0,1,0">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetNoConstraint</enum>
+          </property>
+          <property name="leftMargin">
+           <number>5</number>
+          </property>
+          <property name="rightMargin">
+           <number>5</number>
+          </property>
+          <item row="4" column="0">
+           <widget class="QProgressBar" name="trainSearchProgressBar">
+            <property name="value">
+             <number>24</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <layout class="QGridLayout" name="trainChoiceGridLayout" rowstretch="0">
+            <property name="sizeConstraint">
+             <enum>QLayout::SetDefaultConstraint</enum>
+            </property>
+            <item row="0" column="0">
+             <layout class="QVBoxLayout" name="trainFromVertLayout">
+              <item>
+               <widget class="QLabel" name="trainFromLabel">
+                <property name="text">
+                 <string>Откуда</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="trainFromComboBox"/>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="2">
+             <layout class="QVBoxLayout" name="trainDepartVertLayout">
+              <item>
+               <widget class="QLabel" name="trainDepartLabel">
+                <property name="text">
+                 <string>Дата Выезда</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QDateEdit" name="trainDepartComboBox"/>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="1">
+             <layout class="QVBoxLayout" name="trainToVertLaytout">
+              <item>
+               <widget class="QLabel" name="trainToLabel">
+                <property name="text">
+                 <string>Куда</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="trainToComboBox"/>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item row="3" column="0">
+           <layout class="QVBoxLayout" name="trainResultsVertLayout">
+            <item>
+             <widget class="QListView" name="trainTicketsListView"/>
+            </item>
+           </layout>
+          </item>
+          <item row="2" column="0">
+           <widget class="QPushButton" name="trainSearchPushButton">
+            <property name="text">
+             <string>Показать Расписание</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>642</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <widget class="QMenu" name="menuSave">
+     <property name="title">
+      <string>Save</string>
+     </property>
+     <addaction name="separator"/>
+     <addaction name="separator"/>
+     <addaction name="saveResultsInPlainText"/>
+     <addaction name="saveResultsInXML"/>
+     <addaction name="saveResultsInJSON"/>
+    </widget>
+    <widget class="QMenu" name="menuOpen">
+     <property name="title">
+      <string>Open</string>
+     </property>
+     <addaction name="loadResultsFromText"/>
+     <addaction name="loadResultsFromXML"/>
+     <addaction name="loadResultsFromJSON"/>
+    </widget>
+    <widget class="QMenu" name="menuSettings">
+     <property name="title">
+      <string>Settings</string>
+     </property>
+     <addaction name="changeTheme"/>
+     <addaction name="userPreferences"/>
+    </widget>
+    <addaction name="menuSave"/>
+    <addaction name="menuOpen"/>
+    <addaction name="menuSettings"/>
+   </widget>
+   <widget class="QMenu" name="menuFAQ">
+    <property name="title">
+     <string>FAQ</string>
+    </property>
+    <addaction name="action"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuFAQ"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="saveResultsInPlainText">
+   <property name="text">
+    <string>Plain Text</string>
+   </property>
+  </action>
+  <action name="saveResultsInXML">
+   <property name="text">
+    <string>XML</string>
+   </property>
+  </action>
+  <action name="saveResultsInJSON">
+   <property name="text">
+    <string>JSON</string>
+   </property>
+  </action>
+  <action name="loadResultsFromText">
+   <property name="text">
+    <string>Text</string>
+   </property>
+  </action>
+  <action name="loadResultsFromXML">
+   <property name="text">
+    <string>XML</string>
+   </property>
+  </action>
+  <action name="loadResultsFromJSON">
+   <property name="text">
+    <string>JSON</string>
+   </property>
+  </action>
+  <action name="changeTheme">
+   <property name="text">
+    <string>Theme</string>
+   </property>
+  </action>
+  <action name="userPreferences">
+   <property name="text">
+    <string>Preferences</string>
+   </property>
+  </action>
+  <action name="about">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="action">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -108,77 +108,81 @@
            </widget>
           </item>
           <item row="1" column="0">
-           <layout class="QGridLayout" name="aviaChoiceGridLayout_7" rowstretch="0,0">
+           <layout class="QGridLayout" name="aviaChoiceGridLayout" rowstretch="0,0">
             <property name="sizeConstraint">
              <enum>QLayout::SetNoConstraint</enum>
             </property>
             <item row="0" column="3">
-             <layout class="QVBoxLayout" name="aviaArrivalVertLayout_7">
+             <layout class="QVBoxLayout" name="aviaArrivalVertLayout">
               <item>
-               <widget class="QLabel" name="aviaArrivalLabel_7">
+               <widget class="QLabel" name="aviaArrivalLabel">
                 <property name="text">
                  <string>Обратно</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QDateEdit" name="aviaArrivalComboBox_7"/>
+               <widget class="QDateEdit" name="aviaArrivalComboBox"/>
               </item>
              </layout>
             </item>
             <item row="0" column="0">
-             <layout class="QVBoxLayout" name="aviaFromVertLayout_7">
+             <layout class="QVBoxLayout" name="aviaFromVertLayout">
               <item>
-               <widget class="QLabel" name="aviaFromLabel_7">
+               <widget class="QLabel" name="aviaFromLabel">
                 <property name="text">
                  <string>Откуда</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QComboBox" name="aviaFromComboBox_7"/>
+               <widget class="QComboBox" name="aviaFromComboBox">
+                <property name="editable">
+                 <bool>true</bool>
+                </property>
+               </widget>
               </item>
              </layout>
             </item>
             <item row="0" column="2">
-             <layout class="QVBoxLayout" name="aviaDepartVertLayout_7">
+             <layout class="QVBoxLayout" name="aviaDepartVertLayout">
               <item>
-               <widget class="QLabel" name="aviaDepartLabel_7">
+               <widget class="QLabel" name="aviaDepartLabel">
                 <property name="text">
                  <string>Дата Вылета</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QDateEdit" name="aviaDepartComboBox_7"/>
+               <widget class="QDateEdit" name="aviaDepartComboBox"/>
               </item>
              </layout>
             </item>
             <item row="0" column="1">
-             <layout class="QVBoxLayout" name="aviaToVertLaytout_5">
+             <layout class="QVBoxLayout" name="aviaToVertLaytout">
               <item>
-               <widget class="QLabel" name="aviaToLabel_7">
+               <widget class="QLabel" name="aviaToLabel">
                 <property name="text">
                  <string>Куда</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QComboBox" name="aviaToComboBox_7"/>
+               <widget class="QComboBox" name="aviaToComboBox"/>
               </item>
              </layout>
             </item>
             <item row="1" column="3">
-             <layout class="QVBoxLayout" name="aviaTypeVertLayout_7">
+             <layout class="QVBoxLayout" name="aviaTypeVertLayout">
               <item>
-               <widget class="QLabel" name="aviaTypeLabel_5">
+               <widget class="QLabel" name="aviaTypeLabel">
                 <property name="text">
                  <string>Класс</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QComboBox" name="aviaTypeComboBox_5">
+               <widget class="QComboBox" name="aviaTypeComboBox">
                 <item>
                  <property name="text">
                   <string>Эконом</string>
@@ -199,44 +203,44 @@
              </layout>
             </item>
             <item row="1" column="2">
-             <layout class="QVBoxLayout" name="aviaBabyVertLayout_7">
+             <layout class="QVBoxLayout" name="aviaBabyVertLayout">
               <item>
-               <widget class="QLabel" name="aviaBabyLabel_5">
+               <widget class="QLabel" name="aviaBabyLabel">
                 <property name="text">
                  <string>Дети (до 2 лет)</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QSpinBox" name="aviaBabySpinBox_5"/>
+               <widget class="QSpinBox" name="aviaBabySpinBox"/>
               </item>
              </layout>
             </item>
             <item row="1" column="1">
-             <layout class="QVBoxLayout" name="aviaChildrenVertLayout_7">
+             <layout class="QVBoxLayout" name="aviaChildrenVertLayout">
               <item>
-               <widget class="QLabel" name="aviaChildrenLabel_5">
+               <widget class="QLabel" name="aviaChildrenLabel">
                 <property name="text">
                  <string>Дети (до 12 лет)</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QSpinBox" name="aviaChildrenSpinBox_5"/>
+               <widget class="QSpinBox" name="aviaChildrenSpinBox"/>
               </item>
              </layout>
             </item>
             <item row="1" column="0">
-             <layout class="QVBoxLayout" name="aviaAdultVertLayout_7">
+             <layout class="QVBoxLayout" name="aviaAdultVertLayout">
               <item>
-               <widget class="QLabel" name="aviaAdultLabel_5">
+               <widget class="QLabel" name="aviaAdultLabel">
                 <property name="text">
                  <string>Взрослые</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QSpinBox" name="aviaAdultSpinBox_5"/>
+               <widget class="QSpinBox" name="aviaAdultSpinBox"/>
               </item>
              </layout>
             </item>

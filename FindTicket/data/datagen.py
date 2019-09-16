@@ -289,7 +289,7 @@ def _make_dump(tickets: dict):
             raise Exception('Invalid tickets group name: %s' % group)
 
         if FILE:
-            json.dump(tickets[group], FILE)
+            json.dump(tickets[group], FILE, ensure_ascii=False)
             FILE.close()
 
 

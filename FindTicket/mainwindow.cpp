@@ -1,5 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QDebug>
+
+#include <dataloader.h>
 #include <aviatabdelegate.h>
 #include <railwaytabdelegate.h>
 #include <bustabdelegate.h>
@@ -13,6 +16,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     // Instantiate delegates
+    DataLoader dataLoader = DataLoader();
+    int code = dataLoader.readJsonDocument(dataLoader.aviaSourcesJSON);
+    qDebug() << code;
     AviaTabDelegate aviaTabDelegate = AviaTabDelegate();
     RailwayTabDelegate railwayTabDelegate = RailwayTabDelegate();
     BusTabDelegate busTabDelegate = BusTabDelegate();

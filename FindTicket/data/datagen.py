@@ -12,36 +12,13 @@ import json
 import xlrd
 
 
-# Average Transport Speed (km/h) And Delays
-TRANSPORTS = {
-    'plain': {
-        'speed': 900.0,
-        'delay': 0.5,
-        'delay_measure': 'h',
-        'base_cost': 2000,
-        'rub_per_km': 2
-    },
-    'train': {
-        'speed': 80.0,
-        'delay': 30.0,
-        'delay_measure': '%',
-        'base_cost': 1500,
-        'rub_per_km': 1.5
-    },
-    'bus': {
-        'speed': 90.0,
-        'delay': 20.0,
-        'delay_measure': '%',
-        'base_cost': 1500,
-        'rub_per_km': 1
-    }
-}
-
-
 def _load_sources() -> dict:
     """ Function loads sources for tickets generators """
     with open(os.path.join(__location__, 'sources.json')) as fout:
         return json.load(fout)
+
+
+sources = _load_sources()
 
 
 def _load_cities_distances() -> [list]:
@@ -79,7 +56,7 @@ def _calc_approximate_travel_time(transport_type, depart, dest) -> float:
     distance = distances[depart][dest]  # float
 
     # Get transport characteristics
-    characteristics = TRANSPORTS[transport_type]
+    characteristics = sources[transport_type]
     speed = characteristics['speed']
     delay = characteristics['delay']
     delay_measure = characteristics['delay_measure']
@@ -170,7 +147,6 @@ def _dep_arr_time_randgen(transport_type: str, depart: str, dest: str) -> (str, 
         randint(0, 60)
     )
     travel_time = _calc_approximate_travel_time(transport_type, depart, dest)
-    print(travel_time)
     arr_datetime = _summarize_time(dep_datetime, travel_time)
 
     return dep_datetime, arr_datetime
@@ -193,46 +169,62 @@ def _random_from_list(choices: [str], amount):
 
 def _price_calc(transport_type: str, distance: float) -> float:
     """ Function calculates approximate travel cost """
-    base_cost = TRANSPORTS[transport_type]['base_cost']
-    rub_per_km = TRANSPORTS[transport_type]['rub_per_km']
+    base_cost = sources[transport_type]['base_cost']
+    rub_per_km = sources[transport_type]['rub_per_km']
     return base_cost + (distance * rub_per_km)
 
 
-def _aviagen(avia_source: dict, amount: int) -> [dict]:
-    """ Function generates _amount_ of random airplane ticket """
-    transport_type = 'plain'
+def _ticketgen(transport: str, source: dict, amount: int) -> [dict]:
+    """ Function generates _amount_ of random each ticket types.
+    Ticket fields:
+        -> company
+        -> departure_place
+        -> arrival_place
+        -> departure_datetime
+        -> arrival_datetime
+        -> distance
+        -> price
+        -> price_currency
+        -> features
+        -> rate
+        -> type (speed)
+        -> sales (adult, student, elder, child, baby)
+    """
     gen_result = []
 
     for _ in range(amount):
         # Generate fields
-        company = _random_from_list(avia_source['companies'], 1)
-
         departure_place = _random_from_list(places, 1)
         arrival_place = _random_from_list(places, 1)
         while departure_place == arrival_place:
             arrival_place = _random_from_list(places, 1)
 
+        if transport == 'bus':
+            company = departure_place + 'Авто'
+        else:
+            company = _random_from_list(source['companies'], 1)
+
         departure_datetime, arrival_datetime = _dep_arr_time_randgen(
-            transport_type,
+            transport,
             departure_place,
             arrival_place
         )
         distance = distances[departure_place][arrival_place]
         price = _price_calc(
-            transport_type,
+            transport,
             distance
         )
-        rate = _random_from_list(avia_source['rates'], 1)
-        if rate in ("Первый", "Бизнес"):
-            features = _random_from_list(avia_source['features'], randint(1, 3))
+        rate = _random_from_list(source['rates'], 1)
+
+        if rate in source['rates_with_features']:
+            _features = source['features']
+            features = _random_from_list(_features, randint(1, len(_features) - 1))
         else:
             features = []
 
-        adult_sale = randint(0, 20)
-        child_sale = randint(20, 40)
-        baby_sale = randint(40, 60)
+        _type = _random_from_list(source['types'], 1)
 
-        gen_result.append({
+        ticket = {
             'company': company,
             'departure_place': departure_place,
             'departure_datetime': departure_datetime,
@@ -242,64 +234,24 @@ def _aviagen(avia_source: dict, amount: int) -> [dict]:
             'price': price,
             'price_currency': 'rub',
             'features': features,
-            'adult_sale': adult_sale,
-            'child_sale': child_sale,
-            'baby_sale': baby_sale,
-        })
+            'rate': rate,
+            'type': _type,
+        }
+
+        # Generating additional fields (sales)
+        _sales = source['sales']
+        sales = {}
+
+        if _sales:
+            for field in _sales:
+                _field_low, _field_high = _sales[field]
+                sales[field] = randint(_field_low, _field_high)
+
+        ticket['sales'] = sales
+
+        gen_result.append(ticket)
 
     return gen_result
-
-
-def _railwaygen(railway_source: dict, amount: int) -> [dict]:
-    """ Function generates _amount_ of random railway tickets.
-    Fields:
-    company: str,
-    departure_place: str,
-    departure_datetime: str,
-    arrival_place: str,
-    arrival_datetime: str,
-    price: float,
-    price_currency: str,
-    # Private
-    train_type: str,
-    features: list,
-    rate: str):
-    """
-    pass
-
-
-def _busgen(bus_source: dict, amount: int) -> [dict]:
-    """ Function generates _amount_ of random bus tickets.
-    Fields:
-    company: str,
-    departure_place: str,
-    departure_datetime: str,
-    arrival_place: str,
-    arrival_datetime: str,
-    price: float,
-    price_currency: str,
-    # Private
-    bus_type: str,
-    features: list,
-    rate: str
-    """
-    pass
-
-
-def _traingen(train_source: dict, amount: int) -> [dict]:
-    """ Function generates _amount_ of random train tickets.
-    Fields:
-    company: str,
-    departure_place: str,
-    departure_datetime: str,
-    arrival_place: str,
-    arrival_datetime: str,
-    price: float,
-    price_currency: str,
-    # Private
-    train_type: str
-    """
-    pass
 
 
 def ticketgen(amount: int):
@@ -309,38 +261,30 @@ def ticketgen(amount: int):
     """
     # Load sources from what to generate random tickets
     sources = _load_sources()
+    transports = list(sources.keys())
 
     # Generate all types of tickets
-    mapping = {
-        'avia': _aviagen,
-        # 'railway': _railwaygen,
-        # 'bus': _busgen,
-        # 'train': _traingen,
-    }
     tickets = {}
-    for group in mapping:
+    for transport in transports:
         try:
-            _source = sources[group]
+            _source = sources[transport]
         except KeyError:
-            raise Exception('Invalid "%s" key of sources.json' % group)
+            raise Exception('Invalid "%s" key of sources.json' % transport)
 
         if _source:
-            _tickets = mapping[group](_source, amount)
-            tickets[group] = _tickets
-
-    import pprint
-    pprint.pprint(tickets)
+            _tickets = _ticketgen(transport, _source, amount)
+            tickets[transport] = _tickets
 
     # Make dump for application
-    # if tickets:
-    #     _make_dump(tickets)
+    if tickets:
+        _make_dump(tickets)
 
 
 def _make_dump(tickets: dict):
     """ Dump each of tickets groups to eponymous .json """
     for group in tickets:
         try:
-            FILE = open('./%s.json' % group)
+            FILE = open('./%s.json' % group, 'w')
         except FileNotFoundError:
             raise Exception('Invalid tickets group name: %s' % group)
 
@@ -356,9 +300,11 @@ def _force_quit():
 if __name__ == '__main__':
     if len(argv) == 2:
         try:
-            amount = int(argv[1])
-            ticketgen(amount)
+            int(argv[1])
         except ValueError:
             _force_quit()
     else:
         _force_quit()
+
+    ticketgen(int(argv[1]))
+

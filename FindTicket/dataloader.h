@@ -10,7 +10,7 @@ class DataLoader
 public:
     // Fields
     QString sourcesPath = "/home/alexander/Desktop/C++ Qt/cpp_labs/FindTicket/data/" ;
-    QString aviaSourcesJSON    = "test.json";
+    QString aviaSourcesJSON    = "avia.json";
     QString railwaySourcesJSON = "railway.json";
     QString busSourcesJSON     = "bus.json";
     QString trainSourcesJSON   = "train.json";

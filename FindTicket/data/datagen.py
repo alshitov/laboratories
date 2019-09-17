@@ -190,9 +190,9 @@ def _ticketgen(transport: str, source: dict, amount: int) -> [dict]:
         -> type (speed)
         -> sales (adult, student, elder, child, baby)
     """
-    gen_result = []
+    gen_result = {}
 
-    for _ in range(amount):
+    for idx in range(amount):
         # Generate fields
         departure_place = _random_from_list(places, 1)
         arrival_place = _random_from_list(places, 1)
@@ -249,7 +249,7 @@ def _ticketgen(transport: str, source: dict, amount: int) -> [dict]:
 
         ticket['sales'] = sales
 
-        gen_result.append(ticket)
+        gen_result[idx] = ticket
 
     return gen_result
 

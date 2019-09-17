@@ -3,6 +3,7 @@
 #include <QDebug>
 
 #include <dataloader.h>
+#include <dataprocessor.h>
 #include <aviatabdelegate.h>
 #include <railwaytabdelegate.h>
 #include <bustabdelegate.h>
@@ -15,10 +16,12 @@ MainWindow::MainWindow(QWidget *parent)
     // MainWindow constructor.
     ui->setupUi(this);
 
-    // Instantiate delegates
+    // Instantiate data processing classes
     DataLoader dataLoader = DataLoader();
-    int code = dataLoader.readJsonDocument(dataLoader.aviaSourcesJSON);
-    qDebug() << code;
+    DataProcessor dataProcessor = DataProcessor();
+    dataLoader.readJsonDocument(dataLoader.aviaSourcesJSON);
+
+    // Instantiate delegates
     AviaTabDelegate aviaTabDelegate = AviaTabDelegate();
     RailwayTabDelegate railwayTabDelegate = RailwayTabDelegate();
     BusTabDelegate busTabDelegate = BusTabDelegate();
@@ -30,9 +33,12 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-/*
-* The next methods pass incoming events processing to corresponging delegates
-*/
+void MainWindow::fillUIControls()
+{
+    /* Method fills ui components with data loaded by DataLoader */
+}
+
+/* The next methods pass incoming events processing to corresponging delegates */
 
 void MainWindow::on_aviaFromComboBox_activated(const QString &arg1)
 {

@@ -41,5 +41,11 @@ int DataLoader::readJsonDocument(QString & documentName)
         qDebug() << "JSON object is empty";
         return 0;
     }
+    qDebug() << currentJsonObject.keys();
     return 1;
 }
+
+// TODO: add methods for parsing currentJSONObject (get value by key, etc)
+// For MainWindow::fillUIControls - json co
+
+

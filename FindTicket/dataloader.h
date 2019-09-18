@@ -3,6 +3,7 @@
 
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QList>
 #include <iostream>
 
 class DataLoader
@@ -10,17 +11,20 @@ class DataLoader
 public:
     // Fields
     QString sourcesPath = "/home/alexander/Desktop/C++ Qt/cpp_labs/FindTicket/data/" ;
-    QString aviaSourcesJSON    = "avia.json";
-    QString railwaySourcesJSON = "railway.json";
-    QString busSourcesJSON     = "bus.json";
-    QString trainSourcesJSON   = "train.json";
+    QString citiesJson         = "cities.json";
+    QString aviaSourcesJson    = "avia.json";
+    QString railwaySourcesJson = "railway.json";
+    QString busSourcesJson     = "bus.json";
+    QString trainSourcesJson   = "train.json";
 
+    QStringList cities;
     QJsonObject currentJsonObject;
 
     // Methods
     DataLoader();
     ~DataLoader();
-    int readJsonDocument(QString & documentPath);
+    QJsonObject readJsonDocument(QString & documentPath);
+    void loadCitiesList();
 };
 
 #endif // DATALOADER_H

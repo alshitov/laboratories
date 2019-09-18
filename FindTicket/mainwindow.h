@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <dataloader.h>
 
 
 QT_BEGIN_NAMESPACE
@@ -15,7 +16,10 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    void fillUIControls();
+    void fillAviaTabControls(QStringList & citiesList);
+    void fillRailwayTabControls();
+    void fillBusTabControls();
+    void fillTrainTabControls();
 
 private slots:
     // Avia Tab slots
@@ -68,5 +72,9 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    // The next map holds UI controls mapping:
+    // componentName -> jsonField where to find
+    // the values to be inserted into control
+
 };
 #endif // MAINWINDOW_H

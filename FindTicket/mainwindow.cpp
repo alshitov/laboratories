@@ -18,8 +18,12 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Instantiate data processing classes
     DataLoader dataLoader = DataLoader();
+    dataLoader.loadCitiesList();
+    // Fill only aviaTab controls because it loads first,
+    // other tabs controls are filled when tabSwitch signal triggered
+    MainWindow::fillAviaTabControls(dataLoader.cities);
+
     DataProcessor dataProcessor = DataProcessor();
-    dataLoader.readJsonDocument(dataLoader.aviaSourcesJSON);
 
     // Instantiate delegates
     AviaTabDelegate aviaTabDelegate = AviaTabDelegate();
@@ -33,9 +37,11 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::fillUIControls()
+void MainWindow::fillAviaTabControls(QStringList & citiesList)
 {
-    /* Method fills ui components with data loaded by DataLoader */
+    /* Method fills 'from' and 'to' comboboxes of aviaTab with data loaded by DataLoader */
+    ui->aviaFromComboBox->addItems(citiesList);
+    ui->aviaToComboBox->addItems(citiesList);
 }
 
 /* The next methods pass incoming events processing to corresponging delegates */

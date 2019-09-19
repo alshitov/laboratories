@@ -69,7 +69,7 @@
         </sizepolicy>
        </property>
        <property name="currentIndex">
-        <number>3</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="aviaTab">
         <property name="maximumSize">
@@ -168,7 +168,11 @@
                </widget>
               </item>
               <item>
-               <widget class="QComboBox" name="aviaToComboBox"/>
+               <widget class="QComboBox" name="aviaToComboBox">
+                <property name="editable">
+                 <bool>true</bool>
+                </property>
+               </widget>
               </item>
              </layout>
             </item>

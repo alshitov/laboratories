@@ -113,16 +113,16 @@
              <enum>QLayout::SetNoConstraint</enum>
             </property>
             <item row="0" column="3">
-             <layout class="QVBoxLayout" name="aviaArrivalVertLayout">
+             <layout class="QVBoxLayout" name="aviaReturnVertLayout">
               <item>
-               <widget class="QLabel" name="aviaArrivalLabel">
+               <widget class="QLabel" name="aviaReturnLabel">
                 <property name="text">
                  <string>Обратно</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QDateEdit" name="aviaArrivalComboBox"/>
+               <widget class="QDateEdit" name="aviaReturnDateEdit"/>
               </item>
              </layout>
             </item>
@@ -154,7 +154,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QDateEdit" name="aviaDepartComboBox"/>
+               <widget class="QDateEdit" name="aviaDepartDateEdit"/>
               </item>
              </layout>
             </item>
@@ -177,16 +177,16 @@
              </layout>
             </item>
             <item row="1" column="3">
-             <layout class="QVBoxLayout" name="aviaTypeVertLayout">
+             <layout class="QVBoxLayout" name="aviaRateVertLayout">
               <item>
-               <widget class="QLabel" name="aviaTypeLabel">
+               <widget class="QLabel" name="aviaRateLabel">
                 <property name="text">
                  <string>Класс</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QComboBox" name="aviaTypeComboBox">
+               <widget class="QComboBox" name="aviaRateComboBox">
                 <item>
                  <property name="text">
                   <string>Эконом</string>

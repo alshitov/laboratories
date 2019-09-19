@@ -18,14 +18,18 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     dataloader.cpp \
-    dataprocessor.cpp \
+    dataloadersingleton.cpp \
+    dataprocessorsingleton.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
     dataloader.h \
-    dataprocessor.h \
-    mainwindow.h
+    dataloadersingleton.h \
+    dataprocessorsingleton.h \
+    loader.h \
+    mainwindow.h \
+    processor.h
 
 FORMS += \
     mainwindow.ui

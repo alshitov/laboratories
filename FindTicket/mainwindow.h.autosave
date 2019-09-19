@@ -35,7 +35,7 @@ private:
     void disableChoice(QComboBox *combo, QModelIndex * index);
     void enableChoice(QComboBox *combo, QModelIndex index);
 
-    QMap<QString, QString> getAviaTabSettings();
+    QMap<QString, QString>* getAviaTabSettings();
     void aviaSearch();
 
 };

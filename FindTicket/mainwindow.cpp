@@ -26,19 +26,22 @@ void MainWindow::on_tabWidget_currentChanged(int index)
     switch (index)
     {
     case 1:     // Railway
-        if (!*(tabsFilled + 1)) {
+        if (!*(tabsFilled + 1))
+        {
             fillRailwayTabControls();
             *(tabsFilled + 1) = 1;
         }
         break;
     case 2:     // Bus
-        if (!*(tabsFilled + 2)) {
+        if (!*(tabsFilled + 2))
+        {
             fillBusTabControls();
             *(tabsFilled + 2) = 1;
         }
         break;
     case 3:     // Train
-        if (!*(tabsFilled + 3)) {
+        if (!*(tabsFilled + 3))
+        {
             fillTrainTabControls();
             *(tabsFilled + 3) = 1;
         }
@@ -75,35 +78,48 @@ void MainWindow::fillTrainTabControls()
 void MainWindow::on_aviaSearchPushButton_clicked()
 {
     // Collect data for DataProcessor
-    getAviaTabSettings();
+    QMap<QString, QString>* settings = getAviaTabSettings();
     loader::dls.loadCitiesDistances();  // once
-    // Call findAviaTickets
 
-    // Call findExtraAviaTickets
+    // Find Avia Tickets
+    QJsonObject* aviaTickets = processor::dps.aviaSearch(*settings);
+    qDebug() << *aviaTickets;
 
-    // Return result to MainWindow
-
-    // Render tickets
-
+    // Render
 }
 
 QMap<QString, QString>* MainWindow::getAviaTabSettings()
 {
     /* Method collects user settings from aviaTab */
-    QMap<QString, QString>* settings = new QMap<QString, QString>;
-    settings->insert("pref_department_city", ui->aviaFromComboBox->currentText());
-    settings->insert("pref_destination_city", ui->aviaToComboBox->currentText());
-    settings->insert("depart_date", ui->aviaDepartDateEdit->text());
-    settings->insert("return_date", ui->aviaReturnDateEdit->text());
-    settings->insert("adults_cnt", QString::number(ui->aviaAdultSpinBox->value()));
-    settings->insert("children_cnt", QString::number(ui->aviaChildrenSpinBox->value()));
-    settings->insert("babies_cnt", QString::number(ui->aviaBabySpinBox->value()));
-    settings->insert("pref_rate", ui->aviaRateComboBox->currentText());
-    return settings;
+    QMap<QString, QString>* aviaSettings = new QMap<QString, QString>;
+    aviaSettings->insert("depCity", ui->aviaFromComboBox->currentText());
+    aviaSettings->insert("destCity", ui->aviaToComboBox->currentText());
+    aviaSettings->insert("depDate", ui->aviaDepartDateEdit->text());
+    aviaSettings->insert("retDate", ui->aviaReturnDateEdit->text());
+    aviaSettings->insert("adultsCnt", QString::number(ui->aviaAdultSpinBox->value()));
+    aviaSettings->insert("childCnt", QString::number(ui->aviaChildrenSpinBox->value()));
+    aviaSettings->insert("babiesCnt", QString::number(ui->aviaBabySpinBox->value()));
+    aviaSettings->insert("rate", ui->aviaRateComboBox->currentText());
+    return aviaSettings;
 }
 
-void MainWindow::aviaSearch()
+QMap<QString, QString>* MainWindow::getRailwayTabSettings()
 {
-    // Animate aviaProgressBar while processor::dps.aviaSearch(...);
-    // When found => return result to renderFound(...);
+    /* Method collects user settings from aviaTab */
+    QMap<QString, QString>* railwaySettings = new QMap<QString, QString>;
+    return railwaySettings;
+}
+
+QMap<QString, QString>* MainWindow::getBusTabSettings()
+{
+    /* Method collects user settings from aviaTab */
+    QMap<QString, QString>* busSettings = new QMap<QString, QString>;
+    return busSettings;
+}
+
+QMap<QString, QString>* MainWindow::getTrainTabSettings()
+{
+    /* Method collects user settings from aviaTab */
+    QMap<QString, QString>* trainSettings = new QMap<QString, QString>;
+    return trainSettings;
 }

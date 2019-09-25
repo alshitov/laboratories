@@ -26,19 +26,39 @@ public:
         return object;
     }
 
-    QString sourcesPath = "/home/alexander/Desktop/C++ Qt/cpp_labs/FindTicket/data/" ;
-    QString citiesJson         = "cities.json";
-    QString aviaSourcesJson    = "avia.json";
-    QString railwaySourcesJson = "railway.json";
-    QString busSourcesJson     = "bus.json";
-    QString trainSourcesJson   = "train.json";
+    // Cities distance limit (km) for non-strict search
+    int aviaCitiesDistanceLimit = 150;
+    int railwayCitiesDistanceLimit = 100;
+    int busCitiesDistanceLimit = 50;
+    int trainCitiesDistanceLimit = 30;
 
-    QStringList cities;
-    QJsonObject currentJsonObject;
+    // Tickets QJsonObject keys
 
-    QJsonObject readJsonDocument(QString & documentPath);
-    void loadCitiesList();
+    // Tickets with full settings compliance
+    QString strict = "strict";
+    // Tickets with part settings compliance
+    QString nonStrict = "nonStrict";
 
+    // Ticket department city is near to the one user wants
+    QString byDepCity = "byDepCity";
+    // Ticket destination city is near to the one user wants
+    QString byDestCity = "byDestCity";
+    // Ticket destination & department cities are near to the one user wants
+    QString byNearCities = "byNearCities";
+    // Ticket department date is near the one user wants
+    QString byDate = "byDate";
+    // Only ticket rate is different
+    QString byRate = "byDate";
+
+    QString unifyDate(const QString &rawDateStr);
+    QList<QString>* findNearbyCities(const QString &city);
+    QList<int>* findNearbyDates(const QString &date);
+
+
+    QJsonObject* aviaSearch(QMap<QString, QString> &settings);
+    QJsonObject* railwaySearch(QMap<QString, QString> &settings);
+    QJsonObject* busSearch(QMap<QString, QString> &settings);
+    QJsonObject* trainSearch(QMap<QString, QString> &settings);
 };
 
 #endif // DATAPROCESSOR_H

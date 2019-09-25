@@ -18,23 +18,19 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    // Getters for tabs data processing
-
-
 private slots:
-    // Avia Tab slots
     void on_aviaSearchPushButton_clicked();
-
     void on_tabWidget_currentChanged(int index);
 
 private:
     Ui::MainWindow *ui;
+
     int *tabsFilled = new int[4] {0, 0, 0, 0};
     void fillAviaTabControls();
     void fillRailwayTabControls();
     void fillBusTabControls();
     void fillTrainTabControls();
-    // avia jd bus elka
+    // Getters for tabs data processing
     QMap<QString, QString>* getAviaTabSettings();
     QMap<QString, QString>* getRailwayTabSettings();
     QMap<QString, QString>* getBusTabSettings();

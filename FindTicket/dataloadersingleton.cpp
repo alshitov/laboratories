@@ -29,7 +29,7 @@ QJsonObject DataLoaderSingleton::readJsonDocument(QString & documentName)
 void DataLoaderSingleton::loadCitiesList()
 {
     /* Method parses citiesJson and stores parsed cities list in DataLoader::cities */
-    QJsonObject citiesJson(readJsonDocument(this->citiesJson));
+    QJsonObject citiesJson = readJsonDocument(this->citiesJson);
     char key[7] = "cities";
     auto keys = citiesJson.keys();
     if (keys.contains(key))
@@ -49,7 +49,6 @@ void DataLoaderSingleton::loadCitiesList()
 
 void DataLoaderSingleton::loadCitiesDistances()
 {
-    /* Method loads distances.json. This is needed for findExtra{%transportType%}Tickets */
     QJsonObject distancesDictionary(readJsonDocument(this->distancesJson));
     char key[10] = "distances";
     auto keys = distancesDictionary.keys();
@@ -58,8 +57,4 @@ void DataLoaderSingleton::loadCitiesDistances()
         *distances = distancesDictionary.take(key);
     }
     else exit(0);
-
 }
-
-
-

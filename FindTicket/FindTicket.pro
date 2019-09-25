@@ -17,14 +17,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    dataloader.cpp \
     dataloadersingleton.cpp \
     dataprocessorsingleton.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
-    dataloader.h \
     dataloadersingleton.h \
     dataprocessorsingleton.h \
     loader.h \

@@ -23,20 +23,27 @@ public:
 
 private slots:
     // Avia Tab slots
-    void on_aviaFromComboBox_currentIndexChanged(const QString &arg1);
-    void on_aviaToComboBox_currentIndexChanged(const QString &arg1);
     void on_aviaSearchPushButton_clicked();
+
+    void on_tabWidget_currentChanged(int index);
 
 private:
     Ui::MainWindow *ui;
-
+    int *tabsFilled = new int[4] {0, 0, 0, 0};
     void fillAviaTabControls();
-    QModelIndex chosenCity;
-    void disableChoice(QComboBox *combo, QModelIndex * index);
-    void enableChoice(QComboBox *combo, QModelIndex index);
-
+    void fillRailwayTabControls();
+    void fillBusTabControls();
+    void fillTrainTabControls();
+    // avia jd bus elka
     QMap<QString, QString>* getAviaTabSettings();
+    QMap<QString, QString>* getRailwayTabSettings();
+    QMap<QString, QString>* getBusTabSettings();
+    QMap<QString, QString>* getTrainTabSettings();
+
     void aviaSearch();
+    void railwaySearch();
+    void busSearch();
+    void trainSearch();
 
 };
 #endif // MAINWINDOW_H

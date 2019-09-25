@@ -40,13 +40,26 @@ void DataLoaderSingleton::loadCitiesList()
             QJsonArray citiesArr = citiesValue.toArray();
             for (auto it = citiesArr.begin(); it != citiesArr.end(); ++it)
             {
-                cities.push_back(citiesArr.takeAt(it.i).toString());
+                cities->push_back(citiesArr.takeAt(it.i).toString());
             }
         }
     }
-    else
-    {
-        qDebug() << "cities.json does not contain 'cities' key!";
-        exit(0);
-    }
+    else exit(0);
 }
+
+void DataLoaderSingleton::loadCitiesDistances()
+{
+    /* Method loads distances.json. This is needed for findExtra{%transportType%}Tickets */
+    QJsonObject distancesDictionary(readJsonDocument(this->distancesJson));
+    char key[10] = "distances";
+    auto keys = distancesDictionary.keys();
+    if (keys.contains(key))
+    {
+        *distances = distancesDictionary.take(key);
+    }
+    else exit(0);
+
+}
+
+
+

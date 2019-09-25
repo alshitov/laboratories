@@ -28,12 +28,14 @@ public:
 
     QString sourcesPath = "/home/alexander/Desktop/C++ Qt/cpp_labs/FindTicket/data/" ;
     QString citiesJson         = "cities.json";
+    QString distancesJson      = "distances.json";
     QString aviaSourcesJson    = "avia.json";
     QString railwaySourcesJson = "railway.json";
     QString busSourcesJson     = "bus.json";
     QString trainSourcesJson   = "train.json";
 
-    QStringList cities;
+    QStringList *cities = new QStringList();
+    QJsonValue *distances = new QJsonValue();
     QJsonObject currentJsonObject;
 
     QJsonObject readJsonDocument(QString & documentPath);

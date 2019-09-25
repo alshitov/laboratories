@@ -20,58 +20,71 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::on_tabWidget_currentChanged(int index)
+{
+    // Fill controls on tab switch
+    switch (index)
+    {
+    case 1:     // Railway
+        if (!*(tabsFilled + 1)) {
+            fillRailwayTabControls();
+            *(tabsFilled + 1) = 1;
+        }
+        break;
+    case 2:     // Bus
+        if (!*(tabsFilled + 2)) {
+            fillBusTabControls();
+            *(tabsFilled + 2) = 1;
+        }
+        break;
+    case 3:     // Train
+        if (!*(tabsFilled + 3)) {
+            fillTrainTabControls();
+            *(tabsFilled + 3) = 1;
+        }
+        break;
+    }
+}
+
 void MainWindow::fillAviaTabControls()
 {
     // Fill aviaFrom and aviaTo ComboBoxes
-    loader::dls.loadCitiesList();
-    ui->aviaFromComboBox->addItems(loader::dls.cities);
-    ui->aviaToComboBox->addItems(loader::dls.cities);
+    loader::dls.loadCitiesList();   // once
+    ui->aviaFromComboBox->addItems(*loader::dls.cities);
+    ui->aviaToComboBox->addItems(*loader::dls.cities);
 }
 
-void MainWindow::on_aviaFromComboBox_currentIndexChanged(const QString &arg1)
+void MainWindow::fillRailwayTabControls()
 {
-    /* User made choice in aviaFromComboBox =>
-     * enable previously disabled choice in aviaToComboBox
-     * and disable newly chosen city.
-     */
-    enableChoice(ui->aviaToComboBox, chosenCity);
-    int chosenCityIndex = ui->aviaToComboBox->findText(arg1);
-    QModelIndex index = ui->aviaToComboBox->model()->index(chosenCityIndex, 0);
-    chosenCity = index;
-    disableChoice(ui->aviaToComboBox, &index);
+    ui->railwayFromComboBox->addItems(*loader::dls.cities);
+    ui->railwayToComboBox->addItems(*loader::dls.cities);
 }
 
-void MainWindow::on_aviaToComboBox_currentIndexChanged(const QString &arg1)
+void MainWindow::fillBusTabControls()
 {
-    /* User made choice in aviaToComboBox =>
-     * enable previously disabled choice in aviaFromComboBox
-     * and disable newly chosen city.
-     */
-    enableChoice(ui->aviaFromComboBox, chosenCity);
-    int chosenCityIndex = ui->aviaFromComboBox->findText(arg1);
-    QModelIndex index = ui->aviaFromComboBox->model()->index(chosenCityIndex, 0);
-    chosenCity = index;
-    disableChoice(ui->aviaFromComboBox, &index);
+    ui->busFromComboBox->addItems(*loader::dls.cities);
+    ui->busToComboBox->addItems(*loader::dls.cities);
 }
 
-void MainWindow::disableChoice(QComboBox *combo, QModelIndex * index)
+void MainWindow::fillTrainTabControls()
 {
-    combo->model()->setData(*index, QVariant(0), Qt::UserRole - 1);
-}
-
-void MainWindow::enableChoice(QComboBox *combo, QModelIndex index)
-{
-    combo->model()->setData(index, QVariant(1 | 32), Qt::UserRole - 1);
+    ui->trainFromComboBox->addItems(*loader::dls.cities);
+    ui->trainToComboBox->addItems(*loader::dls.cities);
 }
 
 void MainWindow::on_aviaSearchPushButton_clicked()
 {
     // Collect data for DataProcessor
-    // Call findAviaTickets
-    // Call findExtraAviaTickets
-    // Return result to MainWindow
-    // Render tickets
     getAviaTabSettings();
+    loader::dls.loadCitiesDistances();  // once
+    // Call findAviaTickets
+
+    // Call findExtraAviaTickets
+
+    // Return result to MainWindow
+
+    // Render tickets
+
 }
 
 QMap<QString, QString>* MainWindow::getAviaTabSettings()

@@ -48,7 +48,7 @@ public:
     // Ticket department date is near the one user wants
     QString byDate = "byDate";
     // Only ticket rate is different
-    QString byRate = "byDate";
+    QString byRate = "byRate";
 
     QString unifyDate(const QString &rawDateStr);
     QList<QString>* findNearbyCities(const QString &city);

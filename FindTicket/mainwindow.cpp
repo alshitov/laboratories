@@ -53,6 +53,7 @@ void MainWindow::fillAviaTabControls()
 {
     // Fill aviaFrom and aviaTo ComboBoxes
     loader::dls.loadCitiesList();   // once
+    qDebug() << loader::dls.cities->length();
     ui->aviaFromComboBox->addItems(*loader::dls.cities);
     ui->aviaToComboBox->addItems(*loader::dls.cities);
 }
@@ -83,7 +84,7 @@ void MainWindow::on_aviaSearchPushButton_clicked()
 
     // Find Avia Tickets
     QJsonObject* aviaTickets = processor::dps.aviaSearch(*settings);
-    qDebug() << *aviaTickets;
+//    qDebug() << *aviaTickets;
 
     // Render
 }

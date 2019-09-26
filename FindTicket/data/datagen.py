@@ -87,7 +87,7 @@ def _summarize_time(departure_datetime: str, travel_time: float) -> str:
     if sum_m < 1440:
         arr_h = sum_m // 60
         arr_m = sum_m % 60
-        return '%d/%d/%d - %d:%d' % (dep_day, dep_month, dep_year, arr_h, arr_m)
+        return '%d/%d/%d - %d:%d' % (dep_month, dep_day, dep_year, arr_h, arr_m)
 
     # Travel ends not today;
     # To simplify the task, let's say every month is 30 days long
@@ -102,8 +102,8 @@ def _summarize_time(departure_datetime: str, travel_time: float) -> str:
         # If added days does not entail month change
         if dep_day + all_d <= 30:
             return '%d/%d/%d - %d:%d' % (
-                dep_day + all_d,
                 dep_month,
+                dep_day + all_d,
                 dep_year,
                 arr_t // 60,
                 arr_t % 60
@@ -116,8 +116,8 @@ def _summarize_time(departure_datetime: str, travel_time: float) -> str:
             # If added month does not entail year change
             if dep_month <= 12:
                 return '%d/%d/%d - %d:%d' % (
-                    (dep_day + all_d) - 30,
                     dep_month + 1,
+                    (dep_day + all_d) - 30,
                     dep_year,
                     arr_t // 60,
                     arr_t % 60
@@ -125,8 +125,8 @@ def _summarize_time(departure_datetime: str, travel_time: float) -> str:
 
             else:
                 return '%d/%d/%d - %d:%d' % (
-                    (dep_day + all_d) - 30,
                     (dep_month + 1) % 12,
+                    (dep_day + all_d) - 30,
                     dep_year + 1,
                     arr_t // 60,
                     arr_t % 60
@@ -307,4 +307,5 @@ if __name__ == '__main__':
         _force_quit()
 
     ticketgen(int(argv[1]))
+    # TODO: добавить билеты всех классов для одного сгенерированного и по ближайшим датам
 

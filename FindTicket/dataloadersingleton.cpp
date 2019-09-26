@@ -34,14 +34,10 @@ void DataLoaderSingleton::loadCitiesList()
     auto keys = citiesJson.keys();
     if (keys.contains(key))
     {
-        QJsonValue citiesValue = citiesJson.take(key);
-        if (citiesValue.isArray())
+        QJsonArray citiesArr = citiesJson.take(key).toArray();
+        foreach (const QJsonValue &value, citiesArr)
         {
-            QJsonArray citiesArr = citiesValue.toArray();
-            for (auto it = citiesArr.begin(); it != citiesArr.end(); ++it)
-            {
-                cities->push_back(citiesArr.takeAt(it.i).toString());
-            }
+            cities->push_back(value.toString());
         }
     }
     else exit(0);

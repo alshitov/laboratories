@@ -40,12 +40,23 @@ QJsonObject* DataProcessorSingleton::aviaSearch(QMap<QString, QString> &settings
         QString t_depCity  = ticket["departure_place"].toString(),
                 t_destCity = ticket["arrival_place"].toString(),
                 t_rate     = ticket["rate"].toString(),
-                t_depDate  = ticket["departure_date"].toString();
+                t_depDate  = ticket["departure_datetime"].toString();
+        t_depDate = t_depDate.left(t_depDate.lastIndexOf("/") + 5);
+
+        qDebug() << t_depCity;
+        qDebug() << t_destCity;
+        qDebug() << t_rate;
+        qDebug() << t_depDate;
 
         bool depCitiesMatch = s_depCity == t_depCity,
              destCitiesMatch = s_destCity == t_destCity,
-             ratesMatch = s_rate == t_depDate,
+             ratesMatch = s_rate == t_rate,
              datesMatch = s_depDate == t_depDate;
+
+        qDebug() << depCitiesMatch;
+        qDebug() << destCitiesMatch;
+        qDebug() << ratesMatch;
+        qDebug() << datesMatch;
 
         // Compare fields and separate tickets by categories
 
@@ -88,7 +99,10 @@ QJsonObject* DataProcessorSingleton::aviaSearch(QMap<QString, QString> &settings
             else if (ratesMatch && datesMatch)
             {
                 // With nearby destination & department cities
-                byNearCitiesTickets->append(ticket);
+                if (nearbyDepCities->contains(t_depCity) && nearbyDestCities->contains(t_depCity))
+                {
+                    byNearCitiesTickets->append(ticket);
+                }
             }
         }
     }
@@ -102,15 +116,17 @@ QJsonObject* DataProcessorSingleton::aviaSearch(QMap<QString, QString> &settings
     nonStrictTickets->insert(this->byDestCity, *byDestCityTickets);
     nonStrictTickets->insert(this->byNearCities, *byNearCitiesTickets);
 
+    qDebug() << *strictTickets;
+    qDebug() << *nonStrictTickets;
 
     // Clear mem
-    delete strictTickets;
-    delete nonStrictTickets;
-    delete aviaTickets;
-    delete byDepCityTickets;
-    delete byDestCityTickets;
-    delete byDateTickets;
-    delete byRateTickets;
+//    delete strictTickets;
+//    delete nonStrictTickets;
+//    delete aviaTickets;
+//    delete byDepCityTickets;
+//    delete byDestCityTickets;
+//    delete byDateTickets;
+//    delete byRateTickets;
 
     return aviaTickets;
 }

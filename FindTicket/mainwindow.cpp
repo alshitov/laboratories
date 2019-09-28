@@ -12,6 +12,8 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    loader::dls.loadCitiesList();       // once
+    loader::dls.loadCitiesDistances();  // once
     fillAviaTabControls();
 }
 
@@ -52,8 +54,6 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 void MainWindow::fillAviaTabControls()
 {
     // Fill aviaFrom and aviaTo ComboBoxes
-    loader::dls.loadCitiesList();   // once
-    qDebug() << loader::dls.cities->length();
     ui->aviaFromComboBox->addItems(*loader::dls.cities);
     ui->aviaToComboBox->addItems(*loader::dls.cities);
 }
@@ -78,20 +78,62 @@ void MainWindow::fillTrainTabControls()
 
 void MainWindow::on_aviaSearchPushButton_clicked()
 {
-    // Collect data for DataProcessor
     QMap<QString, QString>* settings = getAviaTabSettings();
-    loader::dls.loadCitiesDistances();  // once
-
-    // Find Avia Tickets
-    QJsonObject* aviaTickets = processor::dps.aviaSearch(*settings);
-//    qDebug() << *aviaTickets;
-
+    QJsonArray* aviaTickets = processor::dps.aviaSearch(*settings);
     // Render
+    showResult(*aviaTicketsHeaders, *MainWindow::ui->aviaResultsVertLayout, *aviaTickets);
+}
+
+
+QTableWidget* MainWindow::createTicketsTable(int colCnt, QStringList& headers)
+{
+    QTableWidget *ticketsTable = new QTableWidget();
+    // Calculate width so that first colCnt - 1 sections are width-equal
+    // and the last section is ~40px stretchable
+    int maxWidth = 610;
+    int normalSectionW = int(((maxWidth - 40) / (colCnt - 1)));
+    // Table settings
+    ticketsTable->setColumnCount(colCnt + 1);
+    ticketsTable->setMaximumWidth(maxWidth);
+    headers.push_back("Opt.");
+    ticketsTable->setHorizontalHeaderLabels(headers);
+    ticketsTable->horizontalHeader()->setDefaultSectionSize(normalSectionW);
+    ticketsTable->horizontalHeader()->setStretchLastSection(true);
+    ticketsTable->verticalHeader()->setVisible(false);
+    return ticketsTable;
+}
+
+
+void MainWindow::fillTable(QTableWidget& table, QJsonArray& tickets)
+{
+    int ticketsCnt = tickets.count();
+    table.setRowCount(ticketsCnt);
+    foreach(const auto &ticket, tickets)
+    {
+
+    }
+}
+
+
+void MainWindow::insertTable(QTableWidget& table, QVBoxLayout& layout)
+{
+    layout.addWidget(&table);
+}
+
+
+void MainWindow::showResult(QStringList& horHeaders, QVBoxLayout& targetLayout, QJsonArray& tickets)
+{
+    /* Create Table with given parameters (rowCnt, colCnt, horHeaders),
+     * fill it with tickets and insert into targetLayout */
+    int colCnt = horHeaders.count();
+    QTableWidget *table = createTicketsTable(colCnt, horHeaders);
+    //    fillTable(table, tickets);
+    insertTable(*table, targetLayout);
 }
 
 QMap<QString, QString>* MainWindow::getAviaTabSettings()
 {
-    /* Method collects user settings from aviaTab */
+    /* Method collects user settings from given controls list */
     QMap<QString, QString>* aviaSettings = new QMap<QString, QString>;
     aviaSettings->insert("depCity", ui->aviaFromComboBox->currentText());
     aviaSettings->insert("destCity", ui->aviaToComboBox->currentText());

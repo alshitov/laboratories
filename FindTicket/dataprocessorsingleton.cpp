@@ -3,7 +3,7 @@
 #include <dataprocessorsingleton.h>
 #include <loader.h>
 
-QJsonObject* DataProcessorSingleton::aviaSearch(QMap<QString, QString> &settings)
+QJsonArray* DataProcessorSingleton::aviaSearch(QMap<QString, QString> &settings)
 {
     /* Tickets search strategy:
      * 1) Strict serach: from given city to given city;
@@ -13,23 +13,23 @@ QJsonObject* DataProcessorSingleton::aviaSearch(QMap<QString, QString> &settings
      */
     qDebug() << settings;
     QJsonObject ticketsToSearchIn = loader::dls.readJsonDocument(loader::dls.aviaSourcesJson);
-    QJsonObject *aviaTickets       = new QJsonObject(),
-                *nonStrictTickets  = new QJsonObject();
-
-    QJsonArray *strictTickets       = new QJsonArray(),
-               *byDateTickets       = new QJsonArray(),
-               *byRateTickets       = new QJsonArray(),
-               *byDepCityTickets    = new QJsonArray(),
-               *byDestCityTickets   = new QJsonArray(),
-               *byNearCitiesTickets = new QJsonArray();
-
-
+    qDebug() << ticketsToSearchIn.length();
+    QJsonArray *ticketsArray = new QJsonArray();
 
     // Prepare settings fields
     QString s_depCity  = settings["depCity"],
             s_destCity = settings["destCity"],
             s_rate     = settings["rate"],
             s_depDate  = this->unifyDate(settings["depDate"]);
+
+
+    // Appropriate settings
+    QList<QString>* apprDepCities = findNearbyCities(s_depCity);
+    QList<QString>* apprDestCities = findNearbyCities(s_destCity);
+
+    QStringList s_dateSplit = s_depDate.split('/');
+    int targetMonth = s_dateSplit[0].toInt(),
+        targetDay = s_dateSplit[1].toInt();
 
     foreach (const QString &key, ticketsToSearchIn.keys())
     {
@@ -43,92 +43,28 @@ QJsonObject* DataProcessorSingleton::aviaSearch(QMap<QString, QString> &settings
                 t_depDate  = ticket["departure_datetime"].toString();
         t_depDate = t_depDate.left(t_depDate.lastIndexOf("/") + 5);
 
-        qDebug() << t_depCity;
-        qDebug() << t_destCity;
-        qDebug() << t_rate;
-        qDebug() << t_depDate;
-
-        bool depCitiesMatch = s_depCity == t_depCity,
-             destCitiesMatch = s_destCity == t_destCity,
-             ratesMatch = s_rate == t_rate,
-             datesMatch = s_depDate == t_depDate;
-
-        qDebug() << depCitiesMatch;
-        qDebug() << destCitiesMatch;
-        qDebug() << ratesMatch;
-        qDebug() << datesMatch;
-
-        // Compare fields and separate tickets by categories
-
-        if (depCitiesMatch && destCitiesMatch && ratesMatch && datesMatch)
+        // If cities (dep and dest are in appropriate ones)
+        if (apprDepCities->contains(t_depCity) && apprDestCities->contains(t_destCity))
         {
-            // Full compliance
-            strictTickets->append(ticket);
-        }
-        else if (depCitiesMatch && destCitiesMatch && datesMatch)
-        {
-            // With different rate
-            byRateTickets->append(ticket);
-        }
-        else if (destCitiesMatch && datesMatch)
-        {
-            // With nearby date
+            qDebug() << ticket;
 
+//            QStringList ticketDateSplit = t_depDate.split('/');
+//            if (ticketDateSplit[0] == targetMonth)
+//            {
+//                int ticketDay = ticketDateSplit[1].toInt();
+//                QList<int>* dayBoundaries = new QList<int> { ticketDay - 10, ticketDay + 10 };
+//                if (dayBoundaries->contains(targetDay))
+//                {
+//                    ticketsArray->append(ticket);
+//                }
+//            }
         }
-        else
-        {
-            QList<QString>* nearbyDepCities = findNearbyCities(s_depCity);
-            QList<QString>* nearbyDestCities = findNearbyCities(s_destCity);
+        // If date is appropriate (same month +- 10 days)
 
-            if (destCitiesMatch && ratesMatch && datesMatch)
-            {
-                // With nearby department cities
-                if (nearbyDepCities->contains(t_depCity))
-                {
-                    byDepCityTickets->append(ticket);
-                }
-            }
-            else if (depCitiesMatch && datesMatch)
-            {
-                // With nearby destination cities
-                if (nearbyDestCities->contains(t_depCity))
-                {
-                    byDestCityTickets->append(ticket);
-                }
-            }
-            else if (ratesMatch && datesMatch)
-            {
-                // With nearby destination & department cities
-                if (nearbyDepCities->contains(t_depCity) && nearbyDestCities->contains(t_depCity))
-                {
-                    byNearCitiesTickets->append(ticket);
-                }
-            }
-        }
     }
 
-    // Collect tickets
-    aviaTickets->insert(this->strict, *strictTickets);
-    aviaTickets->insert(this->nonStrict, *nonStrictTickets);
-    nonStrictTickets->insert(this->byRate, *byRateTickets);
-    nonStrictTickets->insert(this->byDate, *byDateTickets);
-    nonStrictTickets->insert(this->byDepCity, *byDepCityTickets);
-    nonStrictTickets->insert(this->byDestCity, *byDestCityTickets);
-    nonStrictTickets->insert(this->byNearCities, *byNearCitiesTickets);
-
-    qDebug() << *strictTickets;
-    qDebug() << *nonStrictTickets;
-
-    // Clear mem
-//    delete strictTickets;
-//    delete nonStrictTickets;
-//    delete aviaTickets;
-//    delete byDepCityTickets;
-//    delete byDestCityTickets;
-//    delete byDateTickets;
-//    delete byRateTickets;
-
-    return aviaTickets;
+    qDebug() << *ticketsArray;
+    return ticketsArray;
 }
 
 QString DataProcessorSingleton::unifyDate(const QString &rawDateStr)
@@ -160,13 +96,17 @@ QList<QString>* DataProcessorSingleton::findNearbyCities(const QString &city)
     return nearbyCities;
 }
 
-QList<int>* DataProcessorSingleton::findNearbyDates(const QString &date)
+int DataProcessorSingleton::findNearbyDates(const QString &date)
 {
     /* Method returns date boundaries in which the ticket should
      * take place so that it is considered as byDate group ticket;
+     * Nearby date is searched by month (+-10days)
      */
-    QList<int> *dateBoundaries = new QList<int>;
-    return dateBoundaries;
+    int month_start = date.indexOf('/');
+    int month_end = date.lastIndexOf('/');
+    int month = date.mid(month_start, month_end).toInt();
+    qDebug() << month;
+    return month;
 }
 
 

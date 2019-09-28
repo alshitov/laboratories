@@ -30,16 +30,30 @@ private:
     void fillRailwayTabControls();
     void fillBusTabControls();
     void fillTrainTabControls();
-    // Getters for tabs data processing
+
+    /* Tickets search pipeline */
+    // Arrays of pointers to controls from which to get user settings
+    QList<QObject*> aviaTabControls;
+    QList<QObject*> railwayTabControls;
+    QList<QObject*> busTabControls;
+    QList<QObject*> trainTabControls;
+    // Tab settings getter
     QMap<QString, QString>* getAviaTabSettings();
     QMap<QString, QString>* getRailwayTabSettings();
     QMap<QString, QString>* getBusTabSettings();
     QMap<QString, QString>* getTrainTabSettings();
-
+    // Search methods
     void aviaSearch();
     void railwaySearch();
     void busSearch();
     void trainSearch();
 
+    /* Tickets render pipeline */
+    QStringList* aviaTicketsHeaders = new QStringList { "From", "To", "Date", "Company", "Price" };
+
+    QTableWidget* createTicketsTable(int colCnt, QStringList& headers);
+    void fillTable(QTableWidget& table, QJsonArray& tickets);
+    void insertTable(QTableWidget& table, QVBoxLayout& layout);
+    void showResult(QStringList& horHeaders, QVBoxLayout& targetLayout, QJsonArray& tickets);
 };
 #endif // MAINWINDOW_H

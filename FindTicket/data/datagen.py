@@ -5,11 +5,14 @@ avia_tickets, railway_tickets, bus_tickets, train_tickets.
 """
 
 import os
+from sys import path, argv
 __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
-from sys import argv
+path.append(__location__)
 from random import randint
+from copy import deepcopy
 import json
 import xlrd
+import wikiparser as wp
 
 
 def _load_sources() -> dict:
@@ -43,7 +46,10 @@ def _load_cities_distances() -> [list]:
 
 
 distances = _load_cities_distances()
-places = sorted(list(distances.keys()))
+places = sorted(list(distances.keys()))     # all
+# Cities for airplane tickets
+cities_w_airport = wp.get_cities_with_airports()
+air_tickets_cities = [city for city in places if city in cities_w_airport]
 
 
 def _calc_approximate_travel_time(transport_type, depart, dest) -> float:
@@ -192,6 +198,11 @@ def _ticketgen(transport: str, source: dict, amount: int) -> [dict]:
     """
     gen_result = {}
 
+    if transport == 'avia':
+        places = air_tickets_cities
+    else:
+        global places
+
     for idx in range(amount):
         # Generate fields
         departure_place = _random_from_list(places, 1)
@@ -248,9 +259,21 @@ def _ticketgen(transport: str, source: dict, amount: int) -> [dict]:
                 sales[field] = randint(_field_low, _field_high)
 
         ticket['sales'] = sales
+        # Original ticket
+        # gen_result[idx] = ticket
 
-        gen_result[idx] = ticket
-
+        # Generate tickets with nearby dates (+30 tickets in same month)
+        time = departure_datetime.split(' - ')[1]
+        month, day, year = departure_datetime.split(' - ')[0].split('/')
+        for i in range(1, 31):
+            copy = deepcopy(ticket)
+            copy['departure_datetime'] = '{0}/{1}/{2} - {3}'.format(
+                i,
+                month,
+                year,
+                time
+            )
+            gen_result[str(idx) + str(i)] = copy
     return gen_result
 
 
@@ -273,11 +296,12 @@ def ticketgen(amount: int):
 
         if _source:
             _tickets = _ticketgen(transport, _source, amount)
+
             tickets[transport] = _tickets
 
     # Make dump for application
-    if tickets:
-        _make_dump(tickets)
+    # if tickets:
+    #     _make_dump(tickets)
 
 
 def _make_dump(tickets: dict):
@@ -307,5 +331,3 @@ if __name__ == '__main__':
         _force_quit()
 
     ticketgen(int(argv[1]))
-    # TODO: добавить билеты всех классов для одного сгенерированного и по ближайшим датам
-

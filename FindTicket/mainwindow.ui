@@ -154,7 +154,18 @@
                </widget>
               </item>
               <item>
-               <widget class="QDateEdit" name="aviaDepartDateEdit"/>
+               <widget class="QDateEdit" name="aviaDepartDateEdit">
+                <property name="dateTime">
+                 <datetime>
+                  <hour>0</hour>
+                  <minute>0</minute>
+                  <second>0</second>
+                  <year>2019</year>
+                  <month>1</month>
+                  <day>1</day>
+                 </datetime>
+                </property>
+               </widget>
               </item>
              </layout>
             </item>
@@ -253,7 +264,11 @@
           <item row="3" column="0">
            <layout class="QVBoxLayout" name="aviaResultsVertLayout">
             <item>
-             <widget class="QListWidget" name="aviaTicketsListWidget"/>
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>
@@ -318,7 +333,11 @@
                </widget>
               </item>
               <item>
-               <widget class="QComboBox" name="railwayFromComboBox"/>
+               <widget class="QComboBox" name="railwayFromComboBox">
+                <property name="editable">
+                 <bool>true</bool>
+                </property>
+               </widget>
               </item>
              </layout>
             </item>
@@ -332,7 +351,18 @@
                </widget>
               </item>
               <item>
-               <widget class="QDateEdit" name="railwayDepartComboBox"/>
+               <widget class="QDateEdit" name="railwayDepartComboBox">
+                <property name="dateTime">
+                 <datetime>
+                  <hour>0</hour>
+                  <minute>0</minute>
+                  <second>0</second>
+                  <year>2019</year>
+                  <month>1</month>
+                  <day>1</day>
+                 </datetime>
+                </property>
+               </widget>
               </item>
              </layout>
             </item>
@@ -360,7 +390,11 @@
                </widget>
               </item>
               <item>
-               <widget class="QComboBox" name="railwayToComboBox"/>
+               <widget class="QComboBox" name="railwayToComboBox">
+                <property name="editable">
+                 <bool>true</bool>
+                </property>
+               </widget>
               </item>
              </layout>
             </item>
@@ -434,7 +468,14 @@
                </widget>
               </item>
               <item>
-               <widget class="QComboBox" name="busFromComboBox"/>
+               <widget class="QComboBox" name="busFromComboBox">
+                <property name="tabletTracking">
+                 <bool>false</bool>
+                </property>
+                <property name="editable">
+                 <bool>true</bool>
+                </property>
+               </widget>
               </item>
              </layout>
             </item>
@@ -476,7 +517,11 @@
                </widget>
               </item>
               <item>
-               <widget class="QComboBox" name="busToComboBox"/>
+               <widget class="QComboBox" name="busToComboBox">
+                <property name="editable">
+                 <bool>true</bool>
+                </property>
+               </widget>
               </item>
              </layout>
             </item>
@@ -544,7 +589,11 @@
                </widget>
               </item>
               <item>
-               <widget class="QComboBox" name="trainFromComboBox"/>
+               <widget class="QComboBox" name="trainFromComboBox">
+                <property name="editable">
+                 <bool>true</bool>
+                </property>
+               </widget>
               </item>
              </layout>
             </item>
@@ -572,7 +621,11 @@
                </widget>
               </item>
               <item>
-               <widget class="QComboBox" name="trainToComboBox"/>
+               <widget class="QComboBox" name="trainToComboBox">
+                <property name="editable">
+                 <bool>true</bool>
+                </property>
+               </widget>
               </item>
              </layout>
             </item>

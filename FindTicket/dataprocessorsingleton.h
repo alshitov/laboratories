@@ -52,10 +52,10 @@ public:
 
     QString unifyDate(const QString &rawDateStr);
     QList<QString>* findNearbyCities(const QString &city);
-    QList<int>* findNearbyDates(const QString &date);
+    int findNearbyDates(const QString &date);
 
 
-    QJsonObject* aviaSearch(QMap<QString, QString> &settings);
+    QJsonArray* aviaSearch(QMap<QString, QString> &settings);
     QJsonObject* railwaySearch(QMap<QString, QString> &settings);
     QJsonObject* busSearch(QMap<QString, QString> &settings);
     QJsonObject* trainSearch(QMap<QString, QString> &settings);

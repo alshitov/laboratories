@@ -28,7 +28,6 @@ QJsonObject DataLoaderSingleton::readJsonDocument(QString & documentName)
 
 void DataLoaderSingleton::loadCitiesList()
 {
-    /* Method parses citiesJson and stores parsed cities list in DataLoader::cities */
     QJsonObject citiesJson = readJsonDocument(this->citiesJson);
     char key[7] = "cities";
     auto keys = citiesJson.keys();

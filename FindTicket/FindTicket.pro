@@ -19,15 +19,19 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     dataloadersingleton.cpp \
     dataprocessorsingleton.cpp \
+    dialog.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    searchthread.cpp
 
 HEADERS += \
     dataloadersingleton.h \
     dataprocessorsingleton.h \
+    dialog.h \
     loader.h \
     mainwindow.h \
-    processor.h
+    processor.h \
+    searchthread.h
 
 FORMS += \
     mainwindow.ui

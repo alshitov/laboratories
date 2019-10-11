@@ -61,7 +61,7 @@
       <number>5</number>
      </property>
      <item>
-      <widget class="QTabWidget" name="tabWidget">
+      <widget class="QTabWidget" name="findTicketsTabWidget">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
          <horstretch>1</horstretch>
@@ -103,7 +103,13 @@
           <item row="4" column="0">
            <widget class="QProgressBar" name="aviaSearchProgressBar">
             <property name="value">
-             <number>24</number>
+             <number>0</number>
+            </property>
+            <property name="textVisible">
+             <bool>true</bool>
+            </property>
+            <property name="format">
+             <string>%p%</string>
             </property>
            </widget>
           </item>
@@ -140,6 +146,9 @@
                 <property name="editable">
                  <bool>true</bool>
                 </property>
+                <property name="currentText">
+                 <string>Москва</string>
+                </property>
                </widget>
               </item>
              </layout>
@@ -161,7 +170,7 @@
                   <minute>0</minute>
                   <second>0</second>
                   <year>2019</year>
-                  <month>1</month>
+                  <month>9</month>
                   <day>1</day>
                  </datetime>
                 </property>
@@ -182,6 +191,9 @@
                <widget class="QComboBox" name="aviaToComboBox">
                 <property name="editable">
                  <bool>true</bool>
+                </property>
+                <property name="currentText">
+                 <string>Кострома</string>
                 </property>
                </widget>
               </item>
@@ -264,9 +276,103 @@
           <item row="3" column="0">
            <layout class="QVBoxLayout" name="aviaResultsVertLayout">
             <item>
-             <widget class="QLabel" name="label">
+             <widget class="QLabel" name="preview">
+              <property name="palette">
+               <palette>
+                <active>
+                 <colorrole role="WindowText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>136</red>
+                    <green>138</green>
+                    <blue>133</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Text">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>136</red>
+                    <green>138</green>
+                    <blue>133</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="PlaceholderText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="128">
+                    <red>136</red>
+                    <green>138</green>
+                    <blue>133</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                </active>
+                <inactive>
+                 <colorrole role="WindowText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>136</red>
+                    <green>138</green>
+                    <blue>133</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Text">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>136</red>
+                    <green>138</green>
+                    <blue>133</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="PlaceholderText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="128">
+                    <red>136</red>
+                    <green>138</green>
+                    <blue>133</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                </inactive>
+                <disabled>
+                 <colorrole role="WindowText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>190</red>
+                    <green>190</green>
+                    <blue>190</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Text">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>190</red>
+                    <green>190</green>
+                    <blue>190</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="PlaceholderText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="128">
+                    <red>0</red>
+                    <green>0</green>
+                    <blue>0</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                </disabled>
+               </palette>
+              </property>
               <property name="text">
-               <string>TextLabel</string>
+               <string>Your tickets here...</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
               </property>
              </widget>
             </item>
@@ -351,7 +457,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QDateEdit" name="railwayDepartComboBox">
+               <widget class="QDateEdit" name="railwayDepartDateEdit">
                 <property name="dateTime">
                  <datetime>
                   <hour>0</hour>
@@ -376,7 +482,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QDateEdit" name="railwayArrivalComboBox"/>
+               <widget class="QDateEdit" name="railwayArrivalDateEdit"/>
               </item>
              </layout>
             </item>
@@ -403,7 +509,105 @@
           <item row="3" column="0">
            <layout class="QVBoxLayout" name="railwayResultsVertLayout">
             <item>
-             <widget class="QListView" name="railwayTocketsListView"/>
+             <widget class="QLabel" name="preview_2">
+              <property name="palette">
+               <palette>
+                <active>
+                 <colorrole role="WindowText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>136</red>
+                    <green>138</green>
+                    <blue>133</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Text">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>136</red>
+                    <green>138</green>
+                    <blue>133</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="PlaceholderText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="128">
+                    <red>136</red>
+                    <green>138</green>
+                    <blue>133</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                </active>
+                <inactive>
+                 <colorrole role="WindowText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>136</red>
+                    <green>138</green>
+                    <blue>133</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Text">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>136</red>
+                    <green>138</green>
+                    <blue>133</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="PlaceholderText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="128">
+                    <red>136</red>
+                    <green>138</green>
+                    <blue>133</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                </inactive>
+                <disabled>
+                 <colorrole role="WindowText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>190</red>
+                    <green>190</green>
+                    <blue>190</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Text">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>190</red>
+                    <green>190</green>
+                    <blue>190</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="PlaceholderText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="128">
+                    <red>0</red>
+                    <green>0</green>
+                    <blue>0</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                </disabled>
+               </palette>
+              </property>
+              <property name="text">
+               <string>Your tickets here...</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>
@@ -489,7 +693,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QDateEdit" name="busDepartComboBox"/>
+               <widget class="QDateEdit" name="busDepartDateEdit"/>
               </item>
              </layout>
             </item>
@@ -530,7 +734,105 @@
           <item row="3" column="0">
            <layout class="QVBoxLayout" name="busResultsVertLayout">
             <item>
-             <widget class="QListView" name="busTicketsListView"/>
+             <widget class="QLabel" name="preview_3">
+              <property name="palette">
+               <palette>
+                <active>
+                 <colorrole role="WindowText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>136</red>
+                    <green>138</green>
+                    <blue>133</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Text">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>136</red>
+                    <green>138</green>
+                    <blue>133</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="PlaceholderText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="128">
+                    <red>136</red>
+                    <green>138</green>
+                    <blue>133</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                </active>
+                <inactive>
+                 <colorrole role="WindowText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>136</red>
+                    <green>138</green>
+                    <blue>133</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Text">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>136</red>
+                    <green>138</green>
+                    <blue>133</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="PlaceholderText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="128">
+                    <red>136</red>
+                    <green>138</green>
+                    <blue>133</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                </inactive>
+                <disabled>
+                 <colorrole role="WindowText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>190</red>
+                    <green>190</green>
+                    <blue>190</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Text">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>190</red>
+                    <green>190</green>
+                    <blue>190</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="PlaceholderText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="128">
+                    <red>0</red>
+                    <green>0</green>
+                    <blue>0</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                </disabled>
+               </palette>
+              </property>
+              <property name="text">
+               <string>Your tickets here...</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>
@@ -607,7 +909,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QDateEdit" name="trainDepartComboBox"/>
+               <widget class="QDateEdit" name="trainDepartDateEdit"/>
               </item>
              </layout>
             </item>
@@ -634,7 +936,105 @@
           <item row="3" column="0">
            <layout class="QVBoxLayout" name="trainResultsVertLayout">
             <item>
-             <widget class="QListView" name="trainTicketsListView"/>
+             <widget class="QLabel" name="preview_4">
+              <property name="palette">
+               <palette>
+                <active>
+                 <colorrole role="WindowText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>136</red>
+                    <green>138</green>
+                    <blue>133</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Text">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>136</red>
+                    <green>138</green>
+                    <blue>133</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="PlaceholderText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="128">
+                    <red>136</red>
+                    <green>138</green>
+                    <blue>133</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                </active>
+                <inactive>
+                 <colorrole role="WindowText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>136</red>
+                    <green>138</green>
+                    <blue>133</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Text">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>136</red>
+                    <green>138</green>
+                    <blue>133</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="PlaceholderText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="128">
+                    <red>136</red>
+                    <green>138</green>
+                    <blue>133</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                </inactive>
+                <disabled>
+                 <colorrole role="WindowText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>190</red>
+                    <green>190</green>
+                    <blue>190</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Text">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>190</red>
+                    <green>190</green>
+                    <blue>190</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="PlaceholderText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="128">
+                    <red>0</red>
+                    <green>0</green>
+                    <blue>0</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                </disabled>
+               </palette>
+              </property>
+              <property name="text">
+               <string>Your tickets here...</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>

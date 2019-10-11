@@ -1,5 +1,5 @@
-#ifndef LINK_H
-#define LINK_H
+#ifndef PROCESSOR_H
+#define PROCESSOR_H
 #include <dataloadersingleton.h>
 #include <dataprocessorsingleton.h>
 
@@ -7,4 +7,4 @@ QT_BEGIN_NAMESPACE
 namespace processor { static auto& dps = DataProcessorSingleton::getInstance(); }
 QT_END_NAMESPACE
 
-#endif // LINK_H
+#endif // PROCESSOR_H

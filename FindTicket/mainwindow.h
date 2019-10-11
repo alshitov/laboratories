@@ -19,41 +19,54 @@ public:
     ~MainWindow();
 
 private slots:
+    void keyPressEvent(QKeyEvent *event);
+
     void on_aviaSearchPushButton_clicked();
-    void on_tabWidget_currentChanged(int index);
+    void on_railwaySearchPushButton_clicked();
+    void on_busSearchPushButton_clicked();
+    void on_trainSearchPushButton_clicked();
+
+    void on_findTicketsTabWidget_currentChanged(int index);
+    void progressBarIncrement(int percents);
 
 private:
     Ui::MainWindow *ui;
 
     int *tabsFilled = new int[4] {0, 0, 0, 0};
-    void fillAviaTabControls();
-    void fillRailwayTabControls();
-    void fillBusTabControls();
-    void fillTrainTabControls();
+    void fillTabControls(int index);
 
-    /* Tickets search pipeline */
-    // Arrays of pointers to controls from which to get user settings
-    QList<QObject*> aviaTabControls;
-    QList<QObject*> railwayTabControls;
-    QList<QObject*> busTabControls;
-    QList<QObject*> trainTabControls;
-    // Tab settings getter
     QMap<QString, QString>* getAviaTabSettings();
     QMap<QString, QString>* getRailwayTabSettings();
     QMap<QString, QString>* getBusTabSettings();
     QMap<QString, QString>* getTrainTabSettings();
-    // Search methods
+
     void aviaSearch();
     void railwaySearch();
     void busSearch();
     void trainSearch();
 
-    /* Tickets render pipeline */
-    QStringList* aviaTicketsHeaders = new QStringList { "From", "To", "Date", "Company", "Price" };
+    QStringList* aviaTicketsHeaders = new QStringList {
+        "Откуда", "Куда", "Даты", "Компания", "Цена"
+    };
+    QStringList* railwayTicketsHeaders = new QStringList {
+        "Маршрут", "Отправление", "Прибытие", "Перевозчик", "Цена"
+    };
+    QStringList* busTicketsHeaders = new QStringList {
+        "Маршрут", "Отправление", "Прибытие", "В пути (ч)", "Цена"
+    };
+    QStringList* trainTicketsHeaders = new QStringList {
+        "Маршрут", "Отправление", "Прибытие", "Цена"
+    };
 
-    QTableWidget* createTicketsTable(int colCnt, QStringList& headers);
-    void fillTable(QTableWidget& table, QJsonArray& tickets);
-    void insertTable(QTableWidget& table, QVBoxLayout& layout);
-    void showResult(QStringList& horHeaders, QVBoxLayout& targetLayout, QJsonArray& tickets);
+    QWidget* findResultsTable(QVBoxLayout& targetLayout);
+    void showResult(QStringList* horHeaders, QVBoxLayout& targetLayout, QJsonArray* tickets);
+    QStringList* aviaTicketsMapper(const QJsonObject& ticket);
+    QStringList* railwayTicketsMapper(const QJsonObject& ticket);
+    QStringList* busTicketsMapper(const QJsonObject& ticket);
+    QStringList* trainTicketsMapper(const QJsonObject& ticket);
+
+    QTableWidget* createTicketsTable(int colCnt, QStringList* headers);
+    void sortTicketsByRelevance(QJsonArray *tickets);
+    void fillTable(QTableWidget* table, QJsonArray* tickets);
 };
 #endif // MAINWINDOW_H

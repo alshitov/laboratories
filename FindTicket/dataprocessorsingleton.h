@@ -26,29 +26,16 @@ public:
         return object;
     }
 
-    // Cities distance limit (km) for non-strict search
+    bool is_searching = false;
+    bool isSearching() { return this->is_searching; }
+
+    void process();
+    void stop();
+
     int aviaCitiesDistanceLimit = 150;
     int railwayCitiesDistanceLimit = 100;
     int busCitiesDistanceLimit = 50;
     int trainCitiesDistanceLimit = 30;
-
-    // Tickets QJsonObject keys
-
-    // Tickets with full settings compliance
-    QString strict = "strict";
-    // Tickets with part settings compliance
-    QString nonStrict = "nonStrict";
-
-    // Ticket department city is near to the one user wants
-    QString byDepCity = "byDepCity";
-    // Ticket destination city is near to the one user wants
-    QString byDestCity = "byDestCity";
-    // Ticket destination & department cities are near to the one user wants
-    QString byNearCities = "byNearCities";
-    // Ticket department date is near the one user wants
-    QString byDate = "byDate";
-    // Only ticket rate is different
-    QString byRate = "byRate";
 
     QString unifyDate(const QString &rawDateStr);
     QList<QString>* findNearbyCities(const QString &city);
@@ -56,9 +43,12 @@ public:
 
 
     QJsonArray* aviaSearch(QMap<QString, QString> &settings);
-    QJsonObject* railwaySearch(QMap<QString, QString> &settings);
-    QJsonObject* busSearch(QMap<QString, QString> &settings);
-    QJsonObject* trainSearch(QMap<QString, QString> &settings);
+    QJsonArray* railwaySearch(QMap<QString, QString> &settings);
+    QJsonArray* busSearch(QMap<QString, QString> &settings);
+    QJsonArray* trainSearch(QMap<QString, QString> &settings);
+
+signals:
+    void finished();
 };
 
 #endif // DATAPROCESSOR_H

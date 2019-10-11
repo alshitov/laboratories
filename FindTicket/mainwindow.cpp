@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    this->initializeShortcuts();
     loader::dls.loadCitiesList();
     loader::dls.loadCitiesDistances();
     fillTabControls(ui->findTicketsTabWidget->currentIndex());
@@ -21,6 +22,73 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::initializeShortcuts()
+{
+    key_Ctrl_L = new QShortcut(this);
+    key_Ctrl_L->setKey(Qt::CTRL + Qt::Key_L);
+    connect(key_Ctrl_L, SIGNAL(activated()), this, SLOT(clearTicketsTable()));
+
+    this->key_Ctrl_P = new QShortcut(this);
+    key_Ctrl_P->setKey(Qt::CTRL + Qt::Key_P);
+    connect(key_Ctrl_P, SIGNAL(activated()), this, SLOT(showPreviousResults()));
+
+    this->key_Ctrl_S = new QShortcut(this);
+    key_Ctrl_S->setKey(Qt::CTRL + Qt::Key_S);
+    connect(key_Ctrl_S, SIGNAL(activated()), this, SLOT(saveUserPreferences()));
+
+    this->key_Ctrl_V = new QShortcut(this);
+    key_Ctrl_V->setKey(Qt::CTRL + Qt::Key_V);
+    connect(key_Ctrl_V, SIGNAL(activated()), this, SLOT(loadUserPreferences()));
+}
+
+void MainWindow::clearTicketsTable()
+{
+    int currentTab = ui->findTicketsTabWidget->currentIndex();
+    QTableWidget *targetTable;
+
+    switch (currentTab)
+    {
+    case 0:
+        targetTable = this->aviaTicketsTable;
+        break;
+    case 1:
+        targetTable = this->railwayTicketsTable;
+        break;
+    case 2:
+        targetTable = this->busTicketsTable;
+        break;
+    case 3:
+        targetTable = this->trainTicketsTable;
+        break;
+    default:
+        targetTable = nullptr;
+        break;
+    }
+
+    if (targetTable != nullptr)
+    {
+        targetTable->setRowCount(0);
+    }
+}
+
+void MainWindow::showPreviousResults()
+{
+    // Show previous search results with CTRL+P;
+    // Not implemented
+}
+
+void MainWindow::saveUserPreferences()
+{
+    // Save user's search preferences to config with CTRL+S;
+    // Not implemented
+}
+
+void MainWindow::loadUserPreferences()
+{
+    // Load user's search preferences from config with CTRL+V;
+    // Not implemented
 }
 
 void MainWindow::fillTabControls(int index)
@@ -59,67 +127,6 @@ void MainWindow::fillTabControls(int index)
         break;
     }
     if (empty) *(tabsFilled + index) = 1;
-}
-
-void MainWindow::keyPressEvent(QKeyEvent *event)
-{
-    // Clear table with CTRL+L;
-    if (event->key() == Qt::Key_L && event->modifiers() == Qt::ControlModifier)
-    {
-        QVBoxLayout *layoutPtr;
-
-        switch (ui->findTicketsTabWidget->currentIndex())
-        {
-        case 0:
-            layoutPtr = ui->aviaResultsVertLayout;
-            break;
-        case 1:
-            layoutPtr = ui->railwayResultsVertLayout;
-            break;
-        case 2:
-            layoutPtr = ui->busResultsVertLayout;
-            break;
-        case 3:
-            layoutPtr = ui->trainResultsVertLayout;
-            break;
-        default:
-            layoutPtr = nullptr;
-        }
-
-        if (layoutPtr != nullptr)
-        {
-            QWidget *layoutItemWidget = layoutPtr->itemAt(0)->widget();
-            qDebug() << layoutItemWidget;
-
-            if (qobject_cast<QTableWidget*>(layoutItemWidget) != nullptr)
-            {
-                auto *tablePtr = layoutItemWidget;
-                // not working!
-//                if (tablePtr->rowCount() == 0)
-//                {
-//                    qDebug() << "here!";
-//                    tablePtr->setRowCount(0);
-//                }
-            }
-            else qDebug() << "Table does not exist yet!";
-        }
-    }
-    // Show previous search results with CTRL+P;
-    if (event->key() == Qt::Key_P && event->modifiers() == Qt::ControlModifier)
-    {
-        // Not implemented
-    }
-    // Save user's search preferences to config with CTRL+S;
-    if (event->key() == Qt::Key_S && event->modifiers() == Qt::ControlModifier)
-    {
-        // Not implemented
-    }
-    // Load user's search preferences from config with CTRL+S;
-    if (event->key() == Qt::Key_V && event->modifiers() == Qt::ControlModifier)
-    {
-        // Not implemented
-    }
-    QMainWindow::keyPressEvent(event);
 }
 
 void MainWindow::on_findTicketsTabWidget_currentChanged(int index)
@@ -164,7 +171,9 @@ void MainWindow::showResult(QStringList* horHeaders, QVBoxLayout& targetLayout, 
         {
             QMessageBox messageBox;
             messageBox.setText("Выберите действие");
-            messageBox.setInformativeText("Очистить таблицу (Нет - результат поиска будет добавлен в начало таблицы)?");
+            messageBox.setInformativeText(
+                        "Очистить таблицу (Нет - результат поиска будет добавлен в начало таблицы)?"
+            );
             messageBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
             messageBox.setIcon(QMessageBox::Question);
             messageBox.setDefaultButton(QMessageBox::Yes);
@@ -188,6 +197,7 @@ void MainWindow::showResult(QStringList* horHeaders, QVBoxLayout& targetLayout, 
 QTableWidget* MainWindow::createTicketsTable(int colCnt, QStringList* headers)
 {
     QTableWidget *ticketsTable = new QTableWidget();
+
     int maxWidth = 610;
     int normalSectionW = int((maxWidth - 40) / colCnt);
     ticketsTable->setColumnCount(colCnt + 1);
@@ -197,12 +207,30 @@ QTableWidget* MainWindow::createTicketsTable(int colCnt, QStringList* headers)
     ticketsTable->horizontalHeader()->setDefaultSectionSize(normalSectionW);
     ticketsTable->horizontalHeader()->setStretchLastSection(true);
     ticketsTable->verticalHeader()->setVisible(false);
+
+    if (headers == this->aviaTicketsHeaders)
+    {
+        qDebug() << "set avia";
+        this->aviaTicketsTable = ticketsTable;
+    }
+    else if (headers == this->railwayTicketsHeaders)
+    {
+        this->railwayTicketsTable = ticketsTable;
+    }
+    else if (headers == this->busTicketsHeaders)
+    {
+        this->busTicketsTable = ticketsTable;
+    }
+    else if (headers == this->trainTicketsHeaders)
+    {
+        this->trainTicketsTable = ticketsTable;
+    }
     return ticketsTable;
 }
 
 void MainWindow::sortTicketsByRelevance(QJsonArray *tickets)
 {
-    qDebug() << "Sort here: " << *tickets;
+    qDebug() << "Sort here";
 }
 
 QStringList* MainWindow::aviaTicketsMapper(const QJsonObject& ticket)
@@ -218,16 +246,15 @@ QStringList* MainWindow::aviaTicketsMapper(const QJsonObject& ticket)
     Q_ASSERT(keys.contains("price"));
     Q_ASSERT(keys.contains("price_currency"));
 
-    QString company = ticket.value("company").toString();
-    QString from = ticket.value("departure_place").toString();
-    QString to = ticket.value("arrival_place").toString();
-    QString date =   ticket.value("departure_datetime").toString()
-                   + " - "
-                   + ticket.value("arrival_datetime").toString();
-    QString price = QString("%1 %2").arg(
-                QString::number(ticket.value("price").toDouble()),
-                ticket.value("price_currency").toString()
-    );
+    QString company = ticket.value("company").toString(),
+            from    = ticket.value("departure_place").toString(),
+            to      = ticket.value("arrival_place").toString(),
+            date    = ticket.value("departure_datetime").toString()
+                            + " - "
+                            + ticket.value("arrival_datetime").toString(),
+            price   = QString("%1 %2").arg(
+                              QString::number(ticket.value("price").toDouble()),
+                              ticket.value("price_currency").toString());
 
     values->append(from);
     values->append(to);
@@ -243,28 +270,27 @@ QStringList* MainWindow::railwayTicketsMapper(const QJsonObject& ticket)
     QStringList *values = new QStringList();
     QList<QString> keys = ticket.keys();
 
-    Q_ASSERT(keys.contains("company"));
     Q_ASSERT(keys.contains("departure_place"));
     Q_ASSERT(keys.contains("arrival_place"));
     Q_ASSERT(keys.contains("departure_datetime"));
     Q_ASSERT(keys.contains("arrival_datetime"));
+    Q_ASSERT(keys.contains("company"));
     Q_ASSERT(keys.contains("price"));
     Q_ASSERT(keys.contains("price_currency"));
 
-    QString company = ticket.value("company").toString();
-    QString from = ticket.value("departure_place").toString();
-    QString to = ticket.value("arrival_place").toString();
-    QString date =   ticket.value("departure_datetime").toString()
-                   + " - "
-                   + ticket.value("arrival_datetime").toString();
-    QString price = QString("%1 %2").arg(
-                QString::number(ticket.value("price").toDouble()),
-                ticket.value("price_currency").toString()
-    );
+    QString route   = ticket.value("departure_place").toString()
+                    + " - "
+                    + ticket.value("arrival_place").toString(),
+            depDate = ticket.value("departure_datetime").toString(),
+            arrDate = ticket.value("arrival_datetime").toString(),
+            company = ticket.value("company").toString(),
+            price   = QString("%1 %2").arg(
+                              QString::number(ticket.value("price").toDouble()),
+                              ticket.value("price_currency").toString());
 
-    values->append(from);
-    values->append(to);
-    values->append(date);
+    values->append(route);
+    values->append(depDate);
+    values->append(arrDate);
     values->append(company);
     values->append(price);
 
@@ -276,29 +302,28 @@ QStringList* MainWindow::busTicketsMapper(const QJsonObject& ticket)
     QStringList *values = new QStringList();
     QList<QString> keys = ticket.keys();
 
-    Q_ASSERT(keys.contains("company"));
     Q_ASSERT(keys.contains("departure_place"));
     Q_ASSERT(keys.contains("arrival_place"));
     Q_ASSERT(keys.contains("departure_datetime"));
     Q_ASSERT(keys.contains("arrival_datetime"));
+    Q_ASSERT(keys.contains("distance"));
     Q_ASSERT(keys.contains("price"));
     Q_ASSERT(keys.contains("price_currency"));
 
-    QString company = ticket.value("company").toString();
-    QString from = ticket.value("departure_place").toString();
-    QString to = ticket.value("arrival_place").toString();
-    QString date =   ticket.value("departure_datetime").toString()
-                   + " - "
-                   + ticket.value("arrival_datetime").toString();
-    QString price = QString("%1 %2").arg(
-                QString::number(ticket.value("price").toDouble()),
-                ticket.value("price_currency").toString()
-    );
+    QString route   = ticket.value("departure_place").toString()
+                    + " - "
+                    + ticket.value("arrival_place").toString(),
+            depDate = ticket.value("departure_datetime").toString(),
+            arrDate = ticket.value("arrival_datetime").toString(),
+            dist    = ticket.value("distance").toString(),
+            price   = QString("%1 %2").arg(
+                              QString::number(ticket.value("price").toDouble()),
+                              ticket.value("price_currency").toString());
 
-    values->append(from);
-    values->append(to);
-    values->append(date);
-    values->append(company);
+    values->append(route);
+    values->append(depDate);
+    values->append(arrDate);
+    values->append(dist);
     values->append(price);
 
     return values;
@@ -309,7 +334,6 @@ QStringList* MainWindow::trainTicketsMapper(const QJsonObject& ticket)
     QStringList *values = new QStringList();
     QList<QString> keys = ticket.keys();
 
-    Q_ASSERT(keys.contains("company"));
     Q_ASSERT(keys.contains("departure_place"));
     Q_ASSERT(keys.contains("arrival_place"));
     Q_ASSERT(keys.contains("departure_datetime"));
@@ -317,21 +341,18 @@ QStringList* MainWindow::trainTicketsMapper(const QJsonObject& ticket)
     Q_ASSERT(keys.contains("price"));
     Q_ASSERT(keys.contains("price_currency"));
 
-    QString company = ticket.value("company").toString();
-    QString from = ticket.value("departure_place").toString();
-    QString to = ticket.value("arrival_place").toString();
-    QString date =   ticket.value("departure_datetime").toString()
-                   + " - "
-                   + ticket.value("arrival_datetime").toString();
-    QString price = QString("%1 %2").arg(
-                QString::number(ticket.value("price").toDouble()),
-                ticket.value("price_currency").toString()
-    );
+    QString route   = ticket.value("departure_place").toString()
+                    + " - "
+                    + ticket.value("arrival_place").toString(),
+            depDate = ticket.value("departure_datetime").toString(),
+            arrDate = ticket.value("arrival_datetime").toString(),
+            price   = QString("%1 %2").arg(
+                              QString::number(ticket.value("price").toDouble()),
+                              ticket.value("price_currency").toString());
 
-    values->append(from);
-    values->append(to);
-    values->append(date);
-    values->append(company);
+    values->append(route);
+    values->append(depDate);
+    values->append(arrDate);
     values->append(price);
 
     return values;

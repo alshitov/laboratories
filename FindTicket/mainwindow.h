@@ -19,7 +19,10 @@ public:
     ~MainWindow();
 
 private slots:
-    void keyPressEvent(QKeyEvent *event);
+    void clearTicketsTable();
+    void showPreviousResults();
+    void saveUserPreferences();
+    void loadUserPreferences();
 
     void on_aviaSearchPushButton_clicked();
     void on_railwaySearchPushButton_clicked();
@@ -31,6 +34,12 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+
+    QShortcut *key_Ctrl_L;
+    QShortcut *key_Ctrl_P;
+    QShortcut *key_Ctrl_S;
+    QShortcut *key_Ctrl_V;
+    void initializeShortcuts();
 
     int *tabsFilled = new int[4] {0, 0, 0, 0};
     void fillTabControls(int index);
@@ -52,11 +61,16 @@ private:
         "Маршрут", "Отправление", "Прибытие", "Перевозчик", "Цена"
     };
     QStringList* busTicketsHeaders = new QStringList {
-        "Маршрут", "Отправление", "Прибытие", "В пути (ч)", "Цена"
+        "Маршрут", "Отправление", "Прибытие", "В пути (км)", "Цена"
     };
     QStringList* trainTicketsHeaders = new QStringList {
         "Маршрут", "Отправление", "Прибытие", "Цена"
     };
+
+    QTableWidget *aviaTicketsTable = new QTableWidget();
+    QTableWidget *railwayTicketsTable = new QTableWidget();
+    QTableWidget *busTicketsTable = new QTableWidget();
+    QTableWidget *trainTicketsTable = new QTableWidget();
 
     QWidget* findResultsTable(QVBoxLayout& targetLayout);
     void showResult(QStringList* horHeaders, QVBoxLayout& targetLayout, QJsonArray* tickets);

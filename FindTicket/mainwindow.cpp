@@ -14,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     this->initializeShortcuts();
+    this->initializeTicketsTables();
     loader::dls.loadCitiesList();
     loader::dls.loadCitiesDistances();
     fillTabControls(ui->findTicketsTabWidget->currentIndex());
@@ -41,6 +42,33 @@ void MainWindow::initializeShortcuts()
     this->key_Ctrl_V = new QShortcut(this);
     key_Ctrl_V->setKey(Qt::CTRL + Qt::Key_V);
     connect(key_Ctrl_V, SIGNAL(activated()), this, SLOT(loadUserPreferences()));
+}
+
+void MainWindow::initializeTicketsTables()
+{
+    QMap<QTableWidget*, QStringList*> *tables = new QMap<QTableWidget*, QStringList*> {
+        { this->aviaTicketsTable, this->aviaTicketsHeaders },
+        { this->railwayTicketsTable, this->railwayTicketsHeaders },
+        { this->busTicketsTable, this->busTicketsHeaders },
+        { this->trainTicketsTable, this->trainTicketsHeaders }
+    };
+    int maxWidth = 610;
+
+    QMap<QTableWidget*, QStringList*>::iterator it;
+    for (it = tables->begin(); it != tables->end(); ++it)
+    {
+        QTableWidget* table = it.key();
+        QStringList *headers = it.value();
+        int colCount = headers->count();
+        int normalSectionW = int((maxWidth - 40) / colCount);
+        table->setColumnCount(colCount + 1);
+        table->setMaximumWidth(maxWidth);
+        headers->push_back("Ещё");
+        table->setHorizontalHeaderLabels(*headers);
+        table->horizontalHeader()->setDefaultSectionSize(normalSectionW);
+        table->horizontalHeader()->setStretchLastSection(true);
+        table->verticalHeader()->setVisible(false);
+    }
 }
 
 void MainWindow::clearTicketsTable()
@@ -166,7 +194,7 @@ void MainWindow::showResult(QStringList* horHeaders, QVBoxLayout& targetLayout, 
 
     if (qobject_cast<QLabel*>(layoutItem->widget()) == nullptr)
     {
-        tableWidget = new QTableWidget(layoutItem->widget());
+        tableWidget = getTicketsTable(horHeaders);
         if (tableWidget->rowCount() != 0)
         {
             QMessageBox messageBox;
@@ -187,45 +215,32 @@ void MainWindow::showResult(QStringList* horHeaders, QVBoxLayout& targetLayout, 
     else
     {
         targetLayout.layout()->removeItem(layoutItem);
-        tableWidget = createTicketsTable(horHeaders->count(), horHeaders);
+        tableWidget = getTicketsTable(horHeaders);
         targetLayout.addWidget(tableWidget);
     }
     sortTicketsByRelevance(tickets);
     fillTable(tableWidget, tickets);
 }
 
-QTableWidget* MainWindow::createTicketsTable(int colCnt, QStringList* headers)
+QTableWidget* MainWindow::getTicketsTable(QStringList* headers)
 {
-    QTableWidget *ticketsTable = new QTableWidget();
-
-    int maxWidth = 610;
-    int normalSectionW = int((maxWidth - 40) / colCnt);
-    ticketsTable->setColumnCount(colCnt + 1);
-    ticketsTable->setMaximumWidth(maxWidth);
-    headers->push_back("Ещё");
-    ticketsTable->setHorizontalHeaderLabels(*headers);
-    ticketsTable->horizontalHeader()->setDefaultSectionSize(normalSectionW);
-    ticketsTable->horizontalHeader()->setStretchLastSection(true);
-    ticketsTable->verticalHeader()->setVisible(false);
-
     if (headers == this->aviaTicketsHeaders)
     {
-        qDebug() << "set avia";
-        this->aviaTicketsTable = ticketsTable;
+        return this->aviaTicketsTable;
     }
     else if (headers == this->railwayTicketsHeaders)
     {
-        this->railwayTicketsTable = ticketsTable;
+        return this->railwayTicketsTable;
     }
     else if (headers == this->busTicketsHeaders)
     {
-        this->busTicketsTable = ticketsTable;
+        return this->busTicketsTable;
     }
     else if (headers == this->trainTicketsHeaders)
     {
-        this->trainTicketsTable = ticketsTable;
+        return this->trainTicketsTable;
     }
-    return ticketsTable;
+    else exit(0);
 }
 
 void MainWindow::sortTicketsByRelevance(QJsonArray *tickets)
@@ -361,7 +376,8 @@ QStringList* MainWindow::trainTicketsMapper(const QJsonObject& ticket)
 void MainWindow::fillTable(QTableWidget* table, QJsonArray* tickets)
 {
     int ticketsCount = tickets->count();
-    table->setRowCount(ticketsCount / 2);
+    int existingRowsCount = table->rowCount();
+    table->setRowCount(ticketsCount + existingRowsCount);
     if (ticketsCount == 0) return;
 
     for (int i = 0; i <= tickets->count(); ++i)

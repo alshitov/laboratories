@@ -53,7 +53,6 @@ private:
     void railwaySearch();
     void busSearch();
     void trainSearch();
-
     QStringList* aviaTicketsHeaders = new QStringList {
         "Откуда", "Куда", "Даты", "Компания", "Цена"
     };
@@ -72,14 +71,14 @@ private:
     QTableWidget *busTicketsTable = new QTableWidget();
     QTableWidget *trainTicketsTable = new QTableWidget();
 
-    QWidget* findResultsTable(QVBoxLayout& targetLayout);
     void showResult(QStringList* horHeaders, QVBoxLayout& targetLayout, QJsonArray* tickets);
     QStringList* aviaTicketsMapper(const QJsonObject& ticket);
     QStringList* railwayTicketsMapper(const QJsonObject& ticket);
     QStringList* busTicketsMapper(const QJsonObject& ticket);
     QStringList* trainTicketsMapper(const QJsonObject& ticket);
 
-    QTableWidget* createTicketsTable(int colCnt, QStringList* headers);
+    void initializeTicketsTables();
+    QTableWidget* getTicketsTable(QStringList* headers);
     void sortTicketsByRelevance(QJsonArray *tickets);
     void fillTable(QTableWidget* table, QJsonArray* tickets);
 };

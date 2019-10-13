@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <matricescalculator.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -15,7 +16,22 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+private slots:
+    void on_addMatrixRowSpinBox_valueChanged(int arg1);
+    void on_addMatrixColSpinBox_valueChanged(int arg1);
+    void on_addMatrixPushButton_clicked();
+
 private:
     Ui::MainWindow *ui;
+    MatricesCalculator *calculator;
+
+    NumericMatrix **int_Matrices = new NumericMatrix*();
+    void addMatrixToContainer(NumericMatrix &matrix);
+
+    // Load matrices used in previous session
+    void loadPreviousCalculations();
+
+    // Build tree
+    void buildResultsTable();
 };
 #endif // MAINWINDOW_H

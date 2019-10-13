@@ -53,6 +53,7 @@ private:
     void railwaySearch();
     void busSearch();
     void trainSearch();
+
     QStringList* aviaTicketsHeaders = new QStringList {
         "Откуда", "Куда", "Даты", "Компания", "Цена"
     };

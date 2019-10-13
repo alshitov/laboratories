@@ -105,18 +105,21 @@ void MainWindow::showPreviousResults()
 {
     // Show previous search results with CTRL+P;
     // Not implemented
+    qDebug() << "Здесь может быть показан результат предыдущего запроса";
 }
 
 void MainWindow::saveUserPreferences()
 {
     // Save user's search preferences to config with CTRL+S;
     // Not implemented
+    qDebug() << "Здесь могут быть сохранены пользовательские предпочтения";
 }
 
 void MainWindow::loadUserPreferences()
 {
     // Load user's search preferences from config with CTRL+V;
     // Not implemented
+    qDebug() << "Здесь могут быть загружены пользовательские предпочтения";
 }
 
 void MainWindow::fillTabControls(int index)
@@ -189,37 +192,53 @@ void MainWindow::on_trainSearchPushButton_clicked()
 
 void MainWindow::showResult(QStringList* horHeaders, QVBoxLayout& targetLayout, QJsonArray* tickets)
 {
-    QLayoutItem *layoutItem = targetLayout.itemAt(0);
-    QTableWidget *tableWidget;
-
-    if (qobject_cast<QLabel*>(layoutItem->widget()) == nullptr)
+    bool ticketsEmpty = tickets->count() == 0;
+    if (ticketsEmpty)
     {
-        tableWidget = getTicketsTable(horHeaders);
-        if (tableWidget->rowCount() != 0)
+        QMessageBox messageBox;
+        messageBox.setText("Информация");
+        messageBox.setInformativeText("Билетов по Вашему запросу не найдено!");
+        messageBox.setStandardButtons(QMessageBox::Ok);
+        messageBox.setIcon(QMessageBox::Information);
+        messageBox.setDefaultButton(QMessageBox::Ok);
+        messageBox.exec();
+    }
+
+    if (!ticketsEmpty)
+    {
+
+        QLayoutItem *layoutItem = targetLayout.itemAt(0);
+        QTableWidget *tableWidget;
+
+        if (qobject_cast<QLabel*>(layoutItem->widget()) == nullptr)
         {
-            QMessageBox messageBox;
-            messageBox.setText("Выберите действие");
-            messageBox.setInformativeText(
-                        "Очистить таблицу (Нет - результат поиска будет добавлен в начало таблицы)?"
-            );
-            messageBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-            messageBox.setIcon(QMessageBox::Question);
-            messageBox.setDefaultButton(QMessageBox::Yes);
-            int result = messageBox.exec();
-            if (result == QMessageBox::Yes)
+            tableWidget = getTicketsTable(horHeaders);
+            if (tableWidget->rowCount() != 0)
             {
-                tableWidget->setRowCount(0);
+                QMessageBox messageBox;
+                messageBox.setText("Выберите действие");
+                messageBox.setInformativeText(
+                            "Очистить таблицу (Нет - результат поиска будет добавлен в начало таблицы)?"
+                );
+                messageBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+                messageBox.setIcon(QMessageBox::Question);
+                messageBox.setDefaultButton(QMessageBox::Yes);
+                int result = messageBox.exec();
+                if (result == QMessageBox::Yes)
+                {
+                    tableWidget->setRowCount(0);
+                }
             }
         }
+        else
+        {
+            targetLayout.layout()->removeItem(layoutItem);
+            tableWidget = getTicketsTable(horHeaders);
+            targetLayout.addWidget(tableWidget);
+        }
+        sortTicketsByRelevance(tickets);
+        fillTable(tableWidget, tickets);
     }
-    else
-    {
-        targetLayout.layout()->removeItem(layoutItem);
-        tableWidget = getTicketsTable(horHeaders);
-        targetLayout.addWidget(tableWidget);
-    }
-    sortTicketsByRelevance(tickets);
-    fillTable(tableWidget, tickets);
 }
 
 QTableWidget* MainWindow::getTicketsTable(QStringList* headers)

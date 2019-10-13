@@ -6,15 +6,180 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1200</width>
+    <height>675</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>16777214</width>
+    <height>16777215</height>
+   </size>
+  </property>
+  <property name="baseSize">
+   <size>
+    <width>200</width>
+    <height>200</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QWidget" name="centralwidget"/>
-  <widget class="QMenuBar" name="menubar"/>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <layout class="QHBoxLayout" name="centralLayout" stretch="0,0">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetDefaultConstraint</enum>
+      </property>
+      <item>
+       <widget class="QTreeView" name="treeView"/>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="matricesSideMenu">
+        <item>
+         <widget class="QLabel" name="addMatrixLabel">
+          <property name="text">
+           <string>Add new matrix</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="addMatrixMenuLayout">
+          <item>
+           <widget class="QSpinBox" name="addMatrixRowSpinBox">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="value">
+             <number>2</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="addMatrixByLabel">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>by</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="addMatrixColSpinBox">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="value">
+             <number>2</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QTableWidget" name="addNewMatrixTable">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>1</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="baseSize">
+           <size>
+            <width>200</width>
+            <height>200</height>
+           </size>
+          </property>
+          <property name="textElideMode">
+           <enum>Qt::ElideMiddle</enum>
+          </property>
+          <property name="rowCount">
+           <number>2</number>
+          </property>
+          <property name="columnCount">
+           <number>2</number>
+          </property>
+          <attribute name="horizontalHeaderVisible">
+           <bool>false</bool>
+          </attribute>
+          <attribute name="horizontalHeaderCascadingSectionResizes">
+           <bool>false</bool>
+          </attribute>
+          <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
+           <bool>false</bool>
+          </attribute>
+          <attribute name="horizontalHeaderStretchLastSection">
+           <bool>false</bool>
+          </attribute>
+          <attribute name="verticalHeaderVisible">
+           <bool>false</bool>
+          </attribute>
+          <attribute name="verticalHeaderStretchLastSection">
+           <bool>false</bool>
+          </attribute>
+          <row/>
+          <row/>
+          <column/>
+          <column/>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="addMatrixPushButton">
+          <property name="text">
+           <string>Add matrix</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="existingMatricesLabel">
+          <property name="text">
+           <string>Existing Matrices</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QListView" name="existingMatricesView">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="baseSize">
+           <size>
+            <width>200</width>
+            <height>0</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1200</width>
+     <height>25</height>
+    </rect>
+   </property>
+  </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>

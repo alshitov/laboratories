@@ -24,14 +24,10 @@ private slots:
 private:
     Ui::MainWindow *ui;
     MatricesCalculator *calculator;
-
     NumericMatrix **int_Matrices = new NumericMatrix*();
-    void addMatrixToContainer(NumericMatrix &matrix);
 
-    // Load matrices used in previous session
+    void addMatrix(NumericMatrix &matrix);
     void loadPreviousCalculations();
-
-    // Build tree
     void buildResultsTable();
 };
 #endif // MAINWINDOW_H

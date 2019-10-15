@@ -45,7 +45,7 @@ public:
         if (D_is_not_0())
             throw "Cannot inverse matrix with D = 0!";
 
-        double factor = (1 / determinant());
+        double factor = (1 / determinant(*this));
 
         NumericMatrix *acm = new NumericMatrix(rows, cols);
         for (int i = 0; i < rows; ++i)
@@ -64,47 +64,46 @@ public:
         return A;
     }
 
-    NumericMatrix* _minor(int i, int j, NumericMatrix& m)
+    static NumericMatrix* reduce_m(int i, int j, NumericMatrix& m)
     {
-        int _rows = m.rows, _cols = m.cols;
-        NumericMatrix *minor = new NumericMatrix(_rows, _cols);
-        minor->remove_r(i);
-        minor->remove_c(j);
-        return minor;
+        int _rows = m.get_r();
+        NumericMatrix* reduced = new NumericMatrix(_rows, _rows);
+
+        // Copy values
+        for (int i = 0; i < _rows; ++i)
+            for (int j = 0; j < _rows; ++j)
+                reduced->set_v(i, j, m.get_v(i, j));
+
+        NumericMatrix::remove_r(i, *reduced);
+        NumericMatrix::remove_c(j, *reduced);
+        return reduced;
     }
 
-    double determinant()
+    static double determinant(NumericMatrix& m)
     {
-        if (!this->quadratic())
-            throw "Cannot find determinant of non-quadratic matrix!";
+        if ((m.get_r() < 1) || !m.quadratic())
+            throw "Invalid matrix to calculate D of!";
 
-        // D = sum((-1)^(i + j) * data[i][j] * M[i][j] ) for i in cols
-        double D = 0;
+        if (m.get_r() == 1)
+            return m.get_v(0, 0);
 
-        for (int c = 0; c < cols; ++c)
+        if (m.get_r() == 2)
+            return (m.get_v(0, 0) * m.get_v(1, 1)) - (m.get_v(1, 0) * m.get_v(0, 1));
+
+        double D = 0.0;
+        for (int j = 0; j < m.get_c(); ++j)
         {
-            double prefix = pow(-1, (1 + c)),
-                   value = data[0][c];
-
-            NumericMatrix *minor = _minor(0, c, *this);
-
-            if (!(minor->get_size() == std::make_pair(1, 1)))
-            {
-                double D = minor->determinant();
-            }
-            else
-            {
-                D = minor->get_v(0, 0);
-            }
-
+            NumericMatrix *reduced = NumericMatrix::reduce_m(0, j, m);
+            D += pow(-1, (2 + j))
+               * m.get_v(0, j)
+               * NumericMatrix::determinant(*reduced);
         }
-
         return D;
     }
 
     bool D_is_not_0()
     {
-        double D = determinant();
+        double D = determinant(*this);
         return (D > 0) || (D < 0);
     }
 
@@ -148,13 +147,13 @@ public:
         rows = _rows;
     }
 
-    void remove_r(int ri)
+    static void remove_r(int ri, NumericMatrix& m)
     {
-        if(ri >= rows)
+        if(ri >= m.get_r())
             throw "Row index out of bounds!";
-        --rows;
-        for (int r = ri; r < rows; ++r)
-            data[r] = data[r + 1];
+        --m.rows;
+        for (int r = ri; r < m.get_r(); ++r)
+            m.data[r] = m.data[r + 1];
     }
 
     int get_r()
@@ -202,29 +201,29 @@ public:
         cols = _cols;
     }
 
-    void remove_c(int ci)
+    static void remove_c(int ci, NumericMatrix& m)
     {
-        if (ci >= cols)
+        if (ci >= m.get_c())
             throw "Column index of out bounds!";
 
-        double **_data = new double*[rows];
+        double **_data = new double*[m.get_r()];
         double *_row;
         int ni;
 
-        for (int i = 0; i < rows; ++i)
+        for (int i = 0; i < m.get_r(); ++i)
         {
-            _row = new double[cols - 1];
+            _row = new double[m.get_c() - 1];
             ni = 0;
 
-            for(int j = 0; j < cols; ++j)
+            for(int j = 0; j < m.get_c(); ++j)
                 if (j != ci)
-                    _row[ni++] = data[i][j];
+                    _row[ni++] = m.get_v(i, j);
 
             _data[i] = _row;
         }
 
-        data = _data;
-        cols--;
+        m.data = _data;
+        m.cols--;
     }
 
     int get_c()
@@ -248,10 +247,13 @@ public:
 
     void show()
     {
+        std::cout << "<NumericMatrix{" << get_r() << ", " << get_c() << "}:\n";
         for (int i = 0; i < rows; ++i)
+        {
             for (int j = 0; j < cols; ++j)
                 std::cout << data[i][j] << "\t";
             std::cout << "\n";
+        }
     }
 
     double** get_data()

@@ -1,13 +1,3 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
-#include <QDebug>
-#include <numericmatrix.h>
-
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
-{
-    ui->setupUi(this);
     int M = 3, N = 3;
     NumericMatrix m(M, N);
     m.set_v(0, 0, -1);
@@ -22,16 +12,8 @@ MainWindow::MainWindow(QWidget *parent)
     m.set_v(2, 1, -8);
     m.set_v(2, 2, -2);
     m.show();
-    std::cout << "D[m] = " << NumericMatrix::determinant(m) << std::endl;
-    NumericMatrix *m_tr = NumericMatrix::transpose_m(m);
-    std::cout << "mT: ";
-    m_tr->show();
-
-    NumericMatrix *m_inv = NumericMatrix::inverse_m(m);
-    std::cout << "m^(-1): ";
-    m_inv->show();
-
-    std::cout << "***************************************";
+    qreal D = NumericMatrix::determinant(m);
+    std::cout << "D[m] = " << D << std::endl;
 
     int M1 = 4, N1 = 4;
     NumericMatrix m1(M1, N1);
@@ -55,17 +37,8 @@ MainWindow::MainWindow(QWidget *parent)
     m1.set_v(3, 2, -8);
     m1.set_v(3, 3, -2);
     m1.show();
-
-    std::cout << "D[m1] = " << NumericMatrix::determinant(m1) << std::endl;
-    NumericMatrix *m1_tr = NumericMatrix::transpose_m(m1);
-    std::cout << "m1T: ";
-    m1_tr->show();
-
-    NumericMatrix *m1_inv = NumericMatrix::inverse_m(m1);
-    std::cout << "m1^(-1): ";
-    m1_inv->show();
-
-    std::cout << "***************************************\n";
+    qreal D1 = NumericMatrix::determinant(m1);
+    std::cout << "D[m1] = " << D1 << std::endl;
 
     int M2 = 5, N2 = 5;
     NumericMatrix m2(M2, N2);
@@ -100,16 +73,8 @@ MainWindow::MainWindow(QWidget *parent)
     m2.set_v(4, 4, -10);
     m2.show();
 
-    std::cout << "D[m2] = " << NumericMatrix::determinant(m2) << std::endl;
-    NumericMatrix *m2_tr = NumericMatrix::transpose_m(m2);
-    std::cout << "m2T: ";
-    m2_tr->show();
-
-    NumericMatrix *m2_inv = NumericMatrix::inverse_m(m2);
-    std::cout << "m2^(-1): ";
-    m2_inv->show();
-
-    std::cout << "***************************************\n";
+    qreal D2 = NumericMatrix::determinant(m2);
+    std::cout << "D[m2] = " << D2 << std::endl;
 
     int M3 = 6, N3 = 6;
     NumericMatrix m3(M3, N3);
@@ -156,39 +121,5 @@ MainWindow::MainWindow(QWidget *parent)
     m3.set_v(5, 5, 1);
     m3.show();
 
-    std::cout << "D[m3] = " << NumericMatrix::determinant(m3) << std::endl;
-    NumericMatrix *m3_tr = NumericMatrix::transpose_m(m3);
-    std::cout << "m3T: ";
-    m3_tr->show();
-
-    NumericMatrix *m3_inv = NumericMatrix::inverse_m(m3);
-    std::cout << "m3^(-1): ";
-    m3_inv->show();
-
-    std::cout << "***************************************\n";
-
-//    mc = new MatricesCalculator();
-//    sm = new SessionsManager();
-//    t = new Tree();
-}
-
-MainWindow::~MainWindow()
-{
-    delete ui;
-}
-
-
-void MainWindow::on_addMatrixRowSpinBox_valueChanged(int arg1)
-{
-
-}
-
-void MainWindow::on_addMatrixColSpinBox_valueChanged(int arg1)
-{
-
-}
-
-void MainWindow::on_addMatrixPushButton_clicked()
-{
-    // Collect values from table
-}
+    qreal D3 = NumericMatrix::determinant(m3);
+    std::cout << "D[m3] = " << D3 << std::endl;

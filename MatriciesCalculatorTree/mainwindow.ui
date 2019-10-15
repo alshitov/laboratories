@@ -57,6 +57,9 @@
             <property name="minimum">
              <number>1</number>
             </property>
+            <property name="maximum">
+             <number>10</number>
+            </property>
             <property name="value">
              <number>2</number>
             </property>
@@ -79,6 +82,9 @@
            <widget class="QSpinBox" name="addMatrixColSpinBox">
             <property name="minimum">
              <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>10</number>
             </property>
             <property name="value">
              <number>2</number>
@@ -116,6 +122,9 @@
           <attribute name="horizontalHeaderCascadingSectionResizes">
            <bool>false</bool>
           </attribute>
+          <attribute name="horizontalHeaderDefaultSectionSize">
+           <number>24</number>
+          </attribute>
           <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
            <bool>false</bool>
           </attribute>
@@ -124,6 +133,9 @@
           </attribute>
           <attribute name="verticalHeaderVisible">
            <bool>false</bool>
+          </attribute>
+          <attribute name="verticalHeaderDefaultSectionSize">
+           <number>24</number>
           </attribute>
           <attribute name="verticalHeaderStretchLastSection">
            <bool>false</bool>

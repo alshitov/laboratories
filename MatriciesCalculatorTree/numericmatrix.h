@@ -29,39 +29,40 @@ public:
         delete[] data;
     }
 
-    NumericMatrix* transpose()
+    static NumericMatrix* transpose_m(NumericMatrix& m)
     {
-        int _rows = cols, _cols = rows;
+        int _rows = m.get_c(), _cols = m.get_r();
         NumericMatrix *transposed = new NumericMatrix(_rows, _cols);
 
-        for (int i = 0; i < rows; ++i)
-            for (int j = 0; j < cols; ++j)
-                transposed->data[j][i] = data[i][j];
+        for (int i = 0; i < m.get_r(); ++i)
+            for (int j = 0; j < m.get_c(); ++j)
+                transposed->set_v(j, i, m.get_v(i, j));
         return transposed;
     }
 
-    NumericMatrix* inverse()
+    static NumericMatrix* inverse_m(NumericMatrix& m)
     {
-        if (D_is_not_0())
+        if (!(m.D_is_not_0()))
             throw "Cannot inverse matrix with D = 0!";
 
-        double factor = (1 / determinant(*this));
+        double factor = (1 / NumericMatrix::determinant(m));
+        int _rows = m.get_r(), _cols = m.get_c();
 
-        NumericMatrix *acm = new NumericMatrix(rows, cols);
-        for (int i = 0; i < rows; ++i)
-            for (int j = 0; j < cols; ++j)
+        NumericMatrix *acm = new NumericMatrix(_rows, _cols);
+        for (int i = 0; i < _rows; ++i)
+            for (int j = 0; j < _cols; ++j)
             {
-                acm->set_v(i, j, algebraic_complement(i, j, *this));
+                acm->set_v(i, j, m.algebraic_complement(i, j, m));
             }
-
-        return &acm->operator*(factor);
+        NumericMatrix *acm_T = NumericMatrix::transpose_m(*acm);
+        return &acm_T->operator*(factor);
     }
 
     double algebraic_complement(int i, int j, NumericMatrix& m)
     {
-        double A = 0;
-        // A[i][j] * (-1) ^ (i + j) * D(cropped)
-        return A;
+        NumericMatrix *minor_m = NumericMatrix::reduce_m(i, j, m);
+        double D = NumericMatrix::determinant(*minor_m);
+        return pow(-1, ((i + 1) + (j + 1))) * D;
     }
 
     static NumericMatrix* reduce_m(int i, int j, NumericMatrix& m)
@@ -316,7 +317,7 @@ public:
     friend bool operator/=(NumericMatrix& l, NumericMatrix &r)
     {
         // l & r are acceptable for division (A / B == A * B^(-1))
-        return r.quadratic() && r.D_is_not_0() && (l.get_c() == r.inverse()->get_r());
+        return r.quadratic() && r.D_is_not_0() && (l.get_c() == NumericMatrix::inverse_m(r)->get_r());
     }
 
     // Arithmetic operations with a constant

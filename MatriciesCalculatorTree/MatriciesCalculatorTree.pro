@@ -21,15 +21,17 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     matriciescalculator.cpp \
+    matrixrepr.cpp \
     sessionsmanager.cpp \
-    tree.cpp
+    treescene.cpp
 
 HEADERS += \
     mainwindow.h \
     matricescalculator.h \
+    matrixrepr.h \
     numericmatrix.h \
     sessionsmanager.h \
-    tree.h
+    treescene.h
 
 FORMS += \
     mainwindow.ui

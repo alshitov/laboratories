@@ -1,6 +1,10 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QDebug>
+
+#include <QtCore>
+#include <QtWidgets>
+#include <QtGui>
+
 #include <numericmatrix.h>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -8,168 +12,19 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    int M = 3, N = 3;
-    NumericMatrix m(M, N);
-    m.set_v(0, 0, -1);
-    m.set_v(0, 1, 2);
-    m.set_v(0, 2, 4);
+    matr_calc = new MatricesCalculator();
 
-    m.set_v(1, 0, 3);
-    m.set_v(1, 1, -5);
-    m.set_v(1, 2, 24);
+    tree_scene = new TreeScene();
+    tree_scene_view = ui->treeView;
+    tree_scene_view->setScene(tree_scene->get_scene());
+    tree_scene_view->setRenderHint(QPainter::Antialiasing);
+    tree_scene_view->setBackgroundBrush(QBrush(QColor(19, 19, 19), Qt::SolidPattern));
+    m_input_t = ui->addNewMatrixTable;
+    set_up_matrix_input_table();
 
-    m.set_v(2, 0, -10);
-    m.set_v(2, 1, -8);
-    m.set_v(2, 2, -2);
-    m.show();
-    std::cout << "D[m] = " << NumericMatrix::determinant(m) << std::endl;
-    NumericMatrix *m_tr = NumericMatrix::transpose_m(m);
-    std::cout << "mT: ";
-    m_tr->show();
-
-    NumericMatrix *m_inv = NumericMatrix::inverse_m(m);
-    std::cout << "m^(-1): ";
-    m_inv->show();
-
-    std::cout << "***************************************";
-
-    int M1 = 4, N1 = 4;
-    NumericMatrix m1(M1, N1);
-    m1.set_v(0, 0, -1);
-    m1.set_v(0, 1, 2);
-    m1.set_v(0, 2, 4);
-    m1.set_v(0, 3, 15);
-
-    m1.set_v(1, 0, 3);
-    m1.set_v(1, 1, -5);
-    m1.set_v(1, 2, 24);
-    m1.set_v(1, 3, -1);
-
-    m1.set_v(2, 0, -10);
-    m1.set_v(2, 1, -8);
-    m1.set_v(2, 2, -2);
-    m1.set_v(2, 3, 5);
-
-    m1.set_v(3, 0, 24);
-    m1.set_v(3, 1, -10);
-    m1.set_v(3, 2, -8);
-    m1.set_v(3, 3, -2);
-    m1.show();
-
-    std::cout << "D[m1] = " << NumericMatrix::determinant(m1) << std::endl;
-    NumericMatrix *m1_tr = NumericMatrix::transpose_m(m1);
-    std::cout << "m1T: ";
-    m1_tr->show();
-
-    NumericMatrix *m1_inv = NumericMatrix::inverse_m(m1);
-    std::cout << "m1^(-1): ";
-    m1_inv->show();
-
-    std::cout << "***************************************\n";
-
-    int M2 = 5, N2 = 5;
-    NumericMatrix m2(M2, N2);
-    m2.set_v(0, 0, -1);
-    m2.set_v(0, 1, 2);
-    m2.set_v(0, 2, 4);
-    m2.set_v(0, 3, 15);
-    m2.set_v(0, 4, 15);
-
-    m2.set_v(1, 0, 3);
-    m2.set_v(1, 1, -5);
-    m2.set_v(1, 2, 24);
-    m2.set_v(1, 3, -1);
-    m2.set_v(1, 4, -11);
-
-    m2.set_v(2, 0, -10);
-    m2.set_v(2, 1, -8);
-    m2.set_v(2, 2, -2);
-    m2.set_v(2, 3, 5);
-    m2.set_v(2, 4, 0);
-
-    m2.set_v(3, 0, 24);
-    m2.set_v(3, 1, -10);
-    m2.set_v(3, 2, -8);
-    m2.set_v(3, 3, -2);
-    m2.set_v(3, 4, -20);
-
-    m2.set_v(4, 0, 5);
-    m2.set_v(4, 1, 0);
-    m2.set_v(4, 2, 5);
-    m2.set_v(4, 3, 9);
-    m2.set_v(4, 4, -10);
-    m2.show();
-
-    std::cout << "D[m2] = " << NumericMatrix::determinant(m2) << std::endl;
-    NumericMatrix *m2_tr = NumericMatrix::transpose_m(m2);
-    std::cout << "m2T: ";
-    m2_tr->show();
-
-    NumericMatrix *m2_inv = NumericMatrix::inverse_m(m2);
-    std::cout << "m2^(-1): ";
-    m2_inv->show();
-
-    std::cout << "***************************************\n";
-
-    int M3 = 6, N3 = 6;
-    NumericMatrix m3(M3, N3);
-    m3.set_v(0, 0, -1);
-    m3.set_v(0, 1, 2);
-    m3.set_v(0, 2, 4);
-    m3.set_v(0, 3, -8);
-    m3.set_v(0, 4, 10);
-    m3.set_v(0, 5, -2);
-
-    m3.set_v(1, 0, 3);
-    m3.set_v(1, 1, -5);
-    m3.set_v(1, 2, 24);
-    m3.set_v(1, 3, -1);
-    m3.set_v(1, 4, -11);
-    m3.set_v(1, 5, 11);
-
-    m3.set_v(2, 0, -10);
-    m3.set_v(2, 1, -8);
-    m3.set_v(2, 2, -2);
-    m3.set_v(2, 3, 5);
-    m3.set_v(2, 4, 0);
-    m3.set_v(2, 5, 2);
-
-    m3.set_v(3, 0, 24);
-    m3.set_v(3, 1, -10);
-    m3.set_v(3, 2, -8);
-    m3.set_v(3, 3, -2);
-    m3.set_v(3, 4, -20);
-    m3.set_v(3, 5, -56);
-
-    m3.set_v(4, 0, 5);
-    m3.set_v(4, 1, 0);
-    m3.set_v(4, 2, 5);
-    m3.set_v(4, 3, 9);
-    m3.set_v(4, 4, -10);
-    m3.set_v(4, 5, 14);
-
-    m3.set_v(5, 0, 5);
-    m3.set_v(5, 1, 0);
-    m3.set_v(5, 2, 5);
-    m3.set_v(5, 3, 9);
-    m3.set_v(5, 4, -10);
-    m3.set_v(5, 5, 1);
-    m3.show();
-
-    std::cout << "D[m3] = " << NumericMatrix::determinant(m3) << std::endl;
-    NumericMatrix *m3_tr = NumericMatrix::transpose_m(m3);
-    std::cout << "m3T: ";
-    m3_tr->show();
-
-    NumericMatrix *m3_inv = NumericMatrix::inverse_m(m3);
-    std::cout << "m3^(-1): ";
-    m3_inv->show();
-
-    std::cout << "***************************************\n";
-
-//    mc = new MatricesCalculator();
-//    sm = new SessionsManager();
-//    t = new Tree();
+    connect(this, SIGNAL(w_resized(int, int)), tree_scene, SLOT(view_scaled(int, int)));
+    connect(this, SIGNAL(m_added(NumericMatrix&)), matr_calc, SLOT(m_received(NumericMatrix&)));
+    connect(matr_calc, SIGNAL(calc_done(MList&)), this, SLOT(calc_over(MList&)));
 }
 
 MainWindow::~MainWindow()
@@ -177,18 +32,80 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::resizeEvent(QResizeEvent *e)
+{
+    int w = e->size().width();
+    int h = e->size().height();
+    emit w_resized(w, h);
+}
+
+void MainWindow::calc_over(MList& ms)
+{
+    // Get matrices from calculator and pass to treeView for rendering
+    std::cout << "Received from calculator:" << &ms;
+    std::cout << "will render now bra...";
+}
+
+void MainWindow::set_up_matrix_input_table()
+{
+    m_input_t->setRowCount(2);
+    m_input_t->setColumnCount(2);
+
+    for (int i = 0; i < 2; ++i)
+    {
+        m_input_t->setRowHeight(i, 95);
+        m_input_t->setColumnWidth(i, 120);
+
+        for (int j = 0; j < 2; ++j)
+            set_table_cell_edit(i, j);
+    }
+}
+
+void MainWindow::set_table_cell_edit(int i, int j)
+{
+    QLineEdit *edit = new QLineEdit();
+    QDoubleValidator *d_validator = new QDoubleValidator();
+    edit->setFrame(false);
+    d_validator->setParent(edit);
+    edit->setValidator(d_validator);
+    edit->setAlignment(Qt::AlignCenter);
+    edit->setText("0");
+    m_input_t->setCellWidget(i, j, edit);
+}
 
 void MainWindow::on_addMatrixRowSpinBox_valueChanged(int arg1)
 {
+    m_input_t->setRowCount(arg1);
+    for (int i = 0; i < arg1; ++i)
+        m_input_t->setRowHeight(i, int(190 / arg1));
 
+    for (int j = 0; j < m_input_t->columnCount(); ++j)
+        set_table_cell_edit(arg1 - 1, j);
 }
 
 void MainWindow::on_addMatrixColSpinBox_valueChanged(int arg1)
 {
+    m_input_t->setColumnCount(arg1);
+    for (int j = 0; j < arg1; ++j)
+        m_input_t->setColumnWidth(j, int(240 / arg1));
 
+    for (int i = 0; i < m_input_t->rowCount(); ++i)
+        set_table_cell_edit(i, arg1 - 1);
 }
 
 void MainWindow::on_addMatrixPushButton_clicked()
 {
-    // Collect values from table
+    int rows = m_input_t->rowCount(),
+        cols = m_input_t->columnCount();
+
+    NumericMatrix *m = new NumericMatrix(rows, cols);
+    QLineEdit *edit;
+
+    for (int i = 0; i < rows; ++i)
+        for (int j = 0; j < rows; ++j)
+        {
+            edit = qobject_cast<QLineEdit*>(m_input_t->cellWidget(i, j));
+            m->set_v(i, j, edit->text().toDouble());
+        }
+    emit m_added(*m);
 }

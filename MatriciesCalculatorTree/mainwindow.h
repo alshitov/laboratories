@@ -3,9 +3,13 @@
 
 #pragma once
 #include <QMainWindow>
+#include <QtCore>
+#include <QtWidgets>
+#include <QtGui>
+
 #include <sessionsmanager.h>
 #include <matricescalculator.h>
-#include <tree.h>
+#include <treescene.h>
 #include <vector>
 
 QT_BEGIN_NAMESPACE
@@ -20,6 +24,13 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+signals:
+    void w_resized(int, int);
+    void m_added(NumericMatrix&);
+
+public slots:
+    void calc_over(MList&);
+
 private slots:
     void on_addMatrixRowSpinBox_valueChanged(int arg1);
     void on_addMatrixColSpinBox_valueChanged(int arg1);
@@ -27,14 +38,22 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    MatricesCalculator *mc;
-    SessionsManager *sm;
-    Tree *t;
+    TreeScene *tree_scene;
+    QGraphicsView *tree_scene_view;
 
-    std::vector<NumericMatrix*> *ms = new std::vector<NumericMatrix*>();
+    QTableWidget *m_input_t;
+    QGraphicsEllipseItem *ellipse;
+    MatricesCalculator *matr_calc;
+    SessionsManager *sess_m;
 
-    void init_new_matrix(NumericMatrix &matrix);
-    void add_new_matrix_to_existing(NumericMatrix &matrix);
+    void set_up_matrix_input_table();
+    void set_table_cell_edit(int i, int j);
+    void init_new_matrix(NumericMatrix &m);
+    void add_new_matrix_to_existing(NumericMatrix &m);
     void load_previous_session();
+
+protected:
+    virtual void resizeEvent(QResizeEvent *e);
+
 };
 #endif // MAINWINDOW_H

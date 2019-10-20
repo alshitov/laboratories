@@ -1,21 +1,49 @@
 #ifndef MATRICESCALCULATOR_H
 #define MATRICESCALCULATOR_H
 
+#include <QtCore>
+#include <QtWidgets>
+
 #include <numericmatrix.h>
 #include <vector>
-#include <map>
-
-// Dictionary: { NumericMatrix: [NumericMatrix] };
-struct m_dict
-{
-    const NumericMatrix&          m;
-    std::vector<NumericMatrix*>&  ms;
-};
 
 // List: [NumericMatrix];
-struct m_list
+class MList
 {
-    std::vector<NumericMatrix*>& ms;
+private:
+    std::vector<NumericMatrix*>* ms;
+
+public:
+    MList();
+    ~MList()
+    {
+        delete ms;
+    }
+
+    void set_ms(std::vector<NumericMatrix*>* _ms) { ms = _ms; }
+    std::vector<NumericMatrix*>* get() { return ms; }
+};
+
+// Dictionary: { NumericMatrix: [NumericMatrix] };
+class MDict
+{
+private:
+    NumericMatrix* m;
+    MList* ms;
+
+public:
+    MDict();
+    ~MDict()
+    {
+        delete m;
+        delete ms;
+    }
+
+    void set_ms(MList* _ms) { ms = _ms; }
+    void set_m(NumericMatrix* _m) { m = _m; }
+    NumericMatrix* get_m() { return m; }
+    MList* get_ms() { return ms; }
+
 };
 
 struct conditions
@@ -41,25 +69,38 @@ struct conditions
     }
 };
 
-class MatricesCalculator
+class MatricesCalculator : public QObject
 {
+    Q_OBJECT
+
+private:
+    conditions _conditions;
+    MList _m_list;
+    NumericMatrix *last_received_m;
+    MDict _m_dict;
 
 public:
     MatricesCalculator();
     ~MatricesCalculator();
 
+    void add_m(NumericMatrix& m);
+
     // Reduce (m_dict[m] -> ?>condition(m, m_list[index]) -> m_dict)
-    m_dict* permutations(m_dict& mdict);
+    MDict* permutations(MDict& mdict);
+
     // Map (m_dict[m] -> arithmetic_action(m, m_list[index]) -> m_list)
-    m_list* perform_calculations(m_dict& mdict);
+    void perform_calculations(MDict& mdict);
 
-    NumericMatrix* transpose_M(NumericMatrix *m);
-    NumericMatrix* inverse_M(NumericMatrix *m);
+    void sum_ms(MList& ml);
+    void sub_ms(MList& ml);
+    void mul_ms(MList& ml);
+    void div_ms(MList& ml);
 
-    m_list* sum_Ms(m_dict& mset);
-    m_list* sub_Ms(m_dict& mset);
-    m_list* mul_Ms(m_dict& mset);
-    m_list* div_Ms(m_dict& mset);
+public slots:
+    void m_received(NumericMatrix& m);
+
+signals:
+    void calc_done(MList&);
 };
 
 #endif // MATRICESCALCULATOR_H

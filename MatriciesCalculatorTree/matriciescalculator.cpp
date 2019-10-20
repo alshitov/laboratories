@@ -3,9 +3,18 @@
 #include <map>
 #include <vector>
 
-MatricesCalculator::MatricesCalculator()
+MList::MList()
 {
 
+}
+
+MDict::MDict()
+{
+
+}
+
+MatricesCalculator::MatricesCalculator()
+{
 }
 
 MatricesCalculator::~MatricesCalculator()
@@ -13,39 +22,16 @@ MatricesCalculator::~MatricesCalculator()
 
 }
 
-//m_dict* permutations
+void MatricesCalculator::m_received(NumericMatrix& m)
+{
+    std::cout << "received from main:" << std::endl;
+    m.show();
+    _m_dict.set_m(&m);
+    perform_calculations(_m_dict);
+}
 
-//std::vector<NumericMatrix*>* perform_calculations(std::vector<NumericMatrix*>& ms)
-//{
-
-//}
-
-//NumericMatrix* transpose_M(NumericMatrix *m)
-//{
-
-//}
-
-//NumericMatrix* inverse_M(NumericMatrix *m)
-//{
-
-//}
-
-//NumericMatrix* sum_Ms(std::vector<NumericMatrix*>& ms)
-//{
-
-//}
-
-//NumericMatrix* sub_Ms(std::vector<NumericMatrix*>& ms)
-//{
-
-//}
-
-//NumericMatrix* mul_Ms(std::vector<NumericMatrix*>& ms)
-//{
-
-//}
-
-//NumericMatrix* div_Ms(std::vector<NumericMatrix*>& ms)
-//{
-
-//}
+void MatricesCalculator::perform_calculations(MDict &mdict)
+{
+    std::cout << "emit calc_done" << std::endl;
+    emit calc_done(_m_list);
+}

@@ -88,7 +88,6 @@ public slots:
 
 signals:
     void scene_scaled(int);
-
 };
 
 #endif // TREESCENE_H

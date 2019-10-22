@@ -6,7 +6,7 @@ TreeScene::TreeScene()
     scene = new QGraphicsScene();
     scene->setSceneRect(-900, -600, 900, 600);
     make_grid();
-//    make_tree();
+    make_tree();
 }
 
 TreeScene::~TreeScene()

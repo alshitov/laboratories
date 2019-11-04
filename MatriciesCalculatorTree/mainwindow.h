@@ -10,6 +10,8 @@
 #include <sessionsmanager.h>
 #include <matricescalculator.h>
 #include <treescene.h>
+#include <matrixrepr.h>
+#include <treeview.h>
 #include <vector>
 
 QT_BEGIN_NAMESPACE
@@ -26,30 +28,37 @@ public:
 
 signals:
     void w_resized(int, int);
-    void m_added(NumericMatrix&);
-
-public slots:
-    void calc_over(MList&);
 
 private slots:
     void on_addMatrixRowSpinBox_valueChanged(int arg1);
     void on_addMatrixColSpinBox_valueChanged(int arg1);
     void on_addMatrixPushButton_clicked();
 
+    void on_saveMatrixButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     TreeScene *tree_scene;
-    QGraphicsView *tree_scene_view;
+    TreeView *tree_view;
 
     QTableWidget *m_input_t;
-    QGraphicsEllipseItem *ellipse;
     MatricesCalculator *matr_calc;
     SessionsManager *sess_m;
+    NumericMatrix *active_m_p;
+    QListWidgetItem *active_item_p;
+    MatrixRepr *active_repr_p;
 
-    void set_up_matrix_input_table();
+    int matrix_counter = 0;
+
+    void set_up_matrix_input_table(int rows, int cols);
     void set_table_cell_edit(int i, int j);
     void init_new_matrix(NumericMatrix &m);
     void add_new_matrix_to_existing(NumericMatrix &m);
+    void set_active_m(NumericMatrix* m);
+    void edit_m(NumericMatrix&);
+    void prepare_m_edit(NumericMatrix& m);
+    void remove_m(int index);
+    void render_result();
     void load_previous_session();
 
 protected:

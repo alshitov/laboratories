@@ -1,6 +1,7 @@
 #ifndef NUMERICMATRIX_H
 #define NUMERICMATRIX_H
 #include <iostream>
+#include <sstream>
 #include <math.h>
 
 class NumericMatrix
@@ -262,6 +263,19 @@ public:
         return data;
     }
 
+    std::string get_str_data()
+    {
+        std::ostringstream oss;
+        for (int i = 0; i < rows; ++i)
+        {
+            for (int j = 0; j < cols; ++j)
+                oss << data[i][j] << "  ";
+            oss << "\n";
+        }
+
+        return oss.str();
+    }
+
     bool zeros()
     {
         int zeros_counter = 0;
@@ -329,11 +343,27 @@ public:
         return *this;
     }
 
+    NumericMatrix& operator+(NumericMatrix& other)
+    {
+        for (int i = 0; i < rows; ++i)
+            for (int j = 0; j < cols; ++j)
+                data[i][j] += other.get_v(i, j);
+        return *this;
+    }
+
     NumericMatrix& operator-(double c_subtrahend)
     {
         for (int i = 0; i < rows; ++i)
             for (int j = 0; j < cols; ++j)
                 data[i][j] -= c_subtrahend;
+        return *this;
+    }
+
+    NumericMatrix& operator-(NumericMatrix& other)
+    {
+        for (int i = 0; i < rows; ++i)
+            for (int j = 0; j < cols; ++j)
+                data[i][j] -= other.get_v(i, j);
         return *this;
     }
 
@@ -345,12 +375,47 @@ public:
         return *this;
     }
 
+    NumericMatrix& operator*(NumericMatrix& other)
+    {
+        if (!(*this *= other))
+            throw "Operator '*' requires matrices to be same size";
+
+        int _rows_1 = this->get_r(),
+            _cols_1 = this->get_c(),
+            _cols_2 = other.get_c();
+
+        NumericMatrix *result = new NumericMatrix(_rows_1, _cols_2);
+        double value;
+
+        for (int i = 0; i < _rows_1; ++i)
+        {
+            for (int j = 0; j < _cols_2; ++j)
+            {
+                value = 0;
+                for (int k = 0; k < _cols_1; ++k)
+                {
+                    value += (this->get_v(i, k) * other.get_v(k, j));
+                }
+                result->set_v(i, j, value);
+            }
+        }
+
+        return *result;
+    }
+
     NumericMatrix& operator/(double c_delimeter)
     {
         for (int i = 0; i < rows; ++i)
             for (int j = 0; j < cols; ++j)
                 data[i][j] = int(data[i][j] / c_delimeter);
         return *this;
+    }
+
+    NumericMatrix& operator/(NumericMatrix& other)
+    {
+        if (!(*this /= other))
+            throw "Operator '/' requires matrices to be same size";
+        return (*this) * *NumericMatrix::inverse_m(other);
     }
 
     NumericMatrix& operator%(int c_modulus)

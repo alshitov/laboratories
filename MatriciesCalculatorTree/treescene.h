@@ -9,10 +9,10 @@
 
 struct pens
 {
-    QPen *red_p    = new QPen(Qt::red);
-    QPen *white_p  = new QPen(Qt::white);
-    QPen *blue_p   = new QPen(Qt::blue);
-    QPen *yellow_p = new QPen(Qt::yellow);
+    QPen *red_p    = new QPen(Qt::red, 2);
+    QPen *white_p  = new QPen(Qt::white, 2);
+    QPen *blue_p   = new QPen(Qt::blue, 2);
+    QPen *yellow_p = new QPen(Qt::yellow, 2);
     QPen *dim_p    = new QPen(QColor(204, 204, 204), 0.5, Qt::DashLine);
 };
 
@@ -26,7 +26,7 @@ struct brushes
 };
 
 
-class TreeScene : public QObject
+class TreeScene : public QGraphicsScene
 {
     /* TreeScene Levels & Objects:
      * +---+------------------------+---------------------------------------------+----------------+
@@ -63,25 +63,29 @@ class TreeScene : public QObject
     Q_OBJECT
 
 private:
-    QGraphicsScene *scene;
+    qreal w, h;
     QGraphicsLineItem *trunk;
     QList<QGraphicsLineItem*> *grid;
     MatrixRepr *m_repr;
     pens _pens;
     brushes _brushes;
-    QGraphicsItemGroup *group;
 
 public:
     TreeScene();
     ~TreeScene();
     QGraphicsScene* get_scene();
-    void make_grid();
+
+    void make_grid(int rows, int cols);
     void make_tree();
-    QGraphicsLineItem* make_line(QPen& p, qreal lx0, qreal lx1, qreal ly0, qreal ly1, qreal angle);
-    void set_line_settings(QGraphicsLineItem& line, QPen& p, Qt::PenStyle& p_style, int line_w);
+    QGraphicsLineItem* make_line(QPen& p,
+                                 qreal lx0, qreal lx1,
+                                 qreal ly0, qreal ly1,
+                                 qreal angle);
+    QGraphicsEllipseItem *make_ellipse(QPen& p,
+                                       QBrush& b,
+                                       qreal diameter,
+                                       qreal lx0, qreal ly0);
     void place_item(QGraphicsItem& item);
-    void remove_item(QGraphicsItem& item);
-    void remove_group(QGraphicsItem& item);
 
 public slots:
     void view_scaled(int, int);

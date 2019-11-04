@@ -3,70 +3,64 @@
 
 TreeScene::TreeScene()
 {
-    scene = new QGraphicsScene();
-    scene->setSceneRect(-900, -600, 900, 600);
-    make_grid();
+    w = 900; h = 600;
+    setSceneRect(-w, -h, w, h);
+    make_grid(7, 3);
     make_tree();
 }
 
 TreeScene::~TreeScene()
 {
-    delete scene;
     delete grid;
     delete trunk;
     delete m_repr;
 }
 
-QGraphicsScene* TreeScene::get_scene()
+void TreeScene::view_scaled(int _w, int _h)
 {
-    return scene;
+    w = _w; h = _h;
+    setSceneRect(-w, -h, w, h);
+    clear();
+    make_grid(7, 3);
+    make_tree();
 }
 
-void TreeScene::view_scaled(int w, int h)
+void TreeScene::make_grid(int rows, int cols)
 {
-    std::cout << "Scale event! : " << w << h;
-}
+    qreal w = width(),       // 900
+          h = height();      // 600
 
-void TreeScene::make_grid()
-{
-    // n main sections for each matrix
-    int n = 3;
-    qreal w = scene->width(),
-          h = scene->height();
+    qreal container_w = w / cols,   // 128.571
+          container_h = h / rows;   // 200
 
-    qreal container_w = w / n,
-          container_h = h;
-
-    std::cout << "w: " << w << std::endl;
-    std::cout << "h: " << h << std::endl;
-    std::cout << "cw: " << container_w << std::endl;
-    std::cout << "ch: " << container_h << std::endl;
-
-
-    for (int i = 1; i < n; ++i)
+    // Vertical lines
+    for (int i = 1; i < cols; ++i)
     {
-        QGraphicsLineItem *ll = make_line(*_pens.dim_p,
+        QGraphicsLineItem *vl = make_line(*_pens.dim_p,
                                           -w + container_w * i,
                                           -w + container_w * i,
                                           -h, h, 0);
-        place_item(*ll);
+        place_item(*vl);
     }
 
-//    QLineF ll(scene->sceneRect().topLeft(), scene->sceneRect().bottomRight());
-
-//    scene->addLine(ll, *_pens.dim_p);
-
-//    for (int i = 0; i < n; ++i)
-//    {
-//        place_item(*make_line(*_pens.dim_p, 0, 100, 0, 100, 0) ,0, 0);
-//    }
-
+    // Horizontal lines
+    for (int j = 1; j < rows; ++j)
+    {
+        QGraphicsLineItem *hl = make_line(*_pens.dim_p,
+                                          -w, w,
+                                          -h + container_h * j,
+                                          -h + container_h * j,
+                                          0);
+        place_item(*hl);
+    }
 }
 
 void TreeScene::make_tree()
 {
-    trunk = make_line(*_pens.white_p, 0, 0, 0, 100, 0);
+    trunk = make_line(*_pens.white_p, 200, 200, 100, 100, 0);
     place_item(*trunk);
+    QGraphicsEllipseItem *el = make_ellipse(*_pens.red_p, *_brushes.white_b, 10, 100, 100);
+    place_item(*el);
 }
 
 QGraphicsLineItem* TreeScene::make_line(QPen& p,
@@ -74,7 +68,6 @@ QGraphicsLineItem* TreeScene::make_line(QPen& p,
                                         qreal lx1, qreal ly1,
                                         qreal angle)
 {
-    // Standard line 1px wide
     QGraphicsLineItem *line = new QGraphicsLineItem();
     line->setPen(p);
     line->setLine(lx0, lx1, ly0, ly1);
@@ -82,19 +75,21 @@ QGraphicsLineItem* TreeScene::make_line(QPen& p,
     return line;
 }
 
-void TreeScene::set_line_settings(QGraphicsLineItem& line,
-                                  QPen& p, Qt::PenStyle& p_style,
-                                  int line_w)
+QGraphicsEllipseItem* TreeScene::make_ellipse(QPen& p,
+                                              QBrush& b,
+                                              qreal diameter,
+                                              qreal lx0, qreal ly0)
 {
-
+    QGraphicsEllipseItem *ellipse = new QGraphicsEllipseItem();
+    ellipse->setPen(p);
+    ellipse->setBrush(b);
+    ellipse->setRect(QRectF(lx0, ly0, diameter, diameter));
+    ellipse->setStartAngle(0);
+    ellipse->setStartAngle(360);
+    return ellipse;
 }
 
 void TreeScene::place_item(QGraphicsItem& item)
 {
-    scene->addItem(&item);
-}
-
-void TreeScene::remove_item(QGraphicsItem& item)
-{
-    scene->removeItem(&item);
+    addItem(&item);
 }

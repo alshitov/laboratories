@@ -8,62 +8,87 @@
 #include <vector>
 
 // List: [NumericMatrix];
-class MList
+struct mlist
 {
-private:
-    std::vector<NumericMatrix*>* ms;
-
-public:
-    MList();
-    ~MList()
-    {
-        delete ms;
-    }
-
-    void set_ms(std::vector<NumericMatrix*>* _ms) { ms = _ms; }
-    std::vector<NumericMatrix*>* get() { return ms; }
+    std::vector<NumericMatrix> ms;
 };
 
-// Dictionary: { NumericMatrix: [NumericMatrix] };
-class MDict
+struct minfo
 {
-private:
-    NumericMatrix* m;
-    MList* ms;
-
-public:
-    MDict();
-    ~MDict()
+    minfo()
     {
-        delete m;
-        delete ms;
+        m  = new NumericMatrix(0, 0);
+        mT = new NumericMatrix(0, 0);
+        mR = new NumericMatrix(0, 0);
     }
 
-    void set_ms(MList* _ms) { ms = _ms; }
-    void set_m(NumericMatrix* _m) { m = _m; }
-    NumericMatrix* get_m() { return m; }
-    MList* get_ms() { return ms; }
+    ~minfo()
+    {
+        delete m;
+        delete mT;
+        delete mR;
+    }
 
+    void set_m_name(const std::string& _name)
+    {
+        name = _name;
+    }
+
+    std::string get_m_name()
+    {
+        return name;
+    }
+
+    void set_m(NumericMatrix& _m)
+    {
+        m = &_m;
+    }
+
+    NumericMatrix* get_m()
+    {
+        return m;
+    }
+
+    NumericMatrix* m;       // Matrix
+    std::string name;       // Matrix Name
+    NumericMatrix* mT;      // Matrix Transposed
+    NumericMatrix* mR;      // Matrix Reversed
+
+    mlist sum_ms;       // Matrices acceptable for summarizing
+    mlist sub_ms;       // Matrices acceptable for subscription
+    mlist mul_ms;       // Matrices acceptable for multiplication
+    mlist div_ms;       // Matrices acceptable for division
+
+    // Results
+    mlist _done_sum_ms;
+    mlist _done_sub_ms;
+    mlist _done_mul_ms;
+    mlist _done_div_ms;
 };
 
 struct conditions
 {
-    bool is_sum_acceptable(NumericMatrix& l, NumericMatrix& r)
+    static bool is_inversion_acceptable(NumericMatrix& m)
+    {
+        return m.D_is_not_0();
+    }
+
+    static bool is_sum_acceptable(NumericMatrix& l, NumericMatrix& r)
     {
         return l += r;
     }
 
-    bool is_sub_acceptable(NumericMatrix& l, NumericMatrix& r)
+    static bool is_sub_acceptable(NumericMatrix& l, NumericMatrix& r)
     {
         return l -= r;
     }
 
-    bool is_mul_acceptable(NumericMatrix& l, NumericMatrix& r)
+    static bool is_mul_acceptable(NumericMatrix& l, NumericMatrix& r)
     {
         return l *= r;
     }
 
-    bool is_div_acceptable(NumericMatrix& l, NumericMatrix& r)
+    static bool is_div_acceptable(NumericMatrix& l, NumericMatrix& r)
     {
         return l /= r;
     }
@@ -74,33 +99,36 @@ class MatricesCalculator : public QObject
     Q_OBJECT
 
 private:
+    std::vector<minfo*> msinfo;
     conditions _conditions;
-    MList _m_list;
-    NumericMatrix *last_received_m;
-    MDict _m_dict;
 
 public:
     MatricesCalculator();
     ~MatricesCalculator();
 
     void add_m(NumericMatrix& m);
+    void edit_m(NumericMatrix& m, NumericMatrix& nm);
+    void remove_m(NumericMatrix& m);
 
-    // Reduce (m_dict[m] -> ?>condition(m, m_list[index]) -> m_dict)
-    MDict* permutations(MDict& mdict);
+    mlist search_sum_acceptable(NumericMatrix& m, mlist& others);
+    mlist search_sub_acceptable(NumericMatrix& m, mlist& others);
+    mlist search_mul_acceptable(NumericMatrix& m, mlist& others);
+    mlist search_div_acceptable(NumericMatrix& m, mlist& others);
+    void  search_all_acceptable(NumericMatrix& m, minfo& _minfo);
 
-    // Map (m_dict[m] -> arithmetic_action(m, m_list[index]) -> m_list)
-    void perform_calculations(MDict& mdict);
+    minfo* find_by_m(NumericMatrix& m);
+    mlist extract_ms();
 
-    void sum_ms(MList& ml);
-    void sub_ms(MList& ml);
-    void mul_ms(MList& ml);
-    void div_ms(MList& ml);
+    void run_calc();
+    void perform_calculations(minfo& _minfo);
 
-public slots:
-    void m_received(NumericMatrix& m);
-
-signals:
-    void calc_done(MList&);
+    void do_transpose_m(minfo& _minfo);
+    void do_inverse_m(minfo& _minfo);
+    bool mlist_changed(mlist& _ms, mlist& _new_ms);
+    void do_sum_ms(minfo& _minfo);
+    void do_sub_ms(minfo& _minfo);
+    void do_mul_ms(minfo& _minfo);
+    void do_div_ms(minfo& _minfo);
 };
 
 #endif // MATRICESCALCULATOR_H

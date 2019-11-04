@@ -4,7 +4,7 @@
 TreeScene::TreeScene()
 {
     w = 900; h = 600;
-    setSceneRect(-w, -h, w, h);
+    setSceneRect(0, 0, w, h);
     make_grid(7, 3);
     make_tree();
 }
@@ -19,7 +19,7 @@ TreeScene::~TreeScene()
 void TreeScene::view_scaled(int _w, int _h)
 {
     w = _w; h = _h;
-    setSceneRect(-w, -h, w, h);
+    setSceneRect(0, 0, w, h);
     clear();
     make_grid(7, 3);
     make_tree();
@@ -37,8 +37,8 @@ void TreeScene::make_grid(int rows, int cols)
     for (int i = 1; i < cols; ++i)
     {
         QGraphicsLineItem *vl = make_line(*_pens.dim_p,
-                                          -w + container_w * i,
-                                          -w + container_w * i,
+                                          container_w * i,
+                                          container_w * i,
                                           -h, h, 0);
         place_item(*vl);
     }
@@ -48,8 +48,8 @@ void TreeScene::make_grid(int rows, int cols)
     {
         QGraphicsLineItem *hl = make_line(*_pens.dim_p,
                                           -w, w,
-                                          -h + container_h * j,
-                                          -h + container_h * j,
+                                          container_h * j,
+                                          container_h * j,
                                           0);
         place_item(*hl);
     }
@@ -57,9 +57,9 @@ void TreeScene::make_grid(int rows, int cols)
 
 void TreeScene::make_tree()
 {
-    trunk = make_line(*_pens.white_p, 200, 200, 100, 100, 0);
+    trunk = make_line(*_pens.white_p, 60, 120, 50, 100, 0);
     place_item(*trunk);
-    QGraphicsEllipseItem *el = make_ellipse(*_pens.red_p, *_brushes.white_b, 10, 100, 100);
+    QGraphicsEllipseItem *el = make_ellipse(*_pens.red_p, *_brushes.white_b, 100, 100, 100);
     place_item(*el);
 }
 

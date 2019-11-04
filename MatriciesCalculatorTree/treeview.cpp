@@ -8,7 +8,6 @@ TreeView::TreeView(QWidget *parent, QGraphicsScene *scene)
 {
     setParent(parent);
     setScene(scene);
-//    setGeometry(0, 0, 900, 600);
     setStyleSheet("border: 1px solid #cccccc;"\
                   "background-color: #191919;");
 }

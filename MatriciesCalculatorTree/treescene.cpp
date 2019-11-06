@@ -12,11 +12,6 @@ TreeScene::TreeScene()
 
 }
 
-TreeScene::~TreeScene()
-{
-
-}
-
 void TreeScene::set_msinfo(std::vector<minfo*> _msinfo)
 {
     msinfo = _msinfo;

@@ -58,6 +58,7 @@ class TreeScene : public QGraphicsScene
      * because of matrix arithmetic limitations, BUT: those objects will be
      * places onto the tree anyway and marked with red color as impossible to perform.
      */
+
     Q_OBJECT
 
 private:
@@ -83,9 +84,9 @@ private:
 
 public:
     TreeScene();
-    void set_msinfo(std::vector<minfo*> _msinfo);
-    ~TreeScene();
+    virtual ~TreeScene() {  }
 
+    void set_msinfo(std::vector<minfo*> _msinfo);
     QGraphicsScene* get_scene();
     void set_counter(int _counter);
     void draw();

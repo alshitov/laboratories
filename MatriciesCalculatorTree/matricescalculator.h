@@ -13,6 +13,16 @@
 struct mlist
 {
     std::vector<NumericMatrix> ms;
+
+    void __repr__()
+    {
+        std::cout << "\n*** MLIST ***\n";
+        for (unsigned long i = 0; i < ms.size(); ++i)
+        {
+            ms.at(i).show();
+        }
+        std::cout << "\n** END MLIST **\n";
+    }
 };
 
 struct minfo
@@ -51,14 +61,24 @@ struct minfo
         return m;
     }
 
-    void set_capture(bool _capture)
+    void __repr__()
     {
-        capture = _capture;
+        std::cout << "\n----- MINFO -----\n"
+                  << "Name: " << name
+                  << "\nMatrix:\n"; m->show();
+
+        std::cout << "Transposed:\n"; mT->show();
+        std::cout << "Inversed:\n";   mR->show();
+
+        std::cout << "\nSum Ms:"; sum_ms.__repr__();
+        std::cout << "\nSub Ms:"; sub_ms.__repr__();
+        std::cout << "\nMul Ms:"; mul_ms.__repr__();
+        std::cout << "\nDiv Ms:"; div_ms.__repr__();
+        std::cout << "----- END MINFO -----\n";
     }
 
     NumericMatrix* m;       // Matrix
     std::string name;       // Matrix Name
-    bool capture = true;
     NumericMatrix* mT;      // Matrix Transposed
     NumericMatrix* mR;      // Matrix Reversed
 
@@ -112,32 +132,34 @@ private:
 
 public:
     MatricesCalculator();
-    ~MatricesCalculator();
+    virtual ~MatricesCalculator() {  }
 
+    void show();
     void add_m(NumericMatrix& m);
     std::vector<minfo*> get_msinfo();
     void edit_m(NumericMatrix& m, NumericMatrix& nm);
     void remove_m(NumericMatrix& m);
 
-    mlist search_sum_acceptable(NumericMatrix& m, mlist& others);
-    mlist search_sub_acceptable(NumericMatrix& m, mlist& others);
-    mlist search_mul_acceptable(NumericMatrix& m, mlist& others);
-    mlist search_div_acceptable(NumericMatrix& m, mlist& others);
-    void  search_all_acceptable(NumericMatrix& m, minfo& _minfo);
+    void process_new_m(NumericMatrix& m, minfo* _minfo);
 
-    minfo* find_by_m(NumericMatrix& m);
-    mlist extract_ms();
+    mlist* search_sum_acceptable(NumericMatrix& m, mlist* others);
+    mlist* search_sub_acceptable(NumericMatrix& m, mlist* others);
+    mlist* search_mul_acceptable(NumericMatrix& m, mlist* others);
+    mlist* search_div_acceptable(NumericMatrix& m, mlist* others);
+
+    minfo* find_by_id(int _id);
+    mlist* extract_ms();
 
     void run_calc();
-    void perform_calculations(minfo& _minfo);
+    void perform_calculations(minfo* _minfo);
 
-    void do_transpose_m(minfo& _minfo);
-    void do_inverse_m(minfo& _minfo);
+    void do_transpose_m(minfo* _minfo);
+    void do_inverse_m(minfo* _minfo);
     bool mlist_changed(mlist& _ms, mlist& _new_ms);
-    void do_sum_ms(minfo& _minfo);
-    void do_sub_ms(minfo& _minfo);
-    void do_mul_ms(minfo& _minfo);
-    void do_div_ms(minfo& _minfo);
+    void do_sum_ms(minfo* _minfo);
+    void do_sub_ms(minfo* _minfo);
+    void do_mul_ms(minfo* _minfo);
+    void do_div_ms(minfo* _minfo);
 };
 
 #endif // MATRICESCALCULATOR_H

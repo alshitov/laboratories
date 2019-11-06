@@ -176,7 +176,6 @@ void MainWindow::init_new_matrix(NumericMatrix& m)
 
 void MainWindow::render_result()
 {
-    qDebug() << matr_calc->get_msinfo().size();
     tree_scene->set_msinfo(matr_calc->get_msinfo());
     tree_scene->draw();
 }

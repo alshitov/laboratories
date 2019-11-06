@@ -7,11 +7,6 @@ MatrixRepr::MatrixRepr(QString& _m_name, std::string _m_data)
     place_elements();
 }
 
-MatrixRepr::~MatrixRepr()
-{
-
-}
-
 void MatrixRepr::make_elements(QString& _m_name, std::string _m_data)
 {
     frame_l = new QVBoxLayout();

@@ -13,13 +13,13 @@ private:
     std::pair<int, int> size;
     double **data;
     int rows, cols;
-    static int id;
     int self_id;
+
+    static int id;
 
 public:
     NumericMatrix(int _rows, int _cols)
     {
-        qDebug() << "Constructor called!";
         ++id;
         self_id = id / 4;
         rows = _rows;
@@ -32,11 +32,11 @@ public:
 
     ~NumericMatrix()
     {
-        qDebug() << "Destructor called!";
         --id;
-        for (int i = 0; i < rows; ++i)
-            delete[] data[i];
-        delete[] data;
+        // Crashes?
+//        for (int i = 0; i < rows; ++i)
+//            delete[] data[i];
+//        delete[] data;
     }
 
     static int get_id(NumericMatrix& m)

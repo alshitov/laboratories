@@ -20,20 +20,16 @@ private:
 
 public:
     MatrixRepr(QString& _m_name, std::string _m_data);
+    virtual ~MatrixRepr() {  }
 
-    ~MatrixRepr();
     void make_elements(QString& _m_name, std::string _m_data);
     void place_elements();
-
     void set_m_name(const QString& m);
     void set_m_data(const QString& data);
-
     QString std_to_q(std::string s);
     std::string q_to_std(QString& s);
-
     QPushButton* get_edit_b();
     QPushButton* get_remove_b();
-
     QString get_m_name();
 };
 

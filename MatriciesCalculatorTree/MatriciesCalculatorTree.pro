@@ -22,7 +22,7 @@ SOURCES += \
     mainwindow.cpp \
     matriciescalculator.cpp \
     matrixrepr.cpp \
-    sessionsmanager.cpp \
+    numericmatrix.cpp \
     treescene.cpp \
     treeview.cpp
 
@@ -31,7 +31,6 @@ HEADERS += \
     matricescalculator.h \
     matrixrepr.h \
     numericmatrix.h \
-    sessionsmanager.h \
     treescene.h \
     treeview.h
 

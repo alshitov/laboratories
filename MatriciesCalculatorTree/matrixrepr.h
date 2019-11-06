@@ -1,5 +1,7 @@
 #ifndef MATRIXREPR_H
 #define MATRIXREPR_H
+
+#pragma once
 #include <QtCore>
 #include <QtWidgets>
 

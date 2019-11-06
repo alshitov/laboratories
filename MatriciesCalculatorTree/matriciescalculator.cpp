@@ -1,7 +1,4 @@
 #include "matricescalculator.h"
-#include "numericmatrix.h"
-#include <map>
-#include <vector>
 
 MatricesCalculator::MatricesCalculator()
 {
@@ -17,9 +14,28 @@ void MatricesCalculator::add_m(NumericMatrix &m)
 {
     minfo *new_minfo = new minfo();
     new_minfo->set_m(m);
-    search_all_acceptable(m, *new_minfo);
+//    search_all_acceptable(m, *new_minfo);
     msinfo.push_back(new_minfo);
-    run_calc();
+    qDebug() << msinfo.size();
+//    run_calc();
+}
+
+void MatricesCalculator::remove_m(NumericMatrix &m)
+{
+    int id = NumericMatrix::get_id(m);
+    for (unsigned long it = 0; it < msinfo.size(); ++it)
+    {
+        if (NumericMatrix::get_id(*msinfo.at(it)->get_m()) == id)
+        {
+            msinfo.erase(msinfo.begin() + int(it));
+            break;
+        }
+    }
+}
+
+std::vector<minfo*> MatricesCalculator::get_msinfo()
+{
+    return msinfo;
 }
 
 void MatricesCalculator::edit_m(NumericMatrix &m, NumericMatrix &nm)
@@ -28,11 +44,6 @@ void MatricesCalculator::edit_m(NumericMatrix &m, NumericMatrix &nm)
     target_minfo->set_m(nm);
     search_all_acceptable(nm, *target_minfo);
     run_calc();
-}
-
-void MatricesCalculator::remove_m(NumericMatrix& m)
-{
-
 }
 
 mlist MatricesCalculator::search_sum_acceptable(NumericMatrix& m, mlist& others)
@@ -111,8 +122,8 @@ void MatricesCalculator::run_calc()
     for (unsigned long it = 0; it < msinfo.size(); ++it)
     {
         minfo *target_minfo = msinfo.at(it);
-        do_transpose_m(*target_minfo);
-        do_inverse_m(*target_minfo);
+//        do_transpose_m(*target_minfo);
+//        do_inverse_m(*target_minfo);
 //        do_sum_ms(*target_minfo);
 //        do_sub_ms(*target_minfo);
 //        do_mul_ms(*target_minfo);

@@ -3,11 +3,13 @@
 
 #include <QtCore>
 #include <QtWidgets>
-
-#include <numericmatrix.h>
+#include <QDebug>
 #include <vector>
+#include <map>
 
-// List: [NumericMatrix];
+#pragma once
+#include "numericmatrix.h"
+
 struct mlist
 {
     std::vector<NumericMatrix> ms;
@@ -49,8 +51,14 @@ struct minfo
         return m;
     }
 
+    void set_capture(bool _capture)
+    {
+        capture = _capture;
+    }
+
     NumericMatrix* m;       // Matrix
     std::string name;       // Matrix Name
+    bool capture = true;
     NumericMatrix* mT;      // Matrix Transposed
     NumericMatrix* mR;      // Matrix Reversed
 
@@ -107,6 +115,7 @@ public:
     ~MatricesCalculator();
 
     void add_m(NumericMatrix& m);
+    std::vector<minfo*> get_msinfo();
     void edit_m(NumericMatrix& m, NumericMatrix& nm);
     void remove_m(NumericMatrix& m);
 

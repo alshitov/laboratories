@@ -1,36 +1,18 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include <QtCore>
-#include <QtWidgets>
-#include <QtGui>
-#include <QDebug>
-
-#include <numericmatrix.h>
-#include <treeview.h>
-#include <matrixrepr.h>
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
     matr_calc = new MatricesCalculator();
-
-    // Set up graphics elements
     tree_scene = new TreeScene();
     tree_scene->setParent(this);
-
     tree_view = new TreeView(this, tree_scene);
-    tree_view->setParent(this);
-
     ui->centralLayout->addWidget(tree_view);
-
-    // Matrix input controller
     m_input_t = ui->addNewMatrixTable;
-    set_up_matrix_input_table(2, 2);
-
+    set_up_matrix_input_table(3, 3);
     connect(this, SIGNAL(w_resized(int, int)), tree_scene, SLOT(view_scaled(int, int)));
 }
 
@@ -101,8 +83,8 @@ void MainWindow::on_addMatrixPushButton_clicked()
         }
 
     this->init_new_matrix(*m);
-//    matr_calc->add_m(*m);
-//    render_result();
+    matr_calc->add_m(*m);
+    render_result();
 }
 
 void MainWindow::on_saveMatrixButton_clicked()
@@ -141,7 +123,7 @@ void MainWindow::init_new_matrix(NumericMatrix& m)
     ui->existingMatricesView->addItem(matrix_item);
 
     QString text = ui->matrixNameLineEdit->text();
-    QString m_name = text.isEmpty() ? QString("Matrix_%1").arg(matrix_counter++) : text;
+    QString m_name = text.isEmpty() ? QString("Matrix_%1").arg(repr_counter++ + 1) : text;
     MatrixRepr *m_repr = new MatrixRepr(m_name, m.get_str_data());
 
     ui->existingMatricesView->setItemWidget(matrix_item, m_repr);
@@ -180,11 +162,13 @@ void MainWindow::init_new_matrix(NumericMatrix& m)
             }
     );
     connect(m_repr->get_remove_b(), &QPushButton::clicked,
-        [this, matrix_item] {
+        [this, &m, matrix_item] {
                 ui->existingMatricesView->takeItem(
                     ui->existingMatricesView->row(matrix_item)
                 );
-                matrix_counter--;
+                matr_calc->remove_m(m);
+                repr_counter--;
+                render_result();
                 ui->saveMatrixButton->click();
             }
     );
@@ -192,5 +176,7 @@ void MainWindow::init_new_matrix(NumericMatrix& m)
 
 void MainWindow::render_result()
 {
-
+    qDebug() << matr_calc->get_msinfo().size();
+    tree_scene->set_msinfo(matr_calc->get_msinfo());
+    tree_scene->draw();
 }

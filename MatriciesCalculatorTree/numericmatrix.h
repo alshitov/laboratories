@@ -1,5 +1,8 @@
 #ifndef NUMERICMATRIX_H
 #define NUMERICMATRIX_H
+
+#pragma once
+#include <QDebug>
 #include <iostream>
 #include <sstream>
 #include <math.h>
@@ -10,10 +13,15 @@ private:
     std::pair<int, int> size;
     double **data;
     int rows, cols;
+    static int id;
+    int self_id;
 
 public:
     NumericMatrix(int _rows, int _cols)
     {
+        qDebug() << "Constructor called!";
+        ++id;
+        self_id = id / 4;
         rows = _rows;
         cols = _cols;
 
@@ -24,10 +32,16 @@ public:
 
     ~NumericMatrix()
     {
+        qDebug() << "Destructor called!";
+        --id;
         for (int i = 0; i < rows; ++i)
             delete[] data[i];
-
         delete[] data;
+    }
+
+    static int get_id(NumericMatrix& m)
+    {
+        return m.self_id;
     }
 
     static NumericMatrix* transpose_m(NumericMatrix& m)
@@ -439,7 +453,7 @@ public:
     // Data comparison operators
     friend bool operator>(const NumericMatrix& l, const NumericMatrix& r)
     {
-        if (!(r.rows != l.rows) && (r.cols == l.cols))
+        if ((r.rows != l.rows) || (r.cols != l.cols))
             throw "Operator '>' requires matrices to be same size";
 
         for (int i = 0; i < l.rows; ++i)
@@ -450,7 +464,7 @@ public:
 
     friend bool operator>=(const NumericMatrix& l, const NumericMatrix& r)
     {
-        if (!(r.rows != l.rows) && (r.cols == l.cols))
+        if ((r.rows != l.rows) || (r.cols != l.cols))
             throw "Operator '>=' requires matrices to be same size";
 
         for (int i = 0; i < l.rows; ++i)
@@ -461,7 +475,7 @@ public:
 
     friend bool operator<(const NumericMatrix& l, const NumericMatrix& r)
     {
-        if (!(r.rows != l.rows) && (r.cols == l.cols))
+        if ((r.rows != l.rows) || (r.cols != l.cols))
             throw "Operator '<' requires matrices to be same size";
 
         for (int i = 0; i < l.rows; ++i)
@@ -472,7 +486,7 @@ public:
 
     friend bool operator<=(const NumericMatrix& l, const NumericMatrix& r)
     {
-        if (!(r.rows != l.rows) && (r.cols == l.cols))
+        if ((r.rows != l.rows) || (r.cols != l.cols))
             throw "Operator '<=' requires matrices to be same size";
 
         for (int i = 0; i < l.rows; ++i)
@@ -483,7 +497,7 @@ public:
 
     friend bool operator==(const NumericMatrix& l, const NumericMatrix& r)
     {
-        if (!(r.rows != l.rows) && (r.cols == l.cols))
+        if ((r.rows != l.rows) || (r.cols != l.cols))
             throw "Operator '==' requires matrices to be same size";
 
         for (int i = 0; i < l.rows; ++i)
@@ -493,5 +507,4 @@ public:
         return true;
     }
 };
-
 #endif // NUMERICMATRIX_H

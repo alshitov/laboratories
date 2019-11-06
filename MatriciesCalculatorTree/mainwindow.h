@@ -6,13 +6,11 @@
 #include <QtCore>
 #include <QtWidgets>
 #include <QtGui>
-
-#include <sessionsmanager.h>
-#include <matricescalculator.h>
-#include <treescene.h>
-#include <matrixrepr.h>
-#include <treeview.h>
 #include <vector>
+#include "treescene.h"
+#include "matrixrepr.h"
+#include "treeview.h"
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -43,12 +41,11 @@ private:
 
     QTableWidget *m_input_t;
     MatricesCalculator *matr_calc;
-    SessionsManager *sess_m;
     NumericMatrix *active_m_p;
     QListWidgetItem *active_item_p;
     MatrixRepr *active_repr_p;
 
-    int matrix_counter = 0;
+    int repr_counter = 0;
 
     void set_up_matrix_input_table(int rows, int cols);
     void set_table_cell_edit(int i, int j);

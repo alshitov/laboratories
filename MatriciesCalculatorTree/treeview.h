@@ -1,10 +1,13 @@
 #ifndef TREEVIEW_H
 #define TREEVIEW_H
 
+#pragma once
 #include <QtCore>
 #include <QGraphicsView>
 #include <QGraphicsScene>
-#include <treescene.h>
+#include <QDebug>
+#include <iostream>
+#include "treescene.h"
 
 class TreeView : public QGraphicsView
 {
@@ -17,9 +20,6 @@ private:
 
 signals:
     void to_scene_signal(int, int);
-
-private slots:
-    void window_resized(int, int);
 
 public:
     TreeView(QWidget *parent, QGraphicsScene *scene);

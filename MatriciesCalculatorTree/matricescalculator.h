@@ -41,25 +41,18 @@ struct minfo
         delete mR;
     }
 
-    void set_m_name(const std::string& _name)
-    {
-        name = _name;
-    }
+    void set_m_name(const std::string& _name) { name = _name; }
+    void set_m(NumericMatrix& _m) { m = &_m; }
 
-    std::string get_m_name()
-    {
-        return name;
-    }
+    std::string get_m_name() { return name; }
+    NumericMatrix* get_m()  { return m; }
+    NumericMatrix* get_mT() { return mT; }
+    NumericMatrix* get_mR() { return mR; }
 
-    void set_m(NumericMatrix& _m)
-    {
-        m = &_m;
-    }
-
-    NumericMatrix* get_m()
-    {
-        return m;
-    }
+    mlist* get_sum_ms() { return &sum_ms; }
+    mlist* get_sub_ms() { return &sub_ms; }
+    mlist* get_mul_ms() { return &mul_ms; }
+    mlist* get_div_ms() { return &div_ms; }
 
     void __repr__()
     {
@@ -74,6 +67,12 @@ struct minfo
         std::cout << "\nSub Ms:"; sub_ms.__repr__();
         std::cout << "\nMul Ms:"; mul_ms.__repr__();
         std::cout << "\nDiv Ms:"; div_ms.__repr__();
+
+        std::cout << "\nDone sum Ms:"; _done_sum_ms.__repr__();
+        std::cout << "\nDone sub Ms:"; _done_sub_ms.__repr__();
+        std::cout << "\nDone mul Ms:"; _done_mul_ms.__repr__();
+        std::cout << "\nDone div Ms:"; _done_div_ms.__repr__();
+
         std::cout << "----- END MINFO -----\n";
     }
 
@@ -96,30 +95,11 @@ struct minfo
 
 struct conditions
 {
-    static bool is_inversion_acceptable(NumericMatrix& m)
-    {
-        return m.D_is_not_0();
-    }
-
-    static bool is_sum_acceptable(NumericMatrix& l, NumericMatrix& r)
-    {
-        return l += r;
-    }
-
-    static bool is_sub_acceptable(NumericMatrix& l, NumericMatrix& r)
-    {
-        return l -= r;
-    }
-
-    static bool is_mul_acceptable(NumericMatrix& l, NumericMatrix& r)
-    {
-        return l *= r;
-    }
-
-    static bool is_div_acceptable(NumericMatrix& l, NumericMatrix& r)
-    {
-        return l /= r;
-    }
+    static bool is_inversion_acceptable(NumericMatrix& m) { return m.D_is_not_0(); }
+    static bool is_sum_acceptable(NumericMatrix& l, NumericMatrix& r) { return l += r; }
+    static bool is_sub_acceptable(NumericMatrix& l, NumericMatrix& r) { return l -= r; }
+    static bool is_mul_acceptable(NumericMatrix& l, NumericMatrix& r) { return l *= r; }
+    static bool is_div_acceptable(NumericMatrix& l, NumericMatrix& r) { return l /= r; }
 };
 
 class MatricesCalculator : public QObject
@@ -135,8 +115,9 @@ public:
     virtual ~MatricesCalculator() {  }
 
     void show();
-    void add_m(NumericMatrix& m);
+    void add_m(NumericMatrix& m, QString name);
     std::vector<minfo*> get_msinfo();
+    minfo* get_minfo(int matrix_id);
     void edit_m(NumericMatrix& m, NumericMatrix& nm);
     void remove_m(NumericMatrix& m);
 
@@ -155,7 +136,6 @@ public:
 
     void do_transpose_m(minfo* _minfo);
     void do_inverse_m(minfo* _minfo);
-    bool mlist_changed(mlist& _ms, mlist& _new_ms);
     void do_sum_ms(minfo* _minfo);
     void do_sub_ms(minfo* _minfo);
     void do_mul_ms(minfo* _minfo);

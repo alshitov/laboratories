@@ -1,8 +1,8 @@
 #include "matrixrepr.h"
 
 MatrixRepr::MatrixRepr(QString& _m_name, std::string _m_data)
+    : m_name(_m_name)
 {
-    m_name = _m_name;
     make_elements(_m_name, _m_data);
     place_elements();
 }

@@ -58,7 +58,7 @@ public:
     static NumericMatrix* inverse_m(NumericMatrix& m)
     {
         if (!(m.D_is_not_0()))
-            throw "Cannot inverse matrix with D = 0!";
+            std::cerr << "Cannot inverse matrix with D = 0!";
 
         double factor = (1 / NumericMatrix::determinant(m));
         int _rows = m.get_r(), _cols = m.get_c();
@@ -98,7 +98,7 @@ public:
     static double determinant(NumericMatrix& m)
     {
         if ((m.get_r() < 1) || !m.quadratic())
-            throw "Invalid matrix to calculate D of!";
+            std::cerr << "Invalid matrix to calculate D of!";
 
         if (m.get_r() == 1)
             return m.get_v(0, 0);
@@ -166,7 +166,7 @@ public:
     static void remove_r(int ri, NumericMatrix& m)
     {
         if(ri >= m.get_r())
-            throw "Row index out of bounds!";
+            std::cerr << "Row index out of bounds!";
         --m.rows;
         for (int r = ri; r < m.get_r(); ++r)
             m.data[r] = m.data[r + 1];
@@ -220,7 +220,7 @@ public:
     static void remove_c(int ci, NumericMatrix& m)
     {
         if (ci >= m.get_c())
-            throw "Column index of out bounds!";
+            std::cerr << "Column index of out bounds!";
 
         double **_data = new double*[m.get_r()];
         double *_row;
@@ -250,14 +250,14 @@ public:
     void set_v(int row, int col, double _value)
     {
         if ((rows < row) || (cols < col))
-            throw "Size out of bound!";
+            std::cerr << "Size out of bound!";
         data[row][col] = _value;
     }
 
     double& get_v(int row, int col)
     {
         if ((rows < row) || (cols < col))
-            throw "Size out of bound!";
+            std::cerr << "Size out of bound!";
         return data[row][col];
     }
 
@@ -348,7 +348,6 @@ public:
         return r.quadratic() && r.D_is_not_0() && (l.get_c() == NumericMatrix::inverse_m(r)->get_r());
     }
 
-    // Arithmetic operations with a constant
     NumericMatrix& operator+(double c_term)
     {
         for (int i = 0; i < rows; ++i)
@@ -359,10 +358,15 @@ public:
 
     NumericMatrix& operator+(NumericMatrix& other)
     {
+        NumericMatrix *new_m = new NumericMatrix(other.get_r(), other.get_c());
         for (int i = 0; i < rows; ++i)
+        {
             for (int j = 0; j < cols; ++j)
-                data[i][j] += other.get_v(i, j);
-        return *this;
+            {
+                new_m->set_v(i, j, (get_v(i, j) + other.get_v(i, j)));
+            }
+        }
+        return *new_m;
     }
 
     NumericMatrix& operator-(double c_subtrahend)
@@ -375,10 +379,15 @@ public:
 
     NumericMatrix& operator-(NumericMatrix& other)
     {
+        NumericMatrix *new_m = new NumericMatrix(other.get_r(), other.get_c());
         for (int i = 0; i < rows; ++i)
+        {
             for (int j = 0; j < cols; ++j)
-                data[i][j] -= other.get_v(i, j);
-        return *this;
+            {
+                new_m->set_v(i, j, (get_v(i, j) - other.get_v(i, j)));
+            }
+        }
+        return *new_m;
     }
 
     NumericMatrix& operator*(double c_factor)
@@ -392,7 +401,7 @@ public:
     NumericMatrix& operator*(NumericMatrix& other)
     {
         if (!(*this *= other))
-            throw "Operator '*' requires matrices to be same size";
+            std::cerr << "Operator '*' requires matrices to be same size";
 
         int _rows_1 = this->get_r(),
             _cols_1 = this->get_c(),
@@ -428,7 +437,7 @@ public:
     NumericMatrix& operator/(NumericMatrix& other)
     {
         if (!(*this /= other))
-            throw "Operator '/' requires matrices to be same size";
+            std::cerr << "Operator '/' requires matrices to be same size";
         return (*this) * *NumericMatrix::inverse_m(other);
     }
 
@@ -446,7 +455,7 @@ public:
     double& operator()(int row, int col)
     {
         if ((rows < row) || (cols < col))
-            throw "Size out of bound!";
+            std::cerr << "Size out of bound!";
         return data[row][col];
     }
 
@@ -454,7 +463,7 @@ public:
     friend bool operator>(const NumericMatrix& l, const NumericMatrix& r)
     {
         if ((r.rows != l.rows) || (r.cols != l.cols))
-            throw "Operator '>' requires matrices to be same size";
+            std::cerr << "Operator '>' requires matrices to be same size";
 
         for (int i = 0; i < l.rows; ++i)
             for (int j = 0; j < l.cols; ++j)
@@ -465,7 +474,7 @@ public:
     friend bool operator>=(const NumericMatrix& l, const NumericMatrix& r)
     {
         if ((r.rows != l.rows) || (r.cols != l.cols))
-            throw "Operator '>=' requires matrices to be same size";
+            std::cerr << "Operator '>=' requires matrices to be same size";
 
         for (int i = 0; i < l.rows; ++i)
             for (int j = 0; j < l.cols; ++j)
@@ -476,7 +485,7 @@ public:
     friend bool operator<(const NumericMatrix& l, const NumericMatrix& r)
     {
         if ((r.rows != l.rows) || (r.cols != l.cols))
-            throw "Operator '<' requires matrices to be same size";
+            std::cerr << "Operator '<' requires matrices to be same size";
 
         for (int i = 0; i < l.rows; ++i)
             for (int j = 0; j < l.cols; ++j)
@@ -487,7 +496,7 @@ public:
     friend bool operator<=(const NumericMatrix& l, const NumericMatrix& r)
     {
         if ((r.rows != l.rows) || (r.cols != l.cols))
-            throw "Operator '<=' requires matrices to be same size";
+            std::cerr << "Operator '<=' requires matrices to be same size";
 
         for (int i = 0; i < l.rows; ++i)
             for (int j = 0; j < l.cols; ++j)
@@ -498,7 +507,7 @@ public:
     friend bool operator==(const NumericMatrix& l, const NumericMatrix& r)
     {
         if ((r.rows != l.rows) || (r.cols != l.cols))
-            throw "Operator '==' requires matrices to be same size";
+            std::cerr << "Operator '==' requires matrices to be same size";
 
         for (int i = 0; i < l.rows; ++i)
             for (int j = 0; j < l.cols; ++j)

@@ -27,11 +27,13 @@ public:
 signals:
     void w_resized(int, int);
 
+public slots:
+    void show_result(int);
+
 private slots:
     void on_addMatrixRowSpinBox_valueChanged(int arg1);
     void on_addMatrixColSpinBox_valueChanged(int arg1);
     void on_addMatrixPushButton_clicked();
-
     void on_saveMatrixButton_clicked();
 
 private:
@@ -42,14 +44,17 @@ private:
     QTableWidget *m_input_t;
     MatricesCalculator *matr_calc;
     NumericMatrix *active_m_p;
+
     QListWidgetItem *active_item_p;
     MatrixRepr *active_repr_p;
-
+    QString alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    QStringList *taken_names = new QStringList();
     int repr_counter = 0;
 
     void set_up_matrix_input_table(int rows, int cols);
     void set_table_cell_edit(int i, int j);
-    void init_new_matrix(NumericMatrix &m);
+    QString matrix_name();
+    void init_new_matrix(NumericMatrix &m, QString name);
     void add_new_matrix_to_existing(NumericMatrix &m);
     void set_active_m(NumericMatrix* m);
     void edit_m(NumericMatrix&);

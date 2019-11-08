@@ -10,15 +10,12 @@ TreeView::TreeView(QWidget *parent, QGraphicsScene *scene)
 
 void TreeView::mouseMoveEvent(QMouseEvent *event)
 {
-//    QString s = QString("x: %1; y: %2")
-//            .arg(event->pos().x(), event->pos().y());
-//    qDebug() << s.data();
     QGraphicsView::mousePressEvent(event);
 }
 
 void TreeView::mousePressEvent(QMouseEvent *event)
 {
-    qDebug() << "Press: " << event->pos();
+    qDebug() << "Press Scene: " << event->pos();
     QGraphicsView::mousePressEvent(event);
 }
 

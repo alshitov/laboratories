@@ -7,12 +7,13 @@
 #include <QtGui>
 #include <iostream>
 #include "matricescalculator.h"
+#include "clickableellipse.h"
 
 struct pens
 {
     QPen *red_p = new QPen(Qt::red, 2);
     QPen *white_p = new QPen(Qt::white, 2);
-    QPen *blue_p = new QPen(Qt::blue, 2);
+    QPen *blue_p = new QPen(QColor(135, 206, 250), 2);
     QPen *yellow_p = new QPen(Qt::yellow, 2);
     QPen *green_p = new QPen(QColor(0, 128, 0), 3);
     QPen *branches_brown_p = new QPen(QColor(139, 69, 19), 3);
@@ -65,21 +66,44 @@ private:
     qreal w, h;
     std::vector<minfo*> msinfo;
     int counter = 0;
+
     QGraphicsLineItem *trunk;
     QList<QGraphicsLineItem*> *grid;
     pens _pens;
     brushes _brushes;
 
+    QStringList *operators;
+    QMap<QString, int> *operators_map;
+
     void make_grid(int rows, int cols);
-    void make_tree(std::vector<minfo*> _msinfo);
-    void make_branch(qreal x1, qreal y1, qreal x2, qreal y2);
+    void make_tree();
+
+    void make_matrix_branch(minfo* _minfo, int _counter,
+                            qreal matrix_container_w, qreal matrix_container_h,
+                            qreal branch_start_x, qreal branch_start_y,
+                            qreal branch_end_x, qreal branch_end_y);
+
+    void make_secondary_matrix_branches(mlist *_mlist, int counter,
+                                        qreal matrix_container_w,
+                                        qreal branch_start_x, qreal branch_start_y);
+
+    void place_other_matrices(mlist *_mlist, QList<QPair<qreal, qreal>> *matrices_points);
+
     QGraphicsLineItem* make_line(QPen& p,
                                  qreal lx0, qreal lx1,
                                  qreal ly0, qreal ly1);
-    QGraphicsEllipseItem *make_ellipse(QPen& p,
+
+    QGraphicsEllipseItem* make_ellipse(QPen& p,
                                        QBrush& b,
                                        qreal diameter,
                                        qreal lx0, qreal ly0);
+
+    ClickableEllipse* make_clickable_ellipse(QPen& p,
+                                             QBrush& b,
+                                             qreal diameter,
+                                             qreal lx0, qreal ly0,
+                                             int _action_id);
+
     void place_item(QGraphicsItem& item);
 
 public:
@@ -95,7 +119,8 @@ public slots:
     void view_scaled(int, int);
 
 signals:
-    void scene_scaled(int);
+    void show_result(int);
+    void calc_result(int, NumericMatrix&, NumericMatrix&);
 };
 
 #endif // TREESCENE_H

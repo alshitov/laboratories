@@ -18,9 +18,6 @@ private:
     double w, h;
     QGraphicsScene *scene;
 
-signals:
-    void to_scene_signal(int, int);
-
 public:
     TreeView(QWidget *parent, QGraphicsScene *scene);
 

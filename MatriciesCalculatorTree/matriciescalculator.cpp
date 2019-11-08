@@ -16,14 +16,39 @@ void MatricesCalculator::show()
     std::cout << "\n--- END CALCULATOR STATE ---\n";
 }
 
-void MatricesCalculator::add_m(NumericMatrix &m)
+std::vector<minfo*> MatricesCalculator::get_msinfo()
+{
+    return msinfo;
+}
+
+minfo* MatricesCalculator::get_minfo(int matrix_id)
+{
+    bool found = false;
+    unsigned long i;
+
+    for (i = 0; i < msinfo.size(); ++i)
+    {
+        if (NumericMatrix::get_id(*msinfo.at(i)->get_m()) == matrix_id)
+        {
+            found = true;
+            break;
+        }
+    }
+
+    if (found) return msinfo.at(i);
+    else exit(0);
+}
+
+void MatricesCalculator::add_m(NumericMatrix &m, QString name)
 {
     minfo *new_minfo = new minfo();
     new_minfo->set_m(m);
+    new_minfo->set_m_name(name.toUtf8().constData());
     process_new_m(m, new_minfo);
     msinfo.push_back(new_minfo);
+
+    run_calc();
     show();
-//    run_calc();
 }
 
 void MatricesCalculator::remove_m(NumericMatrix &m)
@@ -37,12 +62,9 @@ void MatricesCalculator::remove_m(NumericMatrix &m)
             break;
         }
     }
-    show();
-}
 
-std::vector<minfo*> MatricesCalculator::get_msinfo()
-{
-    return msinfo;
+    run_calc();
+    show();
 }
 
 void MatricesCalculator::edit_m(NumericMatrix &m, NumericMatrix &nm)
@@ -50,8 +72,9 @@ void MatricesCalculator::edit_m(NumericMatrix &m, NumericMatrix &nm)
     minfo* target_minfo = find_by_id(NumericMatrix::get_id(m));
     target_minfo->set_m(nm);
     process_new_m(nm, target_minfo);
+
+    run_calc();
     show();
-//    run_calc();
 }
 
 void  MatricesCalculator::process_new_m(NumericMatrix& m, minfo* _minfo)
@@ -60,13 +83,22 @@ void  MatricesCalculator::process_new_m(NumericMatrix& m, minfo* _minfo)
     do_inverse_m(_minfo);
 
     mlist *_other_ms = extract_ms();
-
     _minfo->sum_ms = *search_sum_acceptable(m, _other_ms);
     _minfo->sub_ms = *search_sub_acceptable(m, _other_ms);
     _minfo->mul_ms = *search_mul_acceptable(m, _other_ms);
     _minfo->div_ms = *search_div_acceptable(m, _other_ms);
 }
 
+void MatricesCalculator::do_transpose_m(minfo *_minfo)
+{
+    _minfo->mT = NumericMatrix::transpose_m(*_minfo->m);
+}
+
+void MatricesCalculator::do_inverse_m(minfo *_minfo)
+{
+    if (!_conditions.is_inversion_acceptable(*_minfo->m)) return;
+    _minfo->mR = NumericMatrix::inverse_m(*_minfo->m);
+}
 
 mlist* MatricesCalculator::search_sum_acceptable(NumericMatrix& m, mlist* others)
 {
@@ -140,7 +172,7 @@ minfo* MatricesCalculator::find_by_id(int _id)
         }
     }
 
-    if (!found) throw "Not found";
+    if (!found) std::cerr << "Not found";
 
     return msinfo.at(it);
 }
@@ -166,82 +198,42 @@ void MatricesCalculator::run_calc()
     }
 }
 
-void MatricesCalculator::do_transpose_m(minfo *_minfo)
-{
-    _minfo->mT = NumericMatrix::transpose_m(*_minfo->m);
-}
-
-void MatricesCalculator::do_inverse_m(minfo *_minfo)
-{
-    if (!_conditions.is_inversion_acceptable(*_minfo->m)) return;
-    _minfo->mR = NumericMatrix::inverse_m(*_minfo->m);
-}
-
-bool MatricesCalculator::mlist_changed(mlist& _ms, mlist& _new_ms)
-{
-    return _ms.ms.size() == _new_ms.ms.size();
-}
-
 void MatricesCalculator::do_sum_ms(minfo* _minfo)
 {
-    if (!mlist_changed(_minfo->sum_ms, _minfo->_done_sum_ms)) return;
-
     for (unsigned long idx = 0; idx < _minfo->sum_ms.ms.size(); ++idx)
     {
-        try {
-            _minfo->_done_sum_ms.ms.push_back(
-                *(_minfo->m) + _minfo->sum_ms.ms.at(idx)
-            );
-        } catch(...) {
-            std::cout << "Fuck u 1";
-        }
+        _minfo->_done_sum_ms.ms.push_back(
+            (*(_minfo->m) + _minfo->sum_ms.ms.at(idx))
+        );
     }
 }
 
 void MatricesCalculator::do_sub_ms(minfo* _minfo)
 {
-    if (!mlist_changed(_minfo->sub_ms, _minfo->_done_sub_ms)) return;
-
     for (unsigned long idx = 0; idx < _minfo->sub_ms.ms.size(); ++idx)
     {
-        try {
-            _minfo->_done_sub_ms.ms.push_back(
-                *(_minfo->m) - _minfo->sub_ms.ms.at(idx)
-            );
-        } catch(...) {
-            std::cout << "Fuck u 2";
-        }
+        _minfo->_done_sub_ms.ms.push_back(
+            (*(_minfo->m) - _minfo->sub_ms.ms.at(idx))
+        );
     }
 }
 
 void MatricesCalculator::do_mul_ms(minfo* _minfo)
 {
-    if (!mlist_changed(_minfo->mul_ms, _minfo->_done_mul_ms)) return;
-
     for (unsigned long idx = 0; idx < _minfo->mul_ms.ms.size(); ++idx)
     {
-        try {
-            _minfo->_done_mul_ms.ms.push_back(
-                *(_minfo->m) * _minfo->mul_ms.ms.at(idx)
-            );
-        } catch(...) {
-            std::cout << "Fuck u 3";
-        }
+        _minfo->_done_mul_ms.ms.push_back(
+            (*(_minfo->m) * _minfo->mul_ms.ms.at(idx))
+        );
     }
 }
 
 void MatricesCalculator::do_div_ms(minfo* _minfo)
 {
-    if (!mlist_changed(_minfo->div_ms, _minfo->_done_div_ms)) return;
-
     for (unsigned long idx = 0; idx < _minfo->div_ms.ms.size(); ++idx)
     {
-        try {
-            _minfo->_done_div_ms.ms.push_back(
-                *(_minfo->m) / _minfo->div_ms.ms.at(idx)
-            );
-        } catch(...) {
-            std::cout << "Fuck u 4";
-        }
+        _minfo->_done_div_ms.ms.push_back(
+            (*(_minfo->m) / _minfo->div_ms.ms.at(idx))
+        );
     }
 }

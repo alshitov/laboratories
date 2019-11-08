@@ -12,8 +12,9 @@ MainWindow::MainWindow(QWidget *parent)
     tree_view = new TreeView(this, tree_scene);
     ui->centralLayout->addWidget(tree_view);
     m_input_t = ui->addNewMatrixTable;
-    set_up_matrix_input_table(3, 3);
+    set_up_matrix_input_table(2, 2);
     connect(this, SIGNAL(w_resized(int, int)), tree_scene, SLOT(view_scaled(int, int)));
+    connect(tree_scene, SIGNAL(show_result(int)), this, SLOT(show_result(int)));
 }
 
 MainWindow::~MainWindow()
@@ -26,6 +27,11 @@ void MainWindow::resizeEvent(QResizeEvent *e)
     int w = e->size().width();
     int h = e->size().height();
     emit w_resized(w, h);
+}
+
+void MainWindow::show_result(int action_id)
+{
+    qDebug() << "From scene signal; received: " << action_id;
 }
 
 void MainWindow::set_up_matrix_input_table(int rows, int cols)
@@ -73,17 +79,22 @@ void MainWindow::on_addMatrixPushButton_clicked()
         cols = m_input_t->columnCount();
 
     NumericMatrix *m = new NumericMatrix(rows, cols);
+    QString m_name = matrix_name();
     QLineEdit *edit;
 
     for (int i = 0; i < rows; ++i)
-        for (int j = 0; j < rows; ++j)
+    {
+        for (int j = 0; j < cols; ++j)
         {
-            edit = qobject_cast<QLineEdit*>(m_input_t->cellWidget(i, j));
+            edit = qobject_cast<QLineEdit*>(
+                m_input_t->cellWidget(i, j)
+            );
             m->set_v(i, j, edit->text().toDouble());
         }
+    }
 
-    this->init_new_matrix(*m);
-    matr_calc->add_m(*m);
+    this->init_new_matrix(*m, m_name);
+    matr_calc->add_m(*m, m_name);
     render_result();
 }
 
@@ -98,6 +109,7 @@ void MainWindow::on_saveMatrixButton_clicked()
     {
         for (int j = 0; j < cols; ++j)
         {
+
             edit = qobject_cast<QLineEdit*>(
                 m_input_t->cellWidget(i, j)
             );
@@ -107,24 +119,44 @@ void MainWindow::on_saveMatrixButton_clicked()
 
     active_repr_p->set_m_name(ui->matrixNameLineEdit->text());
     active_repr_p->set_m_data(QString::fromUtf8(nm->get_str_data().c_str()));
-
-//  matr_calc->edit_m(*active_m_p, *active_m_p);
-
+    matr_calc->edit_m(*active_m_p, *nm);
     set_up_matrix_input_table(2, 2);
     ui->matrixNameLineEdit->setText("");
     ui->saveMatrixButton->setEnabled(false);
     ui->addMatrixPushButton->setEnabled(true);
 }
 
-void MainWindow::init_new_matrix(NumericMatrix& m)
+QString MainWindow::matrix_name()
+{
+    int i = 0;
+    bool found = false;
+    QString name;
+
+    while (!found)
+    {
+        if (i < 26)
+            name = alphabet[i++];
+        else
+            name = alphabet[i] + QString::number(i);
+
+        if (!taken_names->contains(name))
+        {
+            taken_names->push_back(name);
+            found = true;
+        }
+    }
+    return name;
+}
+
+void MainWindow::init_new_matrix(NumericMatrix& m, QString name)
 {
     QListWidgetItem *matrix_item = new QListWidgetItem();
     matrix_item->setSizeHint(QSize(0, 60 + (30 * m.get_r())));
     ui->existingMatricesView->addItem(matrix_item);
 
     QString text = ui->matrixNameLineEdit->text();
-    QString m_name = text.isEmpty() ? QString("Matrix_%1").arg(repr_counter++ + 1) : text;
-    MatrixRepr *m_repr = new MatrixRepr(m_name, m.get_str_data());
+    repr_counter++;
+    MatrixRepr *m_repr = new MatrixRepr(name, m.get_str_data());
 
     ui->existingMatricesView->setItemWidget(matrix_item, m_repr);
 

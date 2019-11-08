@@ -44,9 +44,11 @@ void MatricesCalculator::add_m(NumericMatrix &m, QString name)
     minfo *new_minfo = new minfo();
     new_minfo->set_m(m);
     new_minfo->set_m_name(name.toUtf8().constData());
-    process_new_m(m, new_minfo);
     msinfo.push_back(new_minfo);
+    do_transpose_m(new_minfo);
+    do_inverse_m(new_minfo);
 
+    process_all_ms();
     run_calc();
     show();
 }
@@ -63,6 +65,7 @@ void MatricesCalculator::remove_m(NumericMatrix &m)
         }
     }
 
+    process_all_ms();
     run_calc();
     show();
 }
@@ -71,22 +74,28 @@ void MatricesCalculator::edit_m(NumericMatrix &m, NumericMatrix &nm)
 {
     minfo* target_minfo = find_by_id(NumericMatrix::get_id(m));
     target_minfo->set_m(nm);
-    process_new_m(nm, target_minfo);
+    do_transpose_m(target_minfo);
+    do_inverse_m(target_minfo);
 
+    process_all_ms();
     run_calc();
     show();
 }
 
-void  MatricesCalculator::process_new_m(NumericMatrix& m, minfo* _minfo)
+void MatricesCalculator::process_all_ms()
 {
-    do_transpose_m(_minfo);
-    do_inverse_m(_minfo);
+    mlist *_all_ms = extract_ms();
 
-    mlist *_other_ms = extract_ms();
-    _minfo->sum_ms = *search_sum_acceptable(m, _other_ms);
-    _minfo->sub_ms = *search_sub_acceptable(m, _other_ms);
-    _minfo->mul_ms = *search_mul_acceptable(m, _other_ms);
-    _minfo->div_ms = *search_div_acceptable(m, _other_ms);
+    for (unsigned long i = 0; i < msinfo.size(); ++i)
+    {
+        minfo *_minfo = msinfo.at(i);
+        NumericMatrix* m = _minfo->get_m();
+
+        _minfo->sum_ms = *search_sum_acceptable(m, _all_ms);
+        _minfo->sub_ms = *search_sub_acceptable(m, _all_ms);
+        _minfo->mul_ms = *search_mul_acceptable(m, _all_ms);
+        _minfo->div_ms = *search_div_acceptable(m, _all_ms);
+    }
 }
 
 void MatricesCalculator::do_transpose_m(minfo *_minfo)
@@ -100,13 +109,12 @@ void MatricesCalculator::do_inverse_m(minfo *_minfo)
     _minfo->mR = NumericMatrix::inverse_m(*_minfo->m);
 }
 
-mlist* MatricesCalculator::search_sum_acceptable(NumericMatrix& m, mlist* others)
+mlist* MatricesCalculator::search_sum_acceptable(NumericMatrix* m, mlist* others)
 {
     mlist *_sum_ms = new mlist();
     for (unsigned long it = 0; it < others->ms.size(); ++it)
     {
-        if (!(NumericMatrix::get_id(m) == NumericMatrix::get_id(others->ms[it]))
-            && (_conditions.is_sum_acceptable(m, others->ms[it])))
+        if (_conditions.is_sum_acceptable(*m, others->ms[it]))
         {
             _sum_ms->ms.push_back(others->ms[it]);
         }
@@ -115,13 +123,12 @@ mlist* MatricesCalculator::search_sum_acceptable(NumericMatrix& m, mlist* others
     return _sum_ms;
 }
 
-mlist* MatricesCalculator::search_sub_acceptable(NumericMatrix& m, mlist* others)
+mlist* MatricesCalculator::search_sub_acceptable(NumericMatrix* m, mlist* others)
 {
     mlist *_sub_ms = new mlist();
     for (unsigned long it = 0; it < others->ms.size(); ++it)
     {
-        if (!(NumericMatrix::get_id(m) == NumericMatrix::get_id(others->ms[it]))
-            && (_conditions.is_sub_acceptable(m, others->ms[it])))
+        if (_conditions.is_sub_acceptable(*m, others->ms[it]))
         {
             _sub_ms->ms.push_back(others->ms[it]);
         }
@@ -130,13 +137,12 @@ mlist* MatricesCalculator::search_sub_acceptable(NumericMatrix& m, mlist* others
     return _sub_ms;
 }
 
-mlist* MatricesCalculator::search_mul_acceptable(NumericMatrix& m, mlist* others)
+mlist* MatricesCalculator::search_mul_acceptable(NumericMatrix* m, mlist* others)
 {
     mlist *_mul_ms = new mlist();
     for (unsigned long it = 0; it < others->ms.size(); ++it)
     {
-        if (!(NumericMatrix::get_id(m) == NumericMatrix::get_id(others->ms[it]))
-            && (_conditions.is_mul_acceptable(m, others->ms[it])))
+        if (_conditions.is_mul_acceptable(*m, others->ms[it]))
         {
             _mul_ms->ms.push_back(others->ms[it]);
         }
@@ -145,13 +151,12 @@ mlist* MatricesCalculator::search_mul_acceptable(NumericMatrix& m, mlist* others
     return _mul_ms;
 }
 
-mlist* MatricesCalculator::search_div_acceptable(NumericMatrix& m, mlist* others)
+mlist* MatricesCalculator::search_div_acceptable(NumericMatrix* m, mlist* others)
 {
     mlist *_div_ms = new mlist();
     for (unsigned long it = 0; it < others->ms.size(); ++it)
     {
-        if (!(NumericMatrix::get_id(m) == NumericMatrix::get_id(others->ms[it]))
-            && (_conditions.is_div_acceptable(m, others->ms[it])))
+        if (_conditions.is_div_acceptable(*m, others->ms[it]))
         {
             _div_ms->ms.push_back(others->ms[it]);
         }

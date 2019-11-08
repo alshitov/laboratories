@@ -83,11 +83,18 @@ private:
                             qreal branch_start_x, qreal branch_start_y,
                             qreal branch_end_x, qreal branch_end_y);
 
-    void make_secondary_matrix_branches(mlist *_mlist, int counter,
+    void make_secondary_matrix_branches(mlist *_mlist,
+                                        NumericMatrix *m,
+                                        int counter,
+                                        int operator_id,
                                         qreal matrix_container_w,
                                         qreal branch_start_x, qreal branch_start_y);
 
-    void place_other_matrices(mlist *_mlist, QList<QPair<qreal, qreal>> *matrices_points);
+    void place_other_matrices(NumericMatrix *m,
+                              mlist *_mlist,
+                              int from,
+                              int operator_id,
+                              QList<QPair<qreal, qreal>> *matrices_points);
 
     QGraphicsLineItem* make_line(QPen& p,
                                  qreal lx0, qreal lx1,
@@ -102,7 +109,8 @@ private:
                                              QBrush& b,
                                              qreal diameter,
                                              qreal lx0, qreal ly0,
-                                             int _action_id);
+                                             int _action_id,
+                                             bool _complex);
 
     void place_item(QGraphicsItem& item);
 
@@ -120,7 +128,7 @@ public slots:
 
 signals:
     void show_result(int);
-    void calc_result(int, NumericMatrix&, NumericMatrix&);
+    void calc_result(int, NumericMatrix*, NumericMatrix*);
 };
 
 #endif // TREESCENE_H

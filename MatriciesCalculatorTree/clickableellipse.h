@@ -12,14 +12,16 @@ class ClickableEllipse : public QObject, public QGraphicsEllipseItem
     Q_OBJECT
 
 public:
-    ClickableEllipse(int _action_id);
+    ClickableEllipse(int _action_id, bool _complex);
     int get_action();
 
 signals:
-    void click(int);
+    void simple_action(int);
+    void complex_action(int);
 
 private:
     int action_id;
+    bool complex;
 
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;

@@ -121,12 +121,12 @@ public:
     void edit_m(NumericMatrix& m, NumericMatrix& nm);
     void remove_m(NumericMatrix& m);
 
-    void process_new_m(NumericMatrix& m, minfo* _minfo);
+    void process_all_ms();
 
-    mlist* search_sum_acceptable(NumericMatrix& m, mlist* others);
-    mlist* search_sub_acceptable(NumericMatrix& m, mlist* others);
-    mlist* search_mul_acceptable(NumericMatrix& m, mlist* others);
-    mlist* search_div_acceptable(NumericMatrix& m, mlist* others);
+    mlist* search_sum_acceptable(NumericMatrix* m, mlist* others);
+    mlist* search_sub_acceptable(NumericMatrix* m, mlist* others);
+    mlist* search_mul_acceptable(NumericMatrix* m, mlist* others);
+    mlist* search_div_acceptable(NumericMatrix* m, mlist* others);
 
     minfo* find_by_id(int _id);
     mlist* extract_ms();

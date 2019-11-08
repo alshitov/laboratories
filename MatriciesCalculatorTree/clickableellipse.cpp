@@ -1,7 +1,8 @@
 #include "clickableellipse.h"
 
-ClickableEllipse::ClickableEllipse(int _action_id)
+ClickableEllipse::ClickableEllipse(int _action_id, bool _complex)
     : action_id(_action_id)
+    , complex(_complex)
 {
     setAcceptHoverEvents(true);
 }
@@ -13,8 +14,12 @@ int ClickableEllipse::get_action()
 
 void ClickableEllipse::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    qDebug() << "Press Ellipse: " << event->pos();
-    emit click(get_action());
+//    qDebug() << "Press Ellipse: " << event->pos();
+    if (complex)
+        emit complex_action(get_action());
+    else
+        emit simple_action(get_action());
+
     Q_UNUSED(event)
 }
 

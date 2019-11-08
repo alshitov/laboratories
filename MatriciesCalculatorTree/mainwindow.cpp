@@ -15,6 +15,12 @@ MainWindow::MainWindow(QWidget *parent)
     set_up_matrix_input_table(2, 2);
     connect(this, SIGNAL(w_resized(int, int)), tree_scene, SLOT(view_scaled(int, int)));
     connect(tree_scene, SIGNAL(show_result(int)), this, SLOT(show_result(int)));
+    connect(
+        tree_scene,
+        SIGNAL(calc_result(int, NumericMatrix*, NumericMatrix*)),
+        this,
+        SLOT(calc_result(int, NumericMatrix*, NumericMatrix*))
+    );
 }
 
 MainWindow::~MainWindow()
@@ -31,11 +37,20 @@ void MainWindow::resizeEvent(QResizeEvent *e)
 
 void MainWindow::show_result(int action_id)
 {
-    qDebug() << "From scene signal; received: " << action_id;
+    qDebug() << "From scene simple signal; received: " << action_id;
+}
+
+void MainWindow::calc_result(int action_id, NumericMatrix* m, NumericMatrix* _other)
+{
+    qDebug() << "From scene comple signal; received: " << action_id;
+    m->show();
+    _other->show();
 }
 
 void MainWindow::set_up_matrix_input_table(int rows, int cols)
 {
+    ui->addMatrixRowSpinBox->setValue(rows);
+    ui->addMatrixColSpinBox->setValue(cols);
     m_input_t->setRowCount(rows);
     m_input_t->setColumnCount(cols);
 

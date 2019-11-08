@@ -9,7 +9,7 @@
 
 TreeScene::TreeScene()
 {
-    operators = new QStringList { "Sum", "Sub", "Mul", "Div", "Tns", "Rev" };
+    operators = new QStringList { "Sum", "Sub", "Div", "Mul", "Tns", "Rev" };
     operators_map = new QMap<QString, int>();
     for (int i = 0; i < operators->size(); ++i)
         operators_map->insert(operators->at(i), i);
@@ -121,14 +121,16 @@ void TreeScene::make_matrix_branch(minfo *_minfo, int _counter,
         MATRIX_CIRLCE_D, ellipse_center_x, elliplse_center_y
     );
     place_item(*ellipse);
+    ellipse->setZValue(999);
 
     // Matrix name annotation
     QGraphicsTextItem *text = new QGraphicsTextItem(
         QString::fromUtf8(_minfo->get_m_name().c_str())
     );
-    text->setX(ellipse_center_x);
-    text->setY(elliplse_center_y);
+    text->setX(ellipse_center_x + 10);
+    text->setY(elliplse_center_y + 3);
     place_item(*text);
+    text->setZValue(1000);
 
     // Secondary branches
     qreal operator_container_w = matrix_container_w / 6,
@@ -161,10 +163,10 @@ void TreeScene::make_matrix_branch(minfo *_minfo, int _counter,
             ClickableEllipse *scene_operator_ellipse_clickable = make_clickable_ellipse(
                 *_pens.green_p, *_brushes.green_b,
                 OPERATOR_CIRCLE_D, operator_ellipse_center_x, operator_elliplse_center_y,
-                operator_id
+                operator_id, false
             );
 
-            connect(scene_operator_ellipse_clickable, &ClickableEllipse::click,
+            connect(scene_operator_ellipse_clickable, &ClickableEllipse::simple_action,
                 [=] {
                     emit this->show_result(operator_id);
                 }
@@ -197,7 +199,10 @@ void TreeScene::make_matrix_branch(minfo *_minfo, int _counter,
         for (int it = 0; it < by_operator->size(); ++it)
         {
             make_secondary_matrix_branches(
-                by_operator->at(it), j,
+                by_operator->at(it),
+                _minfo->get_m(),
+                j,
+                operator_id,
                 matrix_container_w,
                 operator_ellipse_center_x, operator_elliplse_center_y
             );
@@ -205,7 +210,10 @@ void TreeScene::make_matrix_branch(minfo *_minfo, int _counter,
     }
 }
 
-void TreeScene::make_secondary_matrix_branches(mlist *_mlist, int counter,
+void TreeScene::make_secondary_matrix_branches(mlist *_mlist,
+                                               NumericMatrix* m,
+                                               int counter,
+                                               int operator_id,
                                                qreal matrix_container_w,
                                                qreal branch_start_x, qreal branch_start_y)
 {
@@ -222,7 +230,7 @@ void TreeScene::make_secondary_matrix_branches(mlist *_mlist, int counter,
         *pen,
         branch_start_x + OPERATOR_CIRCLE_D,
         to_others_y,
-        branch_start_x + (matrix_container_w * (1.0 - (counter / 6.0)) - matrix_container_w * 0.1),
+        branch_start_x + (matrix_container_w * (1.0 - (counter / 6.0) - 0.1)),
         to_others_y
     );
 
@@ -245,40 +253,97 @@ void TreeScene::make_secondary_matrix_branches(mlist *_mlist, int counter,
             matrices_points->push_back(*point);
         }
 
-        place_other_matrices(_mlist, matrices_points);
+        place_other_matrices(m, _mlist, 0, operator_id, matrices_points);
     }
     else if ((counter == 2) || (counter == 3))
     {
+        place_item(*to_right_hor_branch);
+
         to_left_hor_branch = make_line(
             *pen,
             branch_start_x,
             to_others_y,
-            branch_start_x - (matrix_container_w * (counter / 6.0)) + matrix_container_w * 0.1,
+            branch_start_x - ((matrix_container_w / 6.0) * (counter + 0.5)) + OPERATOR_CIRCLE_D,
             to_others_y
         );
         place_item(*to_left_hor_branch);
-        place_item(*to_right_hor_branch);
+
+        qreal to_right_branch_length = (matrix_container_w * (1.0 - (counter / 6.0))
+                                     - matrix_container_w * 0.1
+                                     - OPERATOR_CIRCLE_D);
+        qreal to_left_branch_length = ((matrix_container_w / 6.0) * (counter + 0.5))
+                                    + OPERATOR_CIRCLE_D;
+
+        qreal proportion = to_right_branch_length / to_left_branch_length;
+
+        int amount_to_right = int(count * proportion),
+            amount_to_left  = int(count) - amount_to_right;
+
+        qreal between_others_right_padding = to_right_branch_length / amount_to_right,
+              between_others_left_padding  = to_left_branch_length / amount_to_left - OPERATOR_CIRCLE_D / 2;
+
+        // Place others to the left
+        for (int i = 0; i < amount_to_left; ++i)
+        {
+            QPair<qreal, qreal> *point = new QPair<qreal, qreal> (
+                branch_start_x + 2 * OPERATOR_CIRCLE_D - to_left_branch_length + (i * between_others_left_padding),
+                to_others_y - (OPERATOR_CIRCLE_D / 2)
+            );
+            matrices_points->push_back(*point);
+        }
+        place_other_matrices(
+            m,
+            _mlist,
+            0,
+            operator_id,
+            matrices_points
+        );
+
+        // Place others to the right
+        for (int i = 0; i < amount_to_right; ++i)
+        {
+            QPair<qreal, qreal> *point = new QPair<qreal, qreal> (
+                branch_start_x + ((i + 1) * between_others_right_padding),
+                to_others_y - (OPERATOR_CIRCLE_D / 2)
+            );
+            matrices_points->push_back(*point);
+        }
+        place_other_matrices(
+            m, _mlist,
+            amount_to_left + 1,
+            operator_id,
+            matrices_points
+        );
     }
 }
 
-void TreeScene::place_other_matrices(mlist *_mlist, QList<QPair<qreal, qreal>> *matrices_points)
+void TreeScene::place_other_matrices(NumericMatrix *m,
+                                     mlist *_mlist,
+                                     int from,
+                                     int operator_id,
+                                     QList<QPair<qreal, qreal>> *matrices_points)
 {
-    for (unsigned long i = 0; i < _mlist->ms.size(); ++i)
+    for (int i = from; i < matrices_points->size(); ++i)
     {
         QPair<qreal, qreal> point = matrices_points->at(int(i));
 
         ClickableEllipse *matrix_ellipse_clickable = make_clickable_ellipse(
             *_pens.green_p, *_brushes.green_b,
             OPERATOR_CIRCLE_D, point.first, point.second,
-            0
+            operator_id, true
         );
 
-//        connect(scene_operator_ellipse_clickable, &ClickableEllipse::click,
-//            [=] {
-//                emit this->show_result(operator_id);
-//            }
-//        );
+        connect(matrix_ellipse_clickable, &ClickableEllipse::complex_action,
+            [=] {
+                emit this->calc_result(operator_id, m, &_mlist->ms.at(static_cast<unsigned long>(i)));
+            }
+        );
         place_item(*matrix_ellipse_clickable);
+
+        QGraphicsTextItem *matrix_annotation = new QGraphicsTextItem("A");
+        matrix_annotation->setX(point.first + 7);
+        matrix_annotation->setY(point.second);
+        place_item(*matrix_annotation);
     }
 }
 
@@ -310,9 +375,10 @@ ClickableEllipse* TreeScene::make_clickable_ellipse(QPen& p,
                                                     QBrush& b,
                                                     qreal diameter,
                                                     qreal lx0, qreal ly0,
-                                                    int _action_id)
+                                                    int _action_id,
+                                                    bool _complex)
 {
-    ClickableEllipse *ellipse = new ClickableEllipse(_action_id);
+    ClickableEllipse *ellipse = new ClickableEllipse(_action_id, _complex);
     ellipse->setPen(p);
     ellipse->setBrush(b);
     ellipse->setRect(QRectF(lx0, ly0, diameter, diameter));

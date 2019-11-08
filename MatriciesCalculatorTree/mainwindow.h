@@ -29,6 +29,7 @@ signals:
 
 public slots:
     void show_result(int);
+    void calc_result(int, NumericMatrix*, NumericMatrix*);
 
 private slots:
     void on_addMatrixRowSpinBox_valueChanged(int arg1);
@@ -65,6 +66,5 @@ private:
 
 protected:
     virtual void resizeEvent(QResizeEvent *e);
-
 };
 #endif // MAINWINDOW_H

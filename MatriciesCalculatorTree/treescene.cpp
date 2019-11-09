@@ -168,7 +168,7 @@ void TreeScene::make_matrix_branch(minfo *_minfo, int _counter,
 
             connect(scene_operator_ellipse_clickable, &ClickableEllipse::simple_action,
                 [=] {
-                    emit this->show_result(operator_id);
+                    emit this->show_result(operator_id, _minfo->get_m());
                 }
             );
             place_item(*scene_operator_ellipse_clickable);
@@ -266,7 +266,7 @@ void TreeScene::make_secondary_matrix_branches(mlist *_mlist,
             branch_start_x - ((matrix_container_w / 6.0) * (counter + 0.5)) + OPERATOR_CIRCLE_D,
             to_others_y
         );
-        place_item(*to_left_hor_branch);
+//        place_item(*to_left_hor_branch);
 
         qreal to_right_branch_length = (matrix_container_w * (1.0 - (counter / 6.0))
                                      - matrix_container_w * 0.1
@@ -279,28 +279,29 @@ void TreeScene::make_secondary_matrix_branches(mlist *_mlist,
         int amount_to_right = int(count * proportion),
             amount_to_left  = int(count) - amount_to_right;
 
-        qreal between_others_right_padding = to_right_branch_length / amount_to_right,
+//        qreal between_others_right_padding = to_right_branch_length / amount_to_right,
+        qreal between_others_right_padding = to_right_branch_length / count,
               between_others_left_padding  = to_left_branch_length / amount_to_left - OPERATOR_CIRCLE_D / 2;
 
         // Place others to the left
-        for (int i = 0; i < amount_to_left; ++i)
-        {
-            QPair<qreal, qreal> *point = new QPair<qreal, qreal> (
-                branch_start_x + 2 * OPERATOR_CIRCLE_D - to_left_branch_length + (i * between_others_left_padding),
-                to_others_y - (OPERATOR_CIRCLE_D / 2)
-            );
-            matrices_points->push_back(*point);
-        }
-        place_other_matrices(
-            m,
-            _mlist,
-            0,
-            operator_id,
-            matrices_points
-        );
+//        for (int i = 0; i < amount_to_left; ++i)
+//        {
+//            QPair<qreal, qreal> *point = new QPair<qreal, qreal> (
+//                branch_start_x + 2 * OPERATOR_CIRCLE_D - to_left_branch_length + (i * between_others_left_padding),
+//                to_others_y - (OPERATOR_CIRCLE_D / 2)
+//            );
+//            matrices_points->push_back(*point);
+//        }
+//        place_other_matrices(
+//            m,
+//            _mlist,
+//            0,
+//            operator_id,
+//            matrices_points
+//        );
 
         // Place others to the right
-        for (int i = 0; i < amount_to_right; ++i)
+        for (int i = 0; i < count; ++i)
         {
             QPair<qreal, qreal> *point = new QPair<qreal, qreal> (
                 branch_start_x + ((i + 1) * between_others_right_padding),
@@ -310,7 +311,8 @@ void TreeScene::make_secondary_matrix_branches(mlist *_mlist,
         }
         place_other_matrices(
             m, _mlist,
-            amount_to_left + 1,
+//            amount_to_left + 1,
+                    0,
             operator_id,
             matrices_points
         );
@@ -340,7 +342,9 @@ void TreeScene::place_other_matrices(NumericMatrix *m,
         );
         place_item(*matrix_ellipse_clickable);
 
-        QGraphicsTextItem *matrix_annotation = new QGraphicsTextItem("A");
+        QGraphicsTextItem *matrix_annotation = new QGraphicsTextItem(
+            QString::fromUtf8(_mlist->ms.at(static_cast<unsigned long>(i)).get_name().c_str())
+        );
         matrix_annotation->setX(point.first + 7);
         matrix_annotation->setY(point.second);
         place_item(*matrix_annotation);

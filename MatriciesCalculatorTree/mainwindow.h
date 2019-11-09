@@ -28,7 +28,7 @@ signals:
     void w_resized(int, int);
 
 public slots:
-    void show_result(int);
+    void show_result(int, NumericMatrix*);
     void calc_result(int, NumericMatrix*, NumericMatrix*);
 
 private slots:

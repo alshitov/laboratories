@@ -127,7 +127,7 @@ public slots:
     void view_scaled(int, int);
 
 signals:
-    void show_result(int);
+    void show_result(int, NumericMatrix*);
     void calc_result(int, NumericMatrix*, NumericMatrix*);
 };
 

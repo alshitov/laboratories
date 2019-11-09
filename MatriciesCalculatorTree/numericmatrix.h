@@ -12,18 +12,20 @@ class NumericMatrix
 private:
     std::pair<int, int> size;
     double **data;
+    std::string name;
     int rows, cols;
     int self_id;
 
     static int id;
 
 public:
-    NumericMatrix(int _rows, int _cols)
+    NumericMatrix(int _rows, int _cols, std::string _name)
+        : name(_name)
+        , rows(_rows)
+        , cols(_cols)
     {
         ++id;
         self_id = id / 4;
-        rows = _rows;
-        cols = _cols;
 
         data = new double*[rows];
         for (int i = 0; i < rows; ++i)
@@ -33,10 +35,6 @@ public:
     ~NumericMatrix()
     {
         --id;
-        // Crashes?
-//        for (int i = 0; i < rows; ++i)
-//            delete[] data[i];
-//        delete[] data;
     }
 
     static int get_id(NumericMatrix& m)
@@ -44,10 +42,20 @@ public:
         return m.self_id;
     }
 
+    std::string get_name()
+    {
+        return name;
+    }
+
+    void set_name(std::string _name)
+    {
+        name = _name;
+    }
+
     static NumericMatrix* transpose_m(NumericMatrix& m)
     {
         int _rows = m.get_c(), _cols = m.get_r();
-        NumericMatrix *transposed = new NumericMatrix(_rows, _cols);
+        NumericMatrix *transposed = new NumericMatrix(_rows, _cols, m.get_name() + "^T");
 
         for (int i = 0; i < m.get_r(); ++i)
             for (int j = 0; j < m.get_c(); ++j)
@@ -63,7 +71,7 @@ public:
         double factor = (1 / NumericMatrix::determinant(m));
         int _rows = m.get_r(), _cols = m.get_c();
 
-        NumericMatrix *acm = new NumericMatrix(_rows, _cols);
+        NumericMatrix *acm = new NumericMatrix(_rows, _cols, m.get_name() + "^-1");
         for (int i = 0; i < _rows; ++i)
             for (int j = 0; j < _cols; ++j)
             {
@@ -83,7 +91,7 @@ public:
     static NumericMatrix* reduce_m(int i, int j, NumericMatrix& m)
     {
         int _rows = m.get_r();
-        NumericMatrix* reduced = new NumericMatrix(_rows, _rows);
+        NumericMatrix* reduced = new NumericMatrix(_rows, _rows, m.get_name());
 
         // Copy values
         for (int i = 0; i < _rows; ++i)
@@ -358,7 +366,7 @@ public:
 
     NumericMatrix& operator+(NumericMatrix& other)
     {
-        NumericMatrix *new_m = new NumericMatrix(other.get_r(), other.get_c());
+        NumericMatrix *new_m = new NumericMatrix(other.get_r(), other.get_c(), get_name() + "+" + other.get_name());
         for (int i = 0; i < rows; ++i)
         {
             for (int j = 0; j < cols; ++j)
@@ -379,7 +387,7 @@ public:
 
     NumericMatrix& operator-(NumericMatrix& other)
     {
-        NumericMatrix *new_m = new NumericMatrix(other.get_r(), other.get_c());
+        NumericMatrix *new_m = new NumericMatrix(other.get_r(), other.get_c(), get_name() + "-" + other.get_name());
         for (int i = 0; i < rows; ++i)
         {
             for (int j = 0; j < cols; ++j)
@@ -407,7 +415,7 @@ public:
             _cols_1 = this->get_c(),
             _cols_2 = other.get_c();
 
-        NumericMatrix *result = new NumericMatrix(_rows_1, _cols_2);
+        NumericMatrix *result = new NumericMatrix(_rows_1, _cols_2, get_name() + "*" + other.get_name());
         double value;
 
         for (int i = 0; i < _rows_1; ++i)

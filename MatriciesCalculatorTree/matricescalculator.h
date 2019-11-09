@@ -29,9 +29,9 @@ struct minfo
 {
     minfo()
     {
-        m  = new NumericMatrix(0, 0);
-        mT = new NumericMatrix(0, 0);
-        mR = new NumericMatrix(0, 0);
+        m  = new NumericMatrix(0, 0, "");
+        mT = new NumericMatrix(0, 0, "");
+        mR = new NumericMatrix(0, 0, "");
     }
 
     ~minfo()
@@ -41,7 +41,13 @@ struct minfo
         delete mR;
     }
 
-    void set_m_name(const std::string& _name) { name = _name; }
+    void set_m_name(const std::string& _name)
+    {
+        name = _name;
+        m->set_name(name);
+        mT->set_name(name);
+        mR->set_name(name);
+    }
     void set_m(NumericMatrix& _m) { m = &_m; }
 
     std::string get_m_name() { return name; }

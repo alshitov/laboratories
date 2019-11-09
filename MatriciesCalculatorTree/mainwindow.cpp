@@ -14,7 +14,12 @@ MainWindow::MainWindow(QWidget *parent)
     m_input_t = ui->addNewMatrixTable;
     set_up_matrix_input_table(2, 2);
     connect(this, SIGNAL(w_resized(int, int)), tree_scene, SLOT(view_scaled(int, int)));
-    connect(tree_scene, SIGNAL(show_result(int)), this, SLOT(show_result(int)));
+    connect(
+        tree_scene,
+        SIGNAL(show_result(int, NumericMatrix*)),
+        this,
+        SLOT(show_result(int, NumericMatrix*))
+    );
     connect(
         tree_scene,
         SIGNAL(calc_result(int, NumericMatrix*, NumericMatrix*)),
@@ -35,16 +40,64 @@ void MainWindow::resizeEvent(QResizeEvent *e)
     emit w_resized(w, h);
 }
 
-void MainWindow::show_result(int action_id)
+void MainWindow::show_result(int action_id, NumericMatrix* m)
 {
-    qDebug() << "From scene simple signal; received: " << action_id;
+    qDebug() << "Original matrix:";
+    m->show();
+
+    std::string action;
+    if (action_id == 4)
+    {
+        action = "Transpose";
+        qDebug() << "From scene signal; received action: " << action_id << "(" << action.c_str() << ")";
+        qDebug() << "Result:";
+        NumericMatrix::transpose_m(*m)->show();
+
+    }
+    else    // 5
+    {
+        action = "Inverse";
+        qDebug() << "From scene signal; received action: " << action_id << "(" << action.c_str() << ")";
+        qDebug() << "Result:";
+        NumericMatrix::inverse_m(*m)->show();
+    }
 }
 
 void MainWindow::calc_result(int action_id, NumericMatrix* m, NumericMatrix* _other)
 {
-    qDebug() << "From scene comple signal; received: " << action_id;
+    qDebug() << "First matrix:";
     m->show();
+    qDebug() << "Second matrix:";
     _other->show();
+
+    std::string action;
+    switch (action_id)
+    {
+    case 0:
+        action = "Summing";
+        qDebug() << "From scene signal; received action: " << action_id << "(" << action.c_str() << ")";
+        qDebug() << "Result:";
+        (*m + *_other).show();
+        break;
+    case 1:
+        action = "Subtracting";
+        qDebug() << "From scene signal; received action: " << action_id << "(" << action.c_str() << ")";
+        qDebug() << "Result:";
+        (*m - *_other).show();
+        break;
+    case 2:
+        action = "Division";
+        qDebug() << "From scene signal; received action: " << action_id << "(" << action.c_str() << ")";
+        qDebug() << "Result:";
+        (*m / *_other).show();
+        break;
+    case 3:
+        action = "Multiplication";
+        qDebug() << "From scene signal; received action: " << action_id << "(" << action.c_str() << ")";
+        qDebug() << "Result:";
+        (*m * *_other).show();
+        break;
+    }
 }
 
 void MainWindow::set_up_matrix_input_table(int rows, int cols)
@@ -93,8 +146,8 @@ void MainWindow::on_addMatrixPushButton_clicked()
     int rows = m_input_t->rowCount(),
         cols = m_input_t->columnCount();
 
-    NumericMatrix *m = new NumericMatrix(rows, cols);
     QString m_name = matrix_name();
+    NumericMatrix *m = new NumericMatrix(rows, cols, m_name.toUtf8().constData());
     QLineEdit *edit;
 
     for (int i = 0; i < rows; ++i)
@@ -118,7 +171,8 @@ void MainWindow::on_saveMatrixButton_clicked()
     int rows = m_input_t->rowCount(),
         cols = m_input_t->columnCount();
 
-    NumericMatrix *nm = new NumericMatrix(rows, cols);
+    std::string prev_name = active_m_p->get_name();
+    NumericMatrix *nm = new NumericMatrix(rows, cols, prev_name);
     QLineEdit *edit;
     for(int i = 0; i < rows; ++i)
     {

@@ -14,8 +14,8 @@ class ReplaceUtil(QtWidgets.QDialog, replace_ui.Ui_Frame):
 
         self.state = {
             'mask': r'',
-            'text_to_replace': r'',
-            'text_to_insert': r'',
+            'text_to_replace': '',
+            'text_to_insert': '',
             'directory': '/home/alexander',
             'files': [],
             'chosen_files': []
@@ -27,7 +27,14 @@ class ReplaceUtil(QtWidgets.QDialog, replace_ui.Ui_Frame):
 
         self.maskComboBox.addItems([
             r'\w*.cpp',
-            r'\d*.cpp'
+            r'\d*.cpp',
+            r'[\w*\d*].cpp',
+            r'\w*.h'
+            r'\d*.h'
+            r'[\w*\d*].h'
+            r'\w*.txt'
+            r'\d*.txt'
+            r'[\w*\d*].txt'
         ])
 
         self.exec()
@@ -75,16 +82,19 @@ class ReplaceUtil(QtWidgets.QDialog, replace_ui.Ui_Frame):
         return selected
 
     def search(self):
+        self.state['files'] = []
         self.get_settings()
 
         for file in os.listdir(self.state['directory']):
             file_path = os.path.join(self.state['directory'], file)
-
             if os.path.isfile(file_path) and re.fullmatch(self.state['mask'], file):
-                self.state['files'].append({
-                    'name': file,
-                    'size': '%s KB' % format(round(os.path.getsize(file_path) / 1024, 3), '.3f')
-                })
+                with open(file_path, 'r') as f:
+                    content = f.read()
+                if self.state['text_to_replace'] in content:
+                    self.state['files'].append({
+                        'name': file,
+                        'size': '%s KB' % format(round(os.path.getsize(file_path) / 1024, 3), '.3f')
+                    })
 
         self.list_found()
 
@@ -111,24 +121,25 @@ class ReplaceUtil(QtWidgets.QDialog, replace_ui.Ui_Frame):
 
     def replace(self):
         self.get_settings()
-        self.null_bar()
 
+        if len(self.state['chosen_files']) == 0:
+            return
+
+        self.null_bar()
         chunk = int(100 / len(self.state['chosen_files']))
 
-        for index, file in enumerate(self.state['chosen_files']):
+        for index, file_ in enumerate(self.state['chosen_files']):
+            file_path = os.path.join(self.state['directory'], file_)
+            with open(file_path, 'r') as fout:
+                text = fout.read()
 
-            file_path = os.path.join(self.state['directory'], file).replace(' ', r'\ ').replace(r'\\', '\\')
-            print(file_path)
+            new_text = text.replace(
+                self.state['text_to_replace'],
+                self.state['text_to_insert']
+            )
 
-            with open(file_path, 'w+') as f:
-                text = f.read()
-                print(text)
-            #     f.write(
-            #         text.replace(
-            #             self.state['text_to_replace'],
-            #             self.state['text_to_insert']
-            #         )
-            #     )
+            with open(file_path, 'w') as fin:
+                fin.write(new_text)
 
             if index == len(self.state['chosen_files']) - 1:
                 self.replaceProgressBar.setValue(100)

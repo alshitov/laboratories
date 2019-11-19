@@ -1,4 +1,5 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
+import os
 
 
 class DirList(QtWidgets.QListWidget):
@@ -8,6 +9,17 @@ class DirList(QtWidgets.QListWidget):
 
         self.files = []
         self.directories = []
+
+    def list_directory(self, directory):
+        entries = os.listdir(directory)
+        items = [
+            entry + '/' if os.path.isdir(os.path.join(directory, entry))
+            else entry
+            for entry in entries
+        ]
+
+        items.extend(['./', '../'])
+        self.addItems(sorted(items))
 
     def add_file(self):
         pass

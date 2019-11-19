@@ -18,6 +18,14 @@ private:
     double w, h;
     QGraphicsScene *scene;
 
+    QShortcut *zoom_in;
+    QShortcut *zoom_out;
+    void init_shortcuts();
+
+private slots:
+    void scale_in();
+    void scale_out();
+
 public:
     TreeView(QWidget *parent, QGraphicsScene *scene);
 

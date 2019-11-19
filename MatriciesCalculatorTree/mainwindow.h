@@ -10,7 +10,7 @@
 #include "treescene.h"
 #include "matrixrepr.h"
 #include "treeview.h"
-
+#include "resultswindow.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -26,10 +26,12 @@ public:
 
 signals:
     void w_resized(int, int);
+    void show_res(std::string&);
 
 public slots:
     void show_result(int, NumericMatrix*);
     void calc_result(int, NumericMatrix*, NumericMatrix*);
+    void results_window_closed();
 
 private slots:
     void on_addMatrixRowSpinBox_valueChanged(int arg1);
@@ -39,6 +41,8 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    ResultsWindow *results_window;
+    bool _results_window_closed = false;
     TreeScene *tree_scene;
     TreeView *tree_view;
 

@@ -24,6 +24,7 @@ SOURCES += \
     matriciescalculator.cpp \
     matrixrepr.cpp \
     numericmatrix.cpp \
+    resultswindow.cpp \
     treescene.cpp \
     treeview.cpp
 
@@ -33,6 +34,7 @@ HEADERS += \
     matricescalculator.h \
     matrixrepr.h \
     numericmatrix.h \
+    resultswindow.h \
     treescene.h \
     treeview.h
 

@@ -9,7 +9,7 @@ class DirProc(QtWidgets.QFrame):
 
         self.layout = QtWidgets.QVBoxLayout()
         self.dir_choose_layout = QtWidgets.QHBoxLayout()
-        self.dir_label = QtWidgets.QLabel('Choose directory ->')
+        self.dir_label = QtWidgets.QLabel('Choose directory')
         self.dir_choose_button = QtWidgets.QPushButton("...")
         self.dir_list = dirlist.DirList()
         self.cur_dir = '/home/alexander'
@@ -48,7 +48,7 @@ class DirProc(QtWidgets.QFrame):
             self.cur_dir = abs_path
             formatted = abs_path.split("file://")[1]
             self.dir_label.setText(self.pretty_label(formatted))
-            self.dir_list.list_directory(formatted)
+            self.dir_list.set_directory(formatted)
 
     @staticmethod
     def pretty_label(string):

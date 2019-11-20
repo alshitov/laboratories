@@ -14,10 +14,14 @@ class DirSynchro(QtWidgets.QMainWindow, ui.Ui_DirSynchro):
 
         self.state = {}
         self.toggle_direction(True)
-        self.toggle_record(True)
 
         self.left_dir_proc = dirproc.DirProc()
         self.right_dir_proc = dirproc.DirProc()
+        self.left_dir_proc.dir_list.set_other(self.right_dir_proc)
+        self.right_dir_proc.dir_list.set_other(self.left_dir_proc)
+
+        self.toggle_record(True)
+
         self.utility = dirutil.DirUtil()
 
         self.place_elements()
@@ -36,6 +40,10 @@ class DirSynchro(QtWidgets.QMainWindow, ui.Ui_DirSynchro):
             lambda: self.toggle_record(True))
         self.stopButton.clicked.connect(
             lambda: self.toggle_record(False))
+        self.left_dir_proc.dir_list.to_other_dirlist.connect(
+            self.right_dir_proc.dir_list.from_other_dirlist)
+        self.right_dir_proc.dir_list.to_other_dirlist.connect(
+            self.left_dir_proc.dir_list.from_other_dirlist)
 
         self.textReplaceButton.clicked.connect(self.replace_text)
 
@@ -54,6 +62,8 @@ class DirSynchro(QtWidgets.QMainWindow, ui.Ui_DirSynchro):
             self.stopButton,
             self.state['record']
         )
+        self.left_dir_proc.dir_list.set_record(record_state)
+        self.right_dir_proc.dir_list.set_record(record_state)
 
     @staticmethod
     def toggle_opposite_buttons(on, off, condition):

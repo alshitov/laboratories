@@ -12,14 +12,17 @@ class DirSynchro(QtWidgets.QMainWindow, ui.Ui_DirSynchro):
 
         self.setupUi(self)
 
-        self.state = {}
-        self.toggle_direction(True)
+        self.state = {
+            'left_to_right': True,
+            'record': True
+        }
 
-        self.left_dir_proc = dirproc.DirProc()
-        self.right_dir_proc = dirproc.DirProc()
+        self.left_dir_proc = dirproc.DirProc('left')
+        self.right_dir_proc = dirproc.DirProc('right')
         self.left_dir_proc.dir_list.set_other(self.right_dir_proc)
         self.right_dir_proc.dir_list.set_other(self.left_dir_proc)
 
+        self.toggle_direction(True)
         self.toggle_record(True)
 
         self.utility = dirutil.DirUtil()
@@ -54,6 +57,8 @@ class DirSynchro(QtWidgets.QMainWindow, ui.Ui_DirSynchro):
             self.rightToLeftButton,
             self.state['left_to_right']
         )
+        self.left_dir_proc.dir_list.pull_main_window_state(self.state)
+        self.right_dir_proc.dir_list.pull_main_window_state(self.state)
 
     def toggle_record(self, record_state):
         self.state['record'] = record_state
@@ -62,8 +67,8 @@ class DirSynchro(QtWidgets.QMainWindow, ui.Ui_DirSynchro):
             self.stopButton,
             self.state['record']
         )
-        self.left_dir_proc.dir_list.set_record(record_state)
-        self.right_dir_proc.dir_list.set_record(record_state)
+        self.left_dir_proc.dir_list.pull_main_window_state(self.state)
+        self.right_dir_proc.dir_list.pull_main_window_state(self.state)
 
     @staticmethod
     def toggle_opposite_buttons(on, off, condition):

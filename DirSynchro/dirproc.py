@@ -4,14 +4,14 @@ import dirlist
 
 class DirProc(QtWidgets.QFrame):
 
-    def __init__(self):
+    def __init__(self, id_):
         super().__init__()
 
         self.layout = QtWidgets.QVBoxLayout()
         self.dir_choose_layout = QtWidgets.QHBoxLayout()
         self.dir_label = QtWidgets.QLabel('Choose directory')
         self.dir_choose_button = QtWidgets.QPushButton("...")
-        self.dir_list = dirlist.DirList()
+        self.dir_list = dirlist.DirList(id_)
         self.cur_dir = '/home/alexander'
 
         self.make_ui()
@@ -48,7 +48,7 @@ class DirProc(QtWidgets.QFrame):
             self.cur_dir = abs_path
             formatted = abs_path.split("file://")[1]
             self.dir_label.setText(self.pretty_label(formatted))
-            self.dir_list.set_directory(formatted)
+            self.dir_list.set_dir(formatted)
 
     @staticmethod
     def pretty_label(string):

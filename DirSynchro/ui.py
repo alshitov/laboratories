@@ -2,9 +2,10 @@
 
 # Form implementation generated from reading ui file 'dirsynchro.ui'
 #
-# Created by: PyQt5 UI code generator 5.7
+# Created by: PyQt5 UI code generator 5.13.1
 #
 # WARNING! All changes made in this file will be lost!
+
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -13,18 +14,16 @@ class Ui_DirSynchro(object):
     def setupUi(self, DirSynchro):
         DirSynchro.setObjectName("DirSynchro")
         DirSynchro.resize(800, 600)
-        DirSynchro.setStyleSheet(
-            "QPushButton{\n"
-            "    height: 25px;\n"
-            "    width: 70px;\n"
-            "    background-color: white;\n"
-            "    border-radius: 2px;\n"
-            "    border: 1px solid #cccccc;\n"
-            "}\n"
-            "QPushButton:hover{\n"
-            "    opacity: 0.8;\n"
-            "}"
-        )
+        DirSynchro.setStyleSheet("QPushButton{\n"
+"    height: 25px;\n"
+"    width: 70px;\n"
+"    background-color: white;\n"
+"    border-radius: 2px;\n"
+"    border: 1px solid #cccccc;\n"
+"}\n"
+"QPushButton:hover{\n"
+"    opacity: 0.8;\n"
+"}")
         self.centralwidget = QtWidgets.QWidget(DirSynchro)
         self.centralwidget.setObjectName("centralwidget")
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.centralwidget)
@@ -45,6 +44,10 @@ class Ui_DirSynchro(object):
         self.rightToLeftButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.rightToLeftButton.setObjectName("rightToLeftButton")
         self.buttonsLayout.addWidget(self.rightToLeftButton)
+        self.syncButton = QtWidgets.QPushButton(self.centralwidget)
+        self.syncButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.syncButton.setObjectName("syncButton")
+        self.buttonsLayout.addWidget(self.syncButton)
         self.recordButton = QtWidgets.QPushButton(self.centralwidget)
         self.recordButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.recordButton.setObjectName("recordButton")
@@ -81,7 +84,7 @@ class Ui_DirSynchro(object):
         self.leftToRightButton.setText(_translate("DirSynchro", ">>"))
         self.rightToLeftButton.setToolTip(_translate("DirSynchro", "<html><head/><body><p>Change synchronization direction to &quot;right-to-left&quot;</p></body></html>"))
         self.rightToLeftButton.setText(_translate("DirSynchro", "<<"))
-        self.recordButton.setText(_translate("DirSynchro", "Record"))
-        self.stopButton.setText(_translate("DirSynchro", "Stop"))
+        self.syncButton.setText(_translate("DirSynchro", "Sync"))
+        self.recordButton.setText(_translate("DirSynchro", "Sync On"))
+        self.stopButton.setText(_translate("DirSynchro", "Sync Off"))
         self.textReplaceButton.setText(_translate("DirSynchro", "Text"))
-

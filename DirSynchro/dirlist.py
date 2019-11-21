@@ -1,5 +1,6 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 import os
+import shutil
 import subprocess
 import stat
 from stat import \
@@ -22,7 +23,7 @@ class DirList(QtWidgets.QListWidget):
             'record': True,
             # Self
             'other': None,
-            'directory': '/Users/ympo2oo2/Documents/from' if id_ == 'left' else '/Users/ympo2oo2/Documents/to',
+            'directory': '',
             'files': [],
             'directories': [],
             'chosen_file': '',
@@ -30,8 +31,6 @@ class DirList(QtWidgets.QListWidget):
         }
         self.itemClicked.connect(self.select_item)
         self.itemDoubleClicked.connect(self.go_to)
-
-        self.list_directory()
 
     def pull_main_window_state(self, state):
         self.state.update(state)
@@ -366,8 +365,9 @@ class DirList(QtWidgets.QListWidget):
             "Replace {0} with {1}?",
             QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
             QtWidgets.QMessageBox.No
-        ).exec()
-
+        )
+        reply.show()
+        reply.exec()
         return reply == QtWidgets.QMessageBox.Yes
 
     def full_path(self, file):
@@ -375,6 +375,29 @@ class DirList(QtWidgets.QListWidget):
 
     def full_path_from_dir(self, dir_, file):
         return os.path.join(dir_, file)
+
+    def sync(self):
+        for entry in self.state['files']:
+            from_file_path = self.full_path(entry)
+
+            to_file_path = self.full_path_from_dir(
+                self.state['other'].dir_list.get_dir(),
+                entry
+            )
+
+            if os.path.isfile(to_file_path):
+                print('CONFLICT!')
+                # if self.resolve_conflict:
+                #     shutil.copy(
+                #     from_file_path,
+                #     to_file_path
+                # )
+
+            else:
+                shutil.copy(
+                    from_file_path,
+                    to_file_path
+                )
 
     @QtCore.pyqtSlot(str, str, str)
     def from_other_dirlist(self, entry, action, user_input):

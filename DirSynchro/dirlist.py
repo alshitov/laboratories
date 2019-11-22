@@ -1,4 +1,3 @@
-from PyQt5 import QtWidgets, QtCore, QtGui
 import os
 import shutil
 import subprocess
@@ -8,27 +7,41 @@ from stat import \
     S_IRGRP, S_IWGRP, S_IXGRP, \
     S_IROTH, S_IWOTH, S_IXOTH
 
+from PyQt5 import QtWidgets, QtCore, QtGui
+import dirutil
+
 
 class DirList(QtWidgets.QListWidget):
 
     to_other_dirlist = QtCore.pyqtSignal(str, str, str)
 
-    def __init__(self, id_):
+    def __init__(self, _id):
         super().__init__()
 
         self.state = {
-            'id': id_,
-            # From main windoww
+            # From main window
             'left_to_right': True,
             'record': True,
+
             # Self
-            'other': None,
-            'directory': '',
-            'files': [],
-            'directories': [],
-            'chosen_file': '',
-            'chosen_directory': ''
+            'id': _id,
+            'other': None,              # opposite DirList
+
+            'base_dir': '',             # first chosen directory
+            'cur_dir': '',              # current directory
+
+            'files': [],                # list of files to be displayed
+            'dirs': [],                 # list of directories to be displayed
+
+            'chosen_file': '',          # active file item
+            'chosen_dir': '',           # active directory item
+
+            'pending_dirs': [],         # directories and files that have
+            'pending_files': []         # been added when record is off
         }
+
+        self.dir_util = dirutil.DirUtil()
+
         self.itemClicked.connect(self.select_item)
         self.itemDoubleClicked.connect(self.go_to)
 
@@ -38,67 +51,66 @@ class DirList(QtWidgets.QListWidget):
     def set_other(self, dir_proc):
         self.state['other'] = dir_proc
 
-    def get_dir(self):
-        return self.state['directory']
+    def get_other(self):
+        return self.state['other']
 
-    def set_dir(self, dir_):
-        self.state['directory'] = dir_
+    def get_files(self):
+        return self.state['files']
+
+    def set_files(self, files):
+        self.state['files'] = files
+
+    def get_chosen_file(self):
+        return self.state['chosen_file']
+
+    def set_chosen_file(self, file):
+        self.state['chosen_file'] = file
+
+    def get_dirs(self):
+        return self.state['dirs']
+
+    def set_dirs(self, dirs):
+        self.state['dirs'] = dirs
+
+    def get_chosen_dir(self):
+        return self.state['chosen_dir']
+
+    def set_chosen_dir(self, dir_):
+        self.state['chosen_dir'] = dir_
+
+    def set_base_and_cur_dirs(self, dir_):
+        print(dir_)
+        self.state['cur_dir'] = self.state['base_dir'] = dir_
         self.list_directory()
+
+    def set_cur_dir(self, dir_):
+        self.state['cur_dir'] = dir_
+
+    def get_cur_dir(self):
+        return self.state['cur_dir']
+
+    def get_base_dir(self):
+        return self.state['base_dir']
 
     def list_directory(self):
         self.clear()
-
-        items = []
-        entries = os.listdir(self.state['directory'])
-
-        for entry in entries:
-            is_dir = False
-
-            if os.path.isdir(os.path.join(self.state['directory'], entry)):
-                self.state['directories'].append(entry)
-                is_dir = True
-
-            if os.path.isfile(os.path.join(self.state['directory'], entry)):
-                self.state['files'].append(entry)
-
-            entry_str = '{0}\t{1}\t{2}'
-            items.append(
-                entry_str.format(
-                    entry + '/' if is_dir else entry,
-                    '%s KB' % format(round(os.path.getsize(
-                        self.full_path(entry)) / 1024, 3), '.3f'),
-                    self.get_access_rights(self.full_path(entry), is_dir)
-                )
-            )
-
-        items.extend(['./', '../'])
-        self.addItems(sorted(items))
-
-    def get_access_rights(self, entry, is_dir):
-        mode = os.stat(entry).st_mode
-        return ('d' if is_dir else '') + ''.join([
-            'r' if bool(mode & S_IRUSR) else '-',
-            'w' if bool(mode & S_IWUSR) else '-',
-            'x' if bool(mode & S_IXUSR) else '-',
-            'r' if bool(mode & S_IRGRP) else '-',
-            'w' if bool(mode & S_IWGRP) else '-',
-            'x' if bool(mode & S_IXGRP) else '-',
-            'r' if bool(mode & S_IROTH) else '-',
-            'w' if bool(mode & S_IWOTH) else '-',
-            'x' if bool(mode & S_IXOTH) else '-'
-        ])
+        files, dirs, list_items = self.dir_util.list_directory(
+            self.get_cur_dir()
+        )
+        self.state['files'] = files
+        self.state['dirs'] = dirs
+        self.addItems(sorted(list_items))
 
     def mousePressEvent(self, event):
         if event.button() == QtCore.Qt.LeftButton:
-            # Fires before itemClicked so click on free space will reset chosen files
-            self.state['chosen_directory'] = ''
+            self.state['chosen_dir'] = ''
             self.state['chosen_file'] = ''
 
         if event.button() == QtCore.Qt.RightButton:
-            if self.state['chosen_file'] or self.state['chosen_directory']:
+            if self.state['chosen_file'] or self.state['chosen_dir']:
                 self.call_file_context_menu(event)
             else:
-                if self.state['directory']:
+                if self.state['cur_dir']:
                     self.call_context_menu(event)
 
         super().mousePressEvent(event)
@@ -107,22 +119,22 @@ class DirList(QtWidgets.QListWidget):
         item_name = item.text().split('\t')[0].replace('/', '')
 
         if item_name not in ['.', '..']:
-            if item_name in self.state['files']:
-                self.state['chosen_file'] = item_name
-                self.state['chosen_directory'] = ''
-            elif item_name in self.state['directories']:
-                self.state['chosen_directory'] = item_name
-                self.state['chosen_file'] = ''
+            if item_name in self.get_files():
+                self.set_chosen_file(item_name)
+                self.set_chosen_dir('')
+            elif item_name in self.state['dirs']:
+                self.set_chosen_dir(item_name)
+                self.set_chosen_file('')
         else:
-            self.state['chosen_directory'] = item_name
+            self.set_chosen_dir(item_name)
 
     def go_to(self):
         if self.state['chosen_file']:
             res = subprocess.call([
                 'open',
-                self.full_path_from_dir(
-                    self.state['directory'],
-                    self.state['chosen_file']
+                self.dir_util.full_path(
+                    self.get_cur_dir(),
+                    self.get_chosen_file()
                 )
             ])
             if res != 0:
@@ -133,10 +145,25 @@ class DirList(QtWidgets.QListWidget):
                 )
 
         else:
-            self.state['directory'] = self.full_path(
-                self.state['chosen_directory'])
-
+            self.set_cur_dir(
+                self.dir_util.full_path(
+                    self.get_cur_dir(),
+                    self.get_chosen_dir()
+                )
+            )
             self.list_directory()
+
+            other = self.get_other().dir_list
+            other.set_cur_dir(
+                self.dir_util.full_path(
+                    other.get_base_dir(),
+                    self.dir_util.rel_path(
+                        self.get_cur_dir(),
+                        self.get_base_dir(),
+                        other.get_base_dir()
+                    )
+                )
+            )
 
     def call_file_context_menu(self, event):
         menu = QtWidgets.QMenu(self)
@@ -144,12 +171,12 @@ class DirList(QtWidgets.QListWidget):
         rename_action = QtWidgets.QAction("Переименовать", self)
         move_action = QtWidgets.QAction("Переместить", self)
 
-        if self.state['chosen_file']:
+        if self.get_chosen_file():
             remove_action.triggered.connect(self.remove_file)
             rename_action.triggered.connect(self.rename_file)
             move_action.triggered.connect(self.move_file)
 
-        elif self.state['chosen_directory']:
+        elif self.get_chosen_dir():
             remove_action.triggered.connect(self.remove_directory)
             rename_action.triggered.connect(self.rename_directory)
             move_action.triggered.connect(self.move_directory)
@@ -171,30 +198,67 @@ class DirList(QtWidgets.QListWidget):
         menu.popup(QtCore.QPoint(self.viewport().mapToGlobal(
             QtCore.QPoint(event.x(), event.y()))))
 
+    def input_dialog(self, title, text):
+        name, ok = QtWidgets.QInputDialog.getText(self, title, text)
+        return name, ok
+
     def add_file(self):
-        name, ok = QtWidgets.QInputDialog.getText(
-            self,
-            'New entry',
-            'Entry name:'
-        )
-        if ok:
-            if name in self.state['files']:
-                self.raise_error_message(
-                    'Conflict!',
-                    'File: "{0}" already exists!'.format(name),
-                    self.add_file
+        name, ok = self.input_dialog('New file', 'Entry name:')
+
+        if not ok:
+            return
+
+        if name in self.state['files']:
+            self.raise_error_message(
+                'Conflict!',
+                'File: "{0}" already exists!'.format(name),
+                self.add_file
+            )
+        else:
+            # Do self
+            self.dir_util.add_file(
+                self.dir_util.full_path(
+                    self.get_cur_dir(),
+                    name
                 )
-            else:
-                open(self.full_path(name), 'a').close()
-                self.to_other_dirlist.emit(
-                    '',
-                    'add_file',
-                    self.full_path_from_dir(
-                        self.state['other'].dir_list.get_dir(),
-                        name
-                    )
+            )
+            self.list_directory()
+
+            # Do other
+            other = self.get_other().dir_list
+            new_dir_other = self.dir_util.full_path(
+                other.get_base_dir(),
+                self.dir_util.rel_path(
+                    self.get_cur_dir(),
+                    self.get_base_dir(),
+                    other.get_base_dir()
                 )
-                self.list_directory()
+            )
+
+            print('baEWEQWE', other.get_base_dir())
+            print('new dir other', new_dir_other)
+
+            if not self.dir_util.dir_exists(new_dir_other):
+                self.dir_util.add_directory(new_dir_other)
+
+            new_full_dir_other = self.dir_util.full_path(
+                other.dir_list.get_base_dir(),
+                new_dir_other
+            )
+
+            print('new full dir other', new_full_dir_other)
+
+            # Switch other current directory to newly created one
+            other.dir_list.set_cur_dir(new_dir_other)
+
+            self.to_other_dirlist.emit(
+                '',
+                'add_file',
+                self.dir_util.full_path(
+                    new_full_dir_other,
+                    name
+                )
+            )
 
     def add_directory(self):
         name, ok = QtWidgets.QInputDialog.getText(
@@ -229,7 +293,10 @@ class DirList(QtWidgets.QListWidget):
                 'File not found!',
                 'File may have been removed outside application'
             )
+        self.list_directory()
 
+        if self.state['chosen_file'] not in self.state['other'].dir_list.state['files']:
+            return
         self.to_other_dirlist.emit(
             self.full_path_from_dir(
                 self.state['other'].dir_list.get_dir(),
@@ -238,33 +305,52 @@ class DirList(QtWidgets.QListWidget):
             'remove_file',
             ''
         )
-        self.list_directory()
 
     def rename_file(self):
         name, ok = QtWidgets.QInputDialog.getText(
-            self, 'Rename file', 'New file name:')
+            self,
+            'Rename file',
+            'New file name:'
+        )
         if ok:
-            # First check if new name is not in existing files
             if name in self.state['files']:
                 self.raise_error_message(
                     'Conflict!',
-                    'File: "{0}" already exists!'.format(name),
-                    self.add_file
+                    'File: "{0}" already exists!'.format(self.full_path(name)),
+                    self.rename_file
                 )
+            elif name in self.state['other'].dir_list.state['files']:
+                self.raise_error_message(
+                    'Conflict!',
+                    'File: "{0}" already exists!'.format(
+                        self.full_path_from_dir(
+                            self.state['other'].dir_list.get_dir(),
+                            self.state['chosen_file']
+                        )
+                    ),
+                    self.rename_file
+                )
+
             else:
-                # Second check whether file still exists
                 try:
                     os.rename(
                         self.full_path(self.state['chosen_file']),
                         self.full_path(name)
                     )
+
+                    if self.state['chosen_file'] not in self.state['other'].dir_list.state['files']:
+                        return
+
                     self.to_other_dirlist.emit(
                         self.full_path_from_dir(
                             self.state['other'].dir_list.get_dir(),
                             self.state['chosen_file']
                         ),
                         'rename_file',
-                        self.full_path(name)
+                        self.full_path_from_dir(
+                            self.state['other'].dir_list.get_dir(),
+                            name
+                        )
                     )
                 except FileNotFoundError:
                     self.raise_error_message(
@@ -290,13 +376,26 @@ class DirList(QtWidgets.QListWidget):
                     self.state['other'].dir_list.get_dir(),
                     self.state['chosen_file']
                 ),
-                'move_file',
+                'remove_file',
                 os.path.join(path, self.state['chosen_file'])
             )
             self.list_directory()
 
     def remove_directory(self):
-        os.rmdir(self.full_path(self.state['chosen_directory']))
+        try:
+            os.rmdir(self.full_path(self.state['chosen_directory']))
+            self.list_directory()
+        except OSError:
+            self.raise_error_message(
+                'Conflict',
+                'Directory {0} is not empty'.format(
+                    self.full_path(self.state['chosen_directory'])
+                )
+            )
+
+        if self.state['chosen_directory'] not in self.state['other'].dir_list.state['directories']:
+            return
+
         self.to_other_dirlist.emit(
             self.full_path_from_dir(
                 self.state['other'].dir_list.get_dir(),
@@ -305,7 +404,6 @@ class DirList(QtWidgets.QListWidget):
             'remove_directory',
             ''
         )
-        self.list_directory()
 
     def rename_directory(self):
         name, ok = QtWidgets.QInputDialog.getText(
@@ -315,6 +413,10 @@ class DirList(QtWidgets.QListWidget):
                 self.full_path(self.state['chosen_directory']),
                 self.full_path(name)
             )
+            self.list_directory()
+
+            if self.state['chosen_directory'] not in self.state['other'].dir_list.state['directories']:
+                return
             self.to_other_dirlist.emit(
                 self.full_path_from_dir(
                     self.state['other'].dir_list.get_dir(),
@@ -323,7 +425,6 @@ class DirList(QtWidgets.QListWidget):
                 'rename_directory',
                 self.full_path(name)
             )
-            self.list_directory()
 
     def move_directory(self):
         dirname = QtWidgets.QFileDialog.getExistingDirectoryUrl(
@@ -334,17 +435,24 @@ class DirList(QtWidgets.QListWidget):
             path = abs_path.split("file://")[1]
             os.rename(
                 self.full_path(self.state['chosen_directory']),
-                os.path.join(path, self.state['chosen_directory'])
+                self.full_path_from_dir(
+                    path,
+                    self.state['chosen_directory']
+                )
             )
+            self.list_directory()
+
+            if self.state['chosen_directory'] not in self.state['other'].dir_list.state['directories']:
+                return
+
             self.to_other_dirlist.emit(
                 self.full_path_from_dir(
                     self.state['other'].dir_list.get_dir(),
                     self.state['chosen_directory']
                 ),
-                'move_directory',
+                'remove_directory',
                 os.path.join(path, self.state['chosen_directory'])
             )
-            self.list_directory()
 
     def raise_error_message(self, title, text, callback=None):
         error_message = QtWidgets.QMessageBox(self)
@@ -358,23 +466,18 @@ class DirList(QtWidgets.QListWidget):
         if callback:
             callback()
 
-    def resolve_conflict(self):
+    def resolve_conflict(self, orig, copy):
         reply = QtWidgets.QMessageBox.question(
             self,
             "Conflict",
-            "Replace {0} with {1}?",
+            "Replace {0} with {1}?".format(orig, copy),
             QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
             QtWidgets.QMessageBox.No
         )
-        reply.show()
-        reply.exec()
         return reply == QtWidgets.QMessageBox.Yes
 
-    def full_path(self, file):
-        return os.path.join(self.state['directory'], file)
-
-    def full_path_from_dir(self, dir_, file):
-        return os.path.join(dir_, file)
+    def add_pending_dir(self, directory):
+        self.state['pending_dirs'] += directory
 
     def sync(self):
         for entry in self.state['files']:
@@ -386,44 +489,60 @@ class DirList(QtWidgets.QListWidget):
             )
 
             if os.path.isfile(to_file_path):
-                print('CONFLICT!')
-                # if self.resolve_conflict:
-                #     shutil.copy(
-                #     from_file_path,
-                #     to_file_path
-                # )
-
+                if self.resolve_conflict(from_file_path, to_file_path):
+                    shutil.copy(
+                        from_file_path,
+                        to_file_path
+                    )
             else:
                 shutil.copy(
                     from_file_path,
                     to_file_path
                 )
 
+        for directory in self.state['directories']:
+            self.recursive_sync(directory)
+
     @QtCore.pyqtSlot(str, str, str)
     def from_other_dirlist(self, entry, action, user_input):
-        # If directory is set and record in on
-        if self.state['directory'] and self.state['record']:
+        if not (self.state['cur_dir'] and self.state['record']):
+            return
 
-            if (self.state['left_to_right'] and self.state['id'] == 'left') \
-                    or ((not self.state['left_to_right']) and self.state['id'] == 'right'):
+        if not ((self.state['left_to_right'] and self.state['id'] == 'left')
+                or ((not self.state['left_to_right']) and self.state['id'] == 'right')):
+            return
 
-                if action == 'add_file':
-                    open(self.full_path(user_input), 'a').close()
+        if action == 'add_file':
+            print(user_input)
+            # code = self.dir_util.add_file(user_input)
+            # if code == 1:
+            #     self.raise_error_message(
+            #         'File exists',
+            #         'File {0} already exists!'.format(user_input)
+            #     )
+            # elif code == 2:
+            #     self.raise_error_message(
+            #         'Operation restricted',
+            #         'Unfortunatelly, you do not have enough permissions to continue the action'
+            #     )
 
-                if action == 'add_directory':
-                    os.mkdir(self.full_path(user_input))
+        if action == 'add_directory':
+            os.mkdir(self.full_path(user_input))
 
-                if action == 'remove_file':
-                    os.remove(entry)
+        if action == 'remove_file':
+            os.remove(entry)
 
-                if action == 'remove_directory':
-                    os.rmdir(entry)
+        if action == 'remove_directory':
+            try:
+                os.rmdir(entry)
+            except OSError:
+                self.raise_error_message(
+                    'Conflict',
+                    'Directory {0} is not empty'.format(entry)
+                )
 
-                if action in ['rename_file', 'move_file',
-                              'rename_directory', 'move_directory']:
-                    os.rename(entry, user_input)
-
-            else:
-                print('Skip action due to settings...')
+        if action in ['rename_file', 'move_file',
+                      'rename_directory', 'move_directory']:
+            os.rename(entry, user_input)
 
         self.list_directory()

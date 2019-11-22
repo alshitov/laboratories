@@ -48,7 +48,7 @@ class DirProc(QtWidgets.QFrame):
             self.cur_dir = abs_path
             formatted = abs_path.split("file://")[1]
             self.dir_label.setText(self.pretty_label(formatted))
-            self.dir_list.set_dir(formatted)
+            self.dir_list.set_base_and_cur_dirs(formatted)
 
     @staticmethod
     def pretty_label(string):

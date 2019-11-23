@@ -81,16 +81,15 @@ class DirUtil:
         except PermissionError:
             return 2
 
-    def rename_file(self, record: str, new_record: str) -> Optional[int]:
+    def rename(self, record: str, new_record: str) -> Optional[int]:
         try:
             os.rename(record, new_record)
-        except FileNotFoundError:
+        except FileExistsError:
             return 1
         except PermissionError:
             return 2
-
-    def move_file(self, record: str, new_record: str) -> Optional[int]:
-        return self.rename_file(record, new_record)
+        except FileNotFoundError:
+            return 3
 
     def remove_directory(self, record: str) -> Optional[int]:
         try:
@@ -101,19 +100,6 @@ class DirUtil:
             return 2
         except OSError:
             return 3
-
-    def rename_directory(self, record: str, new_record: str) -> Optional[int]:
-        try:
-            os.rename(record, new_record)
-        except FileNotFoundError:
-            return 1
-        except FileNotFoundError:
-            return 1
-        except FileExistsError:
-            return 4
-
-    def move_directory(self, record: str, new_record: str) -> Optional[int]:
-        return self.rename_directory(record, new_record)
 
     def clear(self, record: str) -> str:
         return os.path.abspath(record)

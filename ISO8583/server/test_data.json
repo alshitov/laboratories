@@ -1,0 +1,160 @@
+{
+  "goods": {
+    "0": {
+      "price": 120,
+      "name": "Juice"
+    },
+    "1": {
+      "price": 250,
+      "name": "Cake"
+    },
+    "2": {
+      "price": 60,
+      "name": "Cookies"
+    },
+    "3": {
+      "price": 80,
+      "name": "Corn"
+    },
+    "4": {
+      "price": 110,
+      "name": "Cola"
+    },
+    "5": {
+      "price": 50,
+      "name": "Lemonade"
+    },
+    "6": {
+      "price": 100,
+      "name": "Chocolate"
+    },
+    "7": {
+      "price": 150,
+      "name": "Marmalade"
+    },
+    "8": {
+      "price": 160,
+      "name": "Sweets"
+    },
+    "9": {
+      "price": 120,
+      "name": "Waffles"
+    },
+    "10": {
+      "price": 80,
+      "name": "Ice Cream"
+    },
+    "11": {
+      "price": 30,
+      "name": "Chewing Gum"
+    },
+    "12": {
+      "price": 140,
+      "name": "Marshmallows"
+    },
+    "13": {
+      "price": 100,
+      "name": "Donuts"
+    },
+    "14": {
+      "price": 60,
+      "name": "Croissant"
+    },
+    "15": {
+      "price": 140,
+      "name": "Nuts"
+    }
+  },
+  "cards": {
+    "0": {
+      "pan": 5420592894149290,
+      "exp_date": "11/2022",
+      "cvv": 235,
+      "pin": 2368,
+      "holder_fcs": "Prodigy MobbDeep",
+      "balance": 65436.3,
+      "type": "MASTERCARD"
+    },
+    "1": {
+      "pan": 4400460711298939,
+      "exp_date": "12/2021",
+      "cvv": 567,
+      "pin": 1488,
+      "holder_fcs": "Havoc MobbDeep",
+      "balance": 36377.78,
+      "type": "VISA"
+    },
+    "2": {
+      "pan": 5344294204058732,
+      "exp_date": "10/2020",
+      "cvv": 185,
+      "pin": 5774,
+      "holder_fcs": "Rakim ThePresident",
+      "balance": 13456.0,
+      "type": "MASTERCARD"
+    },
+    "3": {
+      "pan": 5407437372320376,
+      "exp_date": "05/2022",
+      "cvv": 655,
+      "pin": 9873,
+      "holder_fcs": "EricB ThePresident",
+      "balance": 74436.3,
+      "type": "VISA"
+    },
+    "4": {
+      "pan": 5407437372320376,
+      "exp_date": "12/2023",
+      "cvv": 123,
+      "pin": 1235,
+      "holder_fcs": "Peter Parker",
+      "balance": 85326.0,
+      "type": "MASTERCARD"
+    },
+    "5": {
+      "pan": 4046009627047912,
+      "exp_date": "11/2021",
+      "cvv": 675,
+      "pin": 1356,
+      "holder_fcs": "Grace Brown",
+      "balance": 436.4,
+      "type": "VISA"
+    },
+    "6": {
+      "pan": 5185974130163233,
+      "exp_date": "04/2020",
+      "cvv": 268,
+      "pin": 8394,
+      "holder_fcs": "Aiden Gianth",
+      "balance": 5432.3,
+      "type": "MASTERCARD"
+    },
+    "7": {
+      "pan": 4209532571999765,
+      "exp_date": "01/2022",
+      "cvv": 643,
+      "pin": 1237,
+      "holder_fcs": "Etha White",
+      "balance": 5845.9,
+      "type": "VISA"
+    },
+    "8": {
+      "pan": 5420592894149290,
+      "exp_date": "02/2022",
+      "cvv": 654,
+      "pin": 1236,
+      "holder_fcs": "George Paul",
+      "balance": 83454.8,
+      "type": "MASTERCARD"
+    },
+    "9": {
+      "pan": 4065064202066379,
+      "exp_date": "04/2021",
+      "cvv": 754,
+      "pin": 1267,
+      "holder_fcs": "Ashley Hill",
+      "balance": 8646.77,
+      "type": "VISA"
+    }
+  }
+}

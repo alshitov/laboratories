@@ -1,0 +1,7 @@
+.vscode
+*.pyc
+__pycache__
+server/venv
+*.dll
+*.exe
+

@@ -47,7 +47,6 @@ class DirSynchro(QtWidgets.QMainWindow, ui.Ui_DirSynchro):
             self.right_dir_proc.dir_list.from_other_dirlist)
         self.right_dir_proc.dir_list.to_other_dirlist.connect(
             self.left_dir_proc.dir_list.from_other_dirlist)
-        self.syncButton.clicked.connect(self.sync)
 
         self.textReplaceButton.clicked.connect(self.replace_text)
 
@@ -71,12 +70,12 @@ class DirSynchro(QtWidgets.QMainWindow, ui.Ui_DirSynchro):
         self.left_dir_proc.dir_list.pull_main_window_state(self.state)
         self.right_dir_proc.dir_list.pull_main_window_state(self.state)
 
-    def sync(self):
-        if self.state['record']:
-            if self.state['left_to_right']:
-                self.right_dir_proc.dir_list.sync()
-            else:
-                self.left_dir_proc.dir_list.sync()
+    # def sync(self):
+    #     if self.state['record']:
+    #         if self.state['left_to_right']:
+    #             self.right_dir_proc.dir_list.sync()
+    #         else:
+    #             self.left_dir_proc.dir_list.sync()
 
     @staticmethod
     def toggle_opposite_buttons(on, off, condition):

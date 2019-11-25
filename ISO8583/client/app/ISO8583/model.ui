@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>786</width>
-    <height>495</height>
+    <height>497</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -24,7 +24,7 @@
     <item>
      <layout class="QVBoxLayout" name="mainLayout">
       <item>
-       <widget class="QTabWidget" name="tabWidget">
+       <widget class="QTabWidget" name="modelTabs">
         <property name="currentIndex">
          <number>1</number>
         </property>
@@ -34,7 +34,7 @@
          </attribute>
          <layout class="QVBoxLayout" name="verticalLayout_5">
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout"/>
+           <layout class="QVBoxLayout" name="clientLayout"/>
           </item>
          </layout>
         </widget>
@@ -44,9 +44,9 @@
          </attribute>
          <layout class="QVBoxLayout" name="verticalLayout_4">
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,0,0,0,0">
+           <layout class="QVBoxLayout" name="transactionLayout" stretch="0,0,0,0,0">
             <item>
-             <widget class="QTableWidget" name="tableWidget">
+             <widget class="QTableWidget" name="transactionDataTable">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -299,18 +299,18 @@
              </widget>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_4">
+             <layout class="QHBoxLayout" name="transactionValuesLayout">
               <item>
-               <layout class="QVBoxLayout" name="verticalLayout_6">
+               <layout class="QVBoxLayout" name="startSignLayout">
                 <item>
-                 <widget class="QLabel" name="label_2">
+                 <widget class="QLabel" name="startSignLabel">
                   <property name="text">
                    <string>Start Sign</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QComboBox" name="comboBox">
+                 <widget class="QComboBox" name="startSignComboBox">
                   <item>
                    <property name="text">
                     <string>0002</string>
@@ -321,16 +321,16 @@
                </layout>
               </item>
               <item>
-               <layout class="QVBoxLayout" name="verticalLayout_8">
+               <layout class="QVBoxLayout" name="protocolVersionLayout">
                 <item>
-                 <widget class="QLabel" name="label_3">
+                 <widget class="QLabel" name="protocolVersionLabel">
                   <property name="text">
                    <string>Protocol Version</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QComboBox" name="comboBox_2">
+                 <widget class="QComboBox" name="protocolVersionComboBox">
                   <item>
                    <property name="text">
                     <string>01</string>
@@ -341,16 +341,16 @@
                </layout>
               </item>
               <item>
-               <layout class="QVBoxLayout" name="verticalLayout_7">
+               <layout class="QVBoxLayout" name="endSignLayout">
                 <item>
-                 <widget class="QLabel" name="label_4">
+                 <widget class="QLabel" name="endSignLabel">
                   <property name="text">
                    <string>End Sign</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QComboBox" name="comboBox_3">
+                 <widget class="QComboBox" name="endSignComboBox">
                   <item>
                    <property name="text">
                     <string>0003</string>
@@ -363,7 +363,7 @@
              </layout>
             </item>
             <item>
-             <widget class="QLabel" name="label">
+             <widget class="QLabel" name="transactionDataLabel">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -376,30 +376,30 @@
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="lineEdit">
+             <widget class="QLineEdit" name="transactionDataLineEdit">
               <property name="text">
                <string>.LEONARDODAVINCI000000123456</string>
               </property>
              </widget>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_2">
+             <layout class="QHBoxLayout" name="tarminalButtonsLayout">
               <item>
-               <widget class="QPushButton" name="pushButton">
+               <widget class="QPushButton" name="makeTransactionButton">
                 <property name="text">
                  <string>Make Transaction</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_2">
+               <widget class="QPushButton" name="stopTransactionButton">
                 <property name="text">
                  <string>Stop Transaction</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_3">
+               <widget class="QPushButton" name="cancelTransactionButton">
                 <property name="text">
                  <string>Cancel Transaction</string>
                 </property>
@@ -411,13 +411,27 @@
           </item>
          </layout>
         </widget>
+        <widget class="QWidget" name="termialTab">
+         <attribute name="title">
+          <string>Terminal</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_10">
+          <item>
+           <layout class="QVBoxLayout" name="terminalLayout">
+            <item>
+             <widget class="QListView" name="terminalLogList"/>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
         <widget class="QWidget" name="serverTab">
          <attribute name="title">
           <string>Server</string>
          </attribute>
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout_2">
+           <layout class="QVBoxLayout" name="serverLayout">
             <item>
              <widget class="QListWidget" name="serverLogList"/>
             </item>

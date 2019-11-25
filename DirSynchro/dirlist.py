@@ -42,8 +42,9 @@ class DirList(QtWidgets.QListWidget):
         self.itemClicked.connect(self.select_item)
         self.itemDoubleClicked.connect(self.go_to)
 
-        self.set_base_and_cur_dirs('/home/alexander/Desktop/from' if _id == 'right' else '/home/alexander/Desktop/to')
-        self.list_directory()
+        # self.set_base_and_cur_dirs(
+        #     '/Users/ympo2oo2/Documents/from' if _id == 'right' else '/Users/ympo2oo2/Documents/to')
+        # self.list_directory()
 
     def pull_main_window_state(self, state):
         self.state.update(state)
@@ -155,22 +156,16 @@ class DirList(QtWidgets.QListWidget):
     def call_file_context_menu(self, event):
         menu = QtWidgets.QMenu(self)
         remove_action = QtWidgets.QAction("Удалить", self)
-        rename_action = QtWidgets.QAction("Переименовать", self)
-        move_action = QtWidgets.QAction("Переместить", self)
 
         if self.get_chosen_file():
+            print('file')
             remove_action.triggered.connect(self.remove_file)
-            rename_action.triggered.connect(self.rename_file)
-            move_action.triggered.connect(self.move_file)
 
         elif self.get_chosen_dir():
+            print('dir')
             remove_action.triggered.connect(self.remove_directory)
-            rename_action.triggered.connect(self.rename_directory)
-            move_action.triggered.connect(self.move_directory)
 
         menu.addAction(remove_action)
-        menu.addAction(rename_action)
-        menu.addAction(move_action)
         menu.popup(QtCore.QPoint(self.viewport().mapToGlobal(
             QtCore.QPoint(event.x(), event.y()))))
 
@@ -216,7 +211,10 @@ class DirList(QtWidgets.QListWidget):
                 self.get_cur_dir(),
                 self.get_base_dir(),
                 other.get_base_dir()
-            )[:-1]
+            )
+
+            if rel[-1] == '/':
+                rel = rel[:-1]
 
             if other.get_cur_dir() != rel:
                 rel = rel[1:]
@@ -285,7 +283,7 @@ class DirList(QtWidgets.QListWidget):
             self.get_chosen_file()
         )
 
-        code = 3
+        code = self.dir_util.remove_file(file_path)
         if code == 1:
             self.raise_error_message(
                 'File no found',
@@ -302,176 +300,70 @@ class DirList(QtWidgets.QListWidget):
             if self.get_chosen_file() not in self.get_other().dir_list.get_files():
                 return
 
-            print(self.dir_util.full_path(
+            self.to_other_dirlist.emit(
+                self.dir_util.full_path(
                     self.get_other().dir_list.get_base_dir(),
                     self.dir_util.rel_path(
                         file_path,
                         self.get_base_dir(),
                         self.get_other().dir_list.get_base_dir()
-                    )
-                ))
-
-            # self.to_other_dirlist.emit(
-            #     self.dir_util.full_path(
-            #         self.get_other().dir_list.get_base_dir(),
-            #         self.dir_util.rel_path(
-            #             file_path,
-            #             self.get_base_dir(),
-            #             self.get_other().dir_list.get_base_dir()
-            #         )
-            #     ),
-            #     'remove_file',
-            #     ''
-            # )
-
-    def rename_file(self):
-        name, ok = self.input_dialog('Rename file', 'New file name:')
-
-        if not ok:
-            return
-
-        self_file_path = self.dir_util.full_path(
-            self.get_cur_dir(),
-            name
-        )
-        other_file_path = self.dir_util.full_path(
-            self.get_other().dirlist.get_base_dir(),
-            self.dir_util.rel_path(
-                self_file_path,
-                self.get_base_dir(),
-                self.get_other().dir_list.get_base_dir()
-            )
-        )
-
-        self_conflict = name in self.get_files()
-        other_conflict = name in self.get_other().dir_list.get_files()
-
-        if self_conflict or other_conflict:
-            self.raise_error_message(
-                'Conflict!',
-                'File {0} already exists!'.format(self_file_path if self_conflict else other_file_path),
-                self.rename_file
-            )
-        else:
-            self.dir_util.rename(
-                self.dir_util.full_path(
-                    self.get_cur_dir(),
-                    self.get_chosen_file()
-                ),
-                self_file_path
-            )
-            self.list_directory()
-
-            if not other_conflict:
-                return
-
-            self.to_other_dirlist.emit(
-                self.dir_util.full_path(
-                    self.get_other().dir_list.get_base_dir(),
-                    self.dir_util.rel_path(
-                        self_file_path,
-                        self.get_base_dir(),
-                        self.get_other().dir_list.get_base_dir()
-                    )
-                ),
-                'rename',
-                other_file_path
-            )
-            
-
-    def move_file(self):
-        dirname = QtWidgets.QFileDialog.getExistingDirectoryUrl(
-            self, "Choose directory", QtCore.QUrl("/home/alexander"))
-        abs_path = QtCore.QUrl.toString(dirname)
-
-        if abs_path:
-            path = abs_path.split("file://")[1]
-            os.rename(
-                self.full_path(self.state['chosen_file']),
-                os.path.join(path, self.state['chosen_file'])
-            )
-            self.to_other_dirlist.emit(
-                self.full_path_from_dir(
-                    self.state['other'].dir_list.get_dir(),
-                    self.state['chosen_file']
+                    )[1:]
                 ),
                 'remove_file',
-                os.path.join(path, self.state['chosen_file'])
+                ''
             )
-            self.list_directory()
 
     def remove_directory(self):
-        try:
-            os.rmdir(self.full_path(self.state['chosen_directory']))
-            self.list_directory()
-        except OSError:
+        rel_dir_path = self.dir_util.full_path(
+            self.get_cur_dir(),
+            self.get_chosen_dir()
+        )
+
+        dir_path = self.dir_util.full_path(
+            self.get_base_dir(),
+            rel_dir_path
+        )
+
+        other_rel_dir_path = self.dir_util.rel_path(
+            rel_dir_path,
+            self.get_base_dir(),
+            self.get_other().dir_list.get_base_dir()
+        )[1:]
+
+        other_dir_path = self.dir_util.full_path(
+            self.get_other().dir_list.get_base_dir(),
+            other_rel_dir_path
+        )
+
+        code = self.dir_util.remove_directory(dir_path)
+        if code == 1:
             self.raise_error_message(
-                'Conflict',
-                'Directory {0} is not empty'.format(
-                    self.full_path(self.state['chosen_directory'])
+                'Not found',
+                'Directory {0} does not exist or have been removed'.format(
+                    dir_path
                 )
             )
+        elif code == 2:
+            self.raise_error_message(
+                'Operation restricted',
+                'Unfortunatelly, you do not have enough permissions to continue the action'
+            )
+        elif code == 3:
+            self.raise_error_message(
+                'Operation restricted',
+                'Directory {0} is not empty'.format(dir_path)
+            )
 
-        if self.state['chosen_directory'] not in self.state['other'].dir_list.state['directories']:
+        self.list_directory()
+
+        if self.get_chosen_dir() not in self.get_other().dir_list.get_dirs():
             return
 
         self.to_other_dirlist.emit(
-            self.full_path_from_dir(
-                self.state['other'].dir_list.get_dir(),
-                self.state['chosen_directory']
-            ),
+            other_dir_path,
             'remove_directory',
             ''
         )
-
-    def rename_directory(self):
-        name, ok = QtWidgets.QInputDialog.getText(
-            self, 'Rename file', 'New directory name:')
-        if ok:
-            os.rename(
-                self.full_path(self.state['chosen_directory']),
-                self.full_path(name)
-            )
-            self.list_directory()
-
-            if self.state['chosen_directory'] not in self.state['other'].dir_list.state['directories']:
-                return
-            self.to_other_dirlist.emit(
-                self.full_path_from_dir(
-                    self.state['other'].dir_list.get_dir(),
-                    self.state['chosen_directory']
-                ),
-                'rename_directory',
-                self.full_path(name)
-            )
-
-    def move_directory(self):
-        dirname = QtWidgets.QFileDialog.getExistingDirectoryUrl(
-            self, "Choose directory", QtCore.QUrl("/home/alexander"))
-        abs_path = QtCore.QUrl.toString(dirname)
-
-        if abs_path:
-            path = abs_path.split("file://")[1]
-            os.rename(
-                self.full_path(self.state['chosen_directory']),
-                self.full_path_from_dir(
-                    path,
-                    self.state['chosen_directory']
-                )
-            )
-            self.list_directory()
-
-            if self.state['chosen_directory'] not in self.state['other'].dir_list.state['directories']:
-                return
-
-            self.to_other_dirlist.emit(
-                self.full_path_from_dir(
-                    self.state['other'].dir_list.get_dir(),
-                    self.state['chosen_directory']
-                ),
-                'remove_directory',
-                os.path.join(path, self.state['chosen_directory'])
-            )
 
     def raise_error_message(self, title, text, callback=None):
         error_message = QtWidgets.QMessageBox(self)
@@ -494,30 +386,6 @@ class DirList(QtWidgets.QListWidget):
             QtWidgets.QMessageBox.No
         )
         return reply == QtWidgets.QMessageBox.Yes
-
-    def sync(self):
-        for entry in self.state['files']:
-            from_file_path = self.full_path(entry)
-
-            to_file_path = self.full_path_from_dir(
-                self.state['other'].dir_list.get_dir(),
-                entry
-            )
-
-            if os.path.isfile(to_file_path):
-                if self.resolve_conflict(from_file_path, to_file_path):
-                    shutil.copy(
-                        from_file_path,
-                        to_file_path
-                    )
-            else:
-                shutil.copy(
-                    from_file_path,
-                    to_file_path
-                )
-
-        for directory in self.state['directories']:
-            self.recursive_sync(directory)
 
     @QtCore.pyqtSlot(str, str, str)
     def from_other_dirlist(self, entry, action, user_input):
@@ -569,11 +437,22 @@ class DirList(QtWidgets.QListWidget):
                 )
 
         if action == 'remove_directory':
-            try:
-                os.rmdir(entry)
-            except OSError:
+            code = self.dir_util.remove_directory(entry)
+            if code == 1:
                 self.raise_error_message(
-                    'Conflict',
+                    'Not found',
+                    'Directory {0} does not exist or have been removed'.format(
+                        entry
+                    )
+                )
+            elif code == 2:
+                self.raise_error_message(
+                    'Operation restricted',
+                    'Unfortunatelly, you do not have enough permissions to continue the action'
+                )
+            elif code == 3:
+                self.raise_error_message(
+                    'Operation restricted',
                     'Directory {0} is not empty'.format(entry)
                 )
 
@@ -592,7 +471,8 @@ class DirList(QtWidgets.QListWidget):
             elif code == 3:
                 self.raise_error_message(
                     'Entry not found',
-                    'Entry {0} does not exist or has been removed'.format(entry)
+                    'Entry {0} does not exist or has been removed'.format(
+                        entry)
                 )
 
         self.list_directory()

@@ -1,4 +1,4 @@
-from timestamp import DateTime
+from helpers import DateTime
 
 
 class ClientLogger:
@@ -20,3 +20,8 @@ class ClientLogger:
                 data['transaction'],
                 data['response']
             ))
+
+    @classmethod
+    def get(cls, terminal_uuid):
+        with open(cls._file(terminal_uuid), 'r') as fout:
+            return {'text': fout.read()}

@@ -1,69 +1,23 @@
-import random
-from datetime import datetime as dt
-
-
-class UUID:
-    @classmethod
-    def uuid(cls, storage: list):
-        uuid = hex(random.getrandbits(128))
-        if uuid in storage:
-            return cls.uuid()
-        else:
-            storage.append(uuid)
-            return uuid
-
-
-class DateTime:
-    iso = "%d %B %Y - %I:%M:%S%p"
-
-    @classmethod
-    def datetime(cls):
-        return dt.strftime(dt.now(), cls.iso)
-
-    @classmethod
-    def is_later(cls, t2, t1):
-        return (
-            dt.strptime(t2, cls.iso)
-            - dt.strptime(t1, cls.iso)
-        ).total_seconds() > 0
-
-
-class Good:
-    storage = []
-
-    def __init__(self, _price: float, _name: str):
-        self.uuid = UUID.uuid(self.storage)
-        self.price = _price
-        self.name = _name
-
-    def get_uuid(self):
-        return self.uuid
-
-    def to_dict(self):
-        return {
-            'uuid': self.uuid,
-            'price': self.price,
-            'name': self.name,
-        }
+from helpers import UUID, DateTime
 
 
 class Session:
     storage = []
 
-    def __init__(self, _terminal_uuid):
+    def __init__(self, _terminal_id):
         self.uuid = UUID.uuid(self.storage)
         self.sell_counter = 0
         self.sell_total = 0
         self.refund_count = 0
         self.refund_total = 0
-        self.terminal_uuid = _terminal_uuid
+        self.terminal_id = _terminal_id
         self.datetime = DateTime.datetime()
 
     def get_uuid(self):
         return self.uuid
 
-    def get_terminal_uuid(self):
-        return self.terminal_uuid
+    def get_terminal_id(self):
+        return self.terminal_id
 
     def add_sell(self, amount):
         self.sell_counter += 1

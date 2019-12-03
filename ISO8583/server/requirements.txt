@@ -10,6 +10,8 @@ itsdangerous==1.1.0
 Jinja2==2.10.3
 MarkupSafe==1.1.1
 pycodestyle==2.5.0
+PyQt5==5.13.2
+PyQt5-sip==12.7.0
 pytz==2019.3
 requests==2.22.0
 six==1.13.0

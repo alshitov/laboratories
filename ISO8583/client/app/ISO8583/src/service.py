@@ -90,15 +90,14 @@ def transaction(transaction):
     start_sign = transaction[:4]
     protocol_version = transaction[4:6]
     end_sign = transaction[-4:]
-
-    if not (start_sign == '0002' \
+    if not start_sign == '0002' \
                 and protocol_version == '01' \
-                and end_sign == '0003'):
+                and end_sign == '0003':
         raise e.ServerError(
             message=str({
                 'error': 'Transaction with invalid template received:' \
-                        'start_sign: {0}, ' \
-                        'protocol_version: {1}, ' \
+                        'start_sign: {0} ,' \
+                        'protocol_version: {1} ,' \
                         'end_sign: {2}'.format(
                             start_sign,
                             protocol_version,

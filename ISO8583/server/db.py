@@ -4,61 +4,21 @@ import exceptions as e
 
 
 class DB:
-    goods = []
-    transactions = []
     cards = []
     sessions = []
 
     def __init__(self):
         self.load_test_data()
 
-    def post_good(self, _good: m.Good):
-        self.goods.append(_good)
-
-    def get_good(self, good_uuid: str):
-        for good in self.goods:
-            if good.get_uuid() == good_uuid:
-                return good
-        else:
-            raise e.DBError(message=str(
-                {'error': 'good with uuid: {0} not found'.format(good_uuid)}
-            ))
-
-    def get_goods(self):
-        return [good.to_dict() for good in self.goods]
-
-    def post_transaction(self, _transaction: m.Transaction):
-        self.transactions.append(_transaction)
-
-    def get_transaction(self, transaction_uuid: str):
-        for transaction in self.transactions:
-            if transaction.get_uuid() == transaction_uuid:
-                return transaction
-        else:
-            raise e.DBError(message=str(
-                {'error': 'transaction with uuid: {0} not found'.format(
-                    transaction_uuid)}
-            ))
-
-    def patch_transaction(self, _transaction: m.Transaction):
-        for transaction in self.transactions:
-            if transaction.get_uuid() == _transaction.uuid():
-                transaction.update(_transaction)
-        else:
-            self.post_transaction(_transaction)
-
     def post_card(self, _card: m.Card):
         self.cards.append(_card)
 
-    def get_card(self, card_uuid: str):
+    def get_card(self, PAN: str):
         for card in self.cards:
-            if card.get_uuid() == card_uuid:
+            if card.PAN == PAN:
                 return card
         else:
-            raise e.DBError(message=str(
-                {'error': 'card with uuid: {0} not found'.format(card_uuid)}
-            ))
-        pass
+            return None
 
     def patch_card(self, _card: m.Card):
         for card in self.cards:
@@ -70,16 +30,12 @@ class DB:
     def post_session(self, _session: m.Session):
         self.sessions.append(_session)
 
-    def get_session(self, terminal_uuid: str):
+    def get_session(self, terminal_id: str):
         for session in self.sessions:
-            if session.get_terminal_uuid() == terminal_uuid:
+            if session.get_terminal_id() == terminal_id:
                 return session
         else:
-            raise e.DBError(message=str(
-                {'error': 'session with terminal_uuid: {0} not found'.format(
-                    terminal_uuid)}
-            ))
-        pass
+            return None
 
     def is_session_active(self, terminal_uuid):
         return terminal_uuid in [
@@ -95,14 +51,6 @@ class DB:
     def load_test_data(self):
         with open('test_data.json', 'r') as fout:
             data = json.load(fout)
-
-        for good_json_key in data['goods']:
-            good_json = data['goods'][good_json_key]
-            good = m.Good(
-                good_json['price'],
-                good_json['name']
-            )
-            self.post_good(good)
 
         for card_json_key in data['cards']:
             card_json = data['cards'][card_json_key]

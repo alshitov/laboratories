@@ -8,7 +8,6 @@ def response_decorator(f):
     def wrapper(*args, **kwargs):
         try:
             result = f(*args, **kwargs)
-
             if isinstance(result, tuple):
                 code, status = 400, "Not Found"
             else:

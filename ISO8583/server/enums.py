@@ -1,0 +1,17 @@
+from enum import Enum
+
+
+class ResponseCodes(Enum):
+    ACCEPTED_AND_IMPLEMENTED = '00'
+    TRANSACTION_NOT_FOUND = '12'
+    INVALID_AMOUNT = '13'
+    INVALID_PAN = '14'
+    CARD_EXPIRED = '33'
+    PIN_TRY_EXCEED = '38'
+    CARD_LOST = '41'
+    CARD_STOLEN = '43'
+    INSUFFICIENT_FUNDS = '51'
+    INVALID_PIN = '55'
+    TIMEOUT = '96'
+    UNREGISTERED_TERMINAL_ID = '98'
+    RESUME_REVISE_ERROR = '99'

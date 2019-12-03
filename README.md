@@ -1,2 +1,1 @@
-# cpp_labs
-CPP Laboratory Works Sources
+Laboratory Works Sources

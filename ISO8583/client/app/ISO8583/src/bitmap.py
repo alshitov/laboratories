@@ -43,38 +43,38 @@ class Bitmap:
     @classmethod
     def from_action(cls, action):
         if action == 'test':
-            return cls.test_rq()
+            return cls.test_rs()
         elif action == 'sale':
-            return cls.sale_rq()
+            return cls.sale_rs()
         elif action == 'refund':
-            return cls.refund_rq()
+            return cls.refund_rs()
         elif action == 'balance':
-            return cls.balance_rq()
-        elif action == 'settlement':
-            return cls.settlement_rq()
+            return cls.balance_rs()
         elif action == 'upload':
-            return cls.upload_rq()
+            return cls.upload_rs()
+        elif action == 'settlement':
+            return cls.settlement_rs()
 
     @classmethod
-    def test_rq(cls):
+    def test_rs(cls):
         return cls.hexlify(cls.test_rq_bits)
 
     @classmethod
-    def sale_rq(cls):
+    def sale_rs(cls):
         return cls.hexlify(cls.sale_rq_bits)
 
     @classmethod
-    def refund_rq(cls):
+    def refund_rs(cls):
         return cls.hexlify(cls.refund_rq_bits)
 
     @classmethod
-    def balance_rq(cls):
+    def balance_rs(cls):
         return cls.hexlify(cls.balance_rq_bits)
 
     @classmethod
-    def upload_rq(cls):
+    def upload_rs(cls):
         return cls.hexlify(cls.upload_rq_bits)
 
     @classmethod
-    def settlement_rq(cls):
+    def settlement_rs(cls):
         return cls.hexlify(cls.settlement_rq_bits)

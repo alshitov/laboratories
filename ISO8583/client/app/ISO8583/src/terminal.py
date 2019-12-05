@@ -6,6 +6,7 @@ from .request import Request
 from .transaction import Transaction, action_codes, to_log
 from .bitmap import Bitmap
 from .helpers import UUID
+from .processor import process, respond
 
 
 class Terminal:
@@ -66,18 +67,36 @@ class Terminal:
             else:
                 transaction_data = data
 
+        # Make a request transaction
         request = Request.get(
             self.id,
             self.query(transaction_data)
         )
+        # Parse response
         response = request.text[:-1]
         data = json.loads(response)
+        print('Received from host: ', data)
 
-        print(data)
-
+        # Log action
         if transaction_id in to_log:
             self.log({
-                'terminal_uuid': self.get_uuid(),
-                'transaction': transaction_data,
-                'response': response
-            })
+            'terminal_uuid': self.get_uuid(),
+            'transaction': transaction_data,
+            'response': response
+        })
+        # Try to get trasaction string from host response
+        try:
+            rs_transaction = data['result']['transaction']
+        except KeyError:
+            print(data['message']['error'])
+            rs_transaction = {}
+
+        # Define whether response leads to further actions by terminal
+        if rs_transaction:
+            needs_answer, response = process(rs_transaction)
+
+            # Make new transaction if needed
+            if needs_answer:
+                action, new_transaction = respond(response)
+                # Loop [terminal <-> server] dialog
+                self.make_transaction(action, new_transaction)

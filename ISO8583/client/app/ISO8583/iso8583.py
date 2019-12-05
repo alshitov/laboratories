@@ -6,9 +6,13 @@ import random
 
 class Model(QtWidgets.QMainWindow, model_ui.Ui_Model):
     def __init__(self):
+        self.state = {
+            'from_fields': True,
+            'last_rq_transaction': '',
+            'last_rs_transaction': '',
+        }
         super().__init__()
         self.setupUi(self)
-        self.from_fields = True
         self.toggle_method()
         self.terminal = src.Terminal()
         self.connect_signals()
@@ -41,9 +45,9 @@ class Model(QtWidgets.QMainWindow, model_ui.Ui_Model):
             pass
 
     def toggle_method(self):
-        active = not self.from_fields
+        active = not self.state['from_fields']
+        self.state['from_fields'] = active
         self.transactionDataTable.setEnabled(not active)
-        self.from_fields = active
         self.startSignComboBox.setEnabled(active)
         self.endSignComboBox.setEnabled(active)
         self.protocolVersionComboBox.setEnabled(active)

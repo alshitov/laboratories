@@ -70,6 +70,10 @@ class Transaction:
                     "%(datetime)s" \
 
     @classmethod
+    def pad(cls, string, desired_length):
+        return '{0}{1}'.format('0' * (desired_length - len(string)), string)
+
+    @classmethod
     def format_cardholder_name(cls, cardholder_name):
         """ Each letter to hex from ascii code """
         cardholder_name = cardholder_name.replace(' ', '')
@@ -79,17 +83,17 @@ class Transaction:
     @classmethod
     def format_amount(cls, amount):
         amount_str = str(amount).replace('.', '')
-        return '{0}{1}'.format('0' * (12 - len(amount_str)), amount_str)
+        return cls.pad(amount_str, 12)
 
     @classmethod
     def format_transaction_no(cls, transaction_no):
         transaction_no_str = str(transaction_no)
-        return '{0}{1}'.format('0' * (10 - len(transaction_no_str)), transaction_no_str)
+        return cls.pad(transaction_no_str, 10)
 
     @classmethod
     def format_RRN(cls, RRN):
         RRN_str = str(RRN)
-        return '{0}{1}'.format('0' * (12 - len(RRN_str)), RRN_str)
+        return cls.pad(RRN_str, 12)
 
     @classmethod
     def format_text_data(cls, sales_count: int, sales_sum: float,
@@ -130,22 +134,6 @@ class Transaction:
                     RRN=None,
                     text_data=None,
                     RC=None):
-
-        print({
-            'bitmap': bitmap,
-            'transaction_id': transaction_id,
-            'PAN': PAN if PAN else '',
-            'cardholder_name': cls.format_cardholder_name(cardholder_name) if cardholder_name else '',
-            'expiry_date': expiry_date if expiry_date else '',
-            'PIN': PIN if PIN else '',
-            'amount': cls.format_amount(amount) if amount else '',
-            'transaction_no': cls.format_transaction_no(transaction_no) if transaction_no else '',
-            'RRN': cls.format_RRN(RRN) if RRN else '',
-            'text_data': cls.format_text_data(text_data) if text_data else '',
-            'terminal_id': terminal_id,
-            'RC': RC if RC else '',
-            'datetime': DateTime.datetime()
-        })
 
         data = cls.data_template % {
             'bitmap': bitmap,

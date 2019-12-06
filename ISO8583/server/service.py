@@ -91,8 +91,8 @@ def transaction(transaction):
                 and protocol_version == '01' \
                 and end_sign == '0003'):
         raise e.ServerError(
-            message=str({
-                'error': 'Transaction with invalid template received:' \
+            message={
+                'error': 'Transaction with invalid template received: ' \
                         'start_sign: {0}, ' \
                         'protocol_version: {1}, ' \
                         'end_sign: {2}'.format(
@@ -100,7 +100,7 @@ def transaction(transaction):
                             protocol_version,
                             end_sign
                         )
-            })
+            }
         )
 
     transaction_data = parse(transaction[6:-4])

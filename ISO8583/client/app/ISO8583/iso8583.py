@@ -70,7 +70,7 @@ class Model(QtWidgets.QMainWindow, model_ui.Ui_Model):
 
     def make_transaction(self, action):
         # 2 ways of forming transaction data: ...
-        if self.from_fields:
+        if self.state['from_fields']:
             # ... 1) from fields
             data = {
                 'start_sign': str(self.startSignComboBox.currentText()),

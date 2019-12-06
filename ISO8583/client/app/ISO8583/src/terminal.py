@@ -43,6 +43,8 @@ class Terminal:
         bitmap = Bitmap.from_action(action)
         transaction_id = action_codes[action]
 
+        print('Raw data to host: ', data)
+
         if data is None:
             transaction_data = Transaction.transaction(
                 bitmap=bitmap,
@@ -67,6 +69,8 @@ class Terminal:
             else:
                 transaction_data = data
 
+        print('Send to host: ', transaction_data)
+
         # Make a request transaction
         request = Request.get(
             self.id,
@@ -88,15 +92,18 @@ class Terminal:
         try:
             rs_transaction = data['result']['transaction']
         except KeyError:
-            print(data['message']['error'])
+            print('Host responds with internal error: ', data['message']['error'])
             rs_transaction = {}
 
         # Define whether response leads to further actions by terminal
         if rs_transaction:
-            needs_answer, response = process(rs_transaction)
+            needs_answer, action, response = process(action, rs_transaction)
+            print('Parsed transaction: ', response)
+            print('Needs answer: ', needs_answer)
+            print('Further action: ', action)
 
             # Make new transaction if needed
             if needs_answer:
-                action, new_transaction = respond(response)
+                new_transaction = respond(response)
                 # Loop [terminal <-> server] dialog
                 self.make_transaction(action, new_transaction)

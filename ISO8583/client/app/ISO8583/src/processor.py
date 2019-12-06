@@ -54,11 +54,23 @@ def dispatch(transaction_data):
     return mapping[transaction_data['transaction_id']](transaction_data)
 
 
-def process(rs_transaction):
+def process(action, rs_transaction):
     transaction_data = parse(rs_transaction[6:-4])
-    print('Parsed transaction: ', transaction_data)
-    needs_answer = False
-    return needs_answer, transaction_data
+
+    if action in ['sale', 'refund', 'settlement']:
+        needs_answer = False
+        action = {
+            'sale96': 'sale_reversal',
+            'sale99': 'sale_upload',
+            'refund96': 'refund_reversal',
+            'refund99': 'refund_upload',
+            'settlement99': 'upload',
+        }[action + transaction_data['RC']]
+    else:
+        needs_answer = False
+        action = ''
+
+    return needs_answer, action, transaction_data
 
 
 def respond(transaction_data):

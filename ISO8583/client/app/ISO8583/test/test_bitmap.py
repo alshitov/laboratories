@@ -71,28 +71,28 @@ class TestBitmap(unittest.TestCase):
             result = Bitmap.from_action(action)
             self.assertEqual(result, bitmaps[i])
 
-    def test_test_rs(self):
-        result = Bitmap.test_rs()
+    def test_test_rq(self):
+        result = Bitmap.test_rq()
         self.assertEqual(result, '6016')
 
-    def test_sale_rs(self):
-        result = Bitmap.sale_rs()
+    def test_sale_rq(self):
+        result = Bitmap.sale_rq()
         self.assertEqual(result, '7f96')
 
-    def test_refund_rs(self):
-        result = Bitmap.refund_rs()
+    def test_refund_rq(self):
+        result = Bitmap.refund_rq()
         self.assertEqual(result, '7f96')
 
-    def test_balance_rs(self):
-        result = Bitmap.balance_rs()
+    def test_balance_rq(self):
+        result = Bitmap.balance_rq()
         self.assertEqual(result, '7e16')
 
-    def test_upload_rs(self):
-        result = Bitmap.upload_rs()
+    def test_upload_rq(self):
+        result = Bitmap.upload_rq()
         self.assertEqual(result, '7dd6')
 
-    def test_settlement_rs(self):
-        result = Bitmap.settlement_rs()
+    def test_settlement_rq(self):
+        result = Bitmap.settlement_rq()
         self.assertEqual(result, '6036')
 
 

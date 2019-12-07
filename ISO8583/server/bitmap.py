@@ -8,7 +8,7 @@ Transaction fields:
 02. Transaction ID  [n4]  |  +   +   +   +    +   +    +   +     +   +    +  +
 03. PAN             [n16] |          +   =    +   =    +   =     +   =
 04. Cardholder FCs  [v25] |          +   =    +   =    +   =     +   =
-05. Expiry Date     [v25] |          +   =    +   =    +   =     +   =
+05. Expiry Date     [n4]  |          +   =    +   =    +   =     +   =
 06. PIN             [n4]  |          +        +        +
 07. Amount          [n12] |          +   =    +   =        +     +   =
 08. Transaction No  [n10] |          +   =    +   =              +   =

@@ -1,94 +1,74 @@
 {
   "cards": {
     "0": {
-      "pan": 5420592894149290,
-      "exp_date": "11/2022",
-      "cvv": 235,
-      "pin": 2368,
-      "holder_fcs": "Prodigy MobbDeep",
-      "balance": 65436.3,
-      "type": "MASTERCARD"
+      "PAN": "5420592894149290",
+      "exp_date": "11/22",
+      "PIN": "2368",
+      "cardholder_name": "PRODIGYMOBBDEEP",
+      "balance": "65436.3"
     },
     "1": {
-      "pan": 4400460711298939,
-      "exp_date": "12/2021",
-      "cvv": 567,
-      "pin": 1488,
-      "holder_fcs": "Havoc MobbDeep",
-      "balance": 36377.78,
-      "type": "VISA"
+      "PAN": "4400460711298939",
+      "exp_date": "12/21",
+      "PIN": "1488",
+      "cardholder_name": "HAVOCMOBBDEEP",
+      "balance": "36377.78"
     },
     "2": {
-      "pan": 5344294204058732,
-      "exp_date": "10/2020",
-      "cvv": 185,
-      "pin": 5774,
-      "holder_fcs": "Rakim ThePresident",
-      "balance": 13456.0,
-      "type": "MASTERCARD"
+      "PAN": "5344294204058732",
+      "exp_date": "10/20",
+      "PIN": "5774",
+      "cardholder_name": "RAKIMTHEPRESIDENT",
+      "balance": "13456.0"
     },
     "3": {
-      "pan": 5407437372320376,
-      "exp_date": "05/2022",
-      "cvv": 655,
-      "pin": 9873,
-      "holder_fcs": "EricB ThePresident",
-      "balance": 74436.3,
-      "type": "VISA"
+      "PAN": "5407437372320376",
+      "exp_date": "05/22",
+      "PIN": "9873",
+      "cardholder_name": "ERICBTHEPRESIDENT",
+      "balance": "74436.3"
     },
     "4": {
-      "pan": 5407437372320376,
-      "exp_date": "12/2023",
-      "cvv": 123,
-      "pin": 1235,
-      "holder_fcs": "Peter Parker",
-      "balance": 85326.0,
-      "type": "MASTERCARD"
+      "PAN": "5407437372320376",
+      "exp_date": "12/23",
+      "PIN": "1235",
+      "cardholder_name": "PETERPARKER",
+      "balance": "85326.0"
     },
     "5": {
-      "pan": 4046009627047912,
-      "exp_date": "11/2021",
-      "cvv": 675,
-      "pin": 1356,
-      "holder_fcs": "Grace Brown",
-      "balance": 436.4,
-      "type": "VISA"
+      "PAN": "4046009627047912",
+      "exp_date": "11/21",
+      "PIN": "1356",
+      "cardholder_name": "GRACEBROWN",
+      "balance": "436.4"
     },
     "6": {
-      "pan": 5185974130163233,
-      "exp_date": "04/2020",
-      "cvv": 268,
-      "pin": 8394,
-      "holder_fcs": "Aiden Gianth",
-      "balance": 5432.3,
-      "type": "MASTERCARD"
+      "PAN": "5185974130163233",
+      "exp_date": "04/20",
+      "PIN": "8394",
+      "cardholder_name": "AIDENGIANTH",
+      "balance": "5432.3"
     },
     "7": {
-      "pan": 4209532571999765,
-      "exp_date": "01/2022",
-      "cvv": 643,
-      "pin": 1237,
-      "holder_fcs": "Etha White",
-      "balance": 5845.9,
-      "type": "VISA"
+      "PAN": "4209532571999765",
+      "exp_date": "01/22",
+      "PIN": "1237",
+      "cardholder_name": "ETHAWHITE",
+      "balance": "5845.9"
     },
     "8": {
-      "pan": 5420592894149290,
-      "exp_date": "02/2022",
-      "cvv": 654,
-      "pin": 1236,
-      "holder_fcs": "George Paul",
-      "balance": 83454.8,
-      "type": "MASTERCARD"
+      "PAN": "5420592894149290",
+      "exp_date": "02/22",
+      "PIN": "1236",
+      "cardholder_name": "GEORGEPAUL",
+      "balance": "83454.8"
     },
     "9": {
-      "pan": 4065064202066379,
-      "exp_date": "04/2021",
-      "cvv": 754,
-      "pin": 1267,
-      "holder_fcs": "Ashley Hill",
-      "balance": 8646.77,
-      "type": "VISA"
+      "PAN": "4065064202066379",
+      "exp_date": "04/21",
+      "PIN": "1267",
+      "cardholder_name": "ASHLEYHILL",
+      "balance": "8646.77"
     }
   }
 }

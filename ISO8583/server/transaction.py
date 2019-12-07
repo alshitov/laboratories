@@ -33,12 +33,12 @@ action_codes = {
     'test': '0020',
     'balance': '0220',
     'settlement': '0440',
-    'sale_first': '0120',
-    'refund_first': '0140',
-    'sale_reversal': '0121',
-    'refund_reversal': '0141',
-    'sale_upload': '0520',
-    'refund_upload': '0540'
+    'sale': '0120',
+    'refund': '0140'
+    # 'sale_reversal': '0121',
+    # 'refund_reversal': '0141',
+    # 'sale_upload': '0520',
+    # 'refund_upload': '0540'
 }
 
 to_log = ['0120', '0140', '0121', '0141', '0520', '0540']
@@ -97,6 +97,22 @@ class Transaction:
                     text_data=None,
                     RC=None):
 
+        print('TO TERMINAL', {
+            'bitmap': bitmap,
+            'transaction_id': transaction_id,
+            'PAN': PAN if PAN else '',
+            'cardholder_name': cls.format_cardholder_name(cardholder_name) if cardholder_name else '',
+            'expiry_date': expiry_date if expiry_date else '',
+            'PIN': PIN if PIN else '',
+            'amount': cls.format_amount(amount) if amount else '',
+            'transaction_no': cls.format_transaction_no(transaction_no) if transaction_no else '',
+            'RRN': cls.format_RRN(RRN) if RRN else '',
+            'text_data': cls.format_text_data(text_data) if text_data else '',
+            'terminal_id': terminal_id,
+            'RC': RC if RC else '',
+            'datetime': helpers.DateTime.datetime()
+        }, '\n')
+
         data = cls.data_template % {
             'bitmap': bitmap,
             'transaction_id': transaction_id,
@@ -118,6 +134,6 @@ class Transaction:
         return cls.template % {
             'start_sign': cls.start_sign,
             'protocol_version': cls.protocol_version,
-            'data': data,
+            'data': data.upper(),
             'end_sign': cls.end_sign
         }

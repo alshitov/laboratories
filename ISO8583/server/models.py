@@ -60,51 +60,15 @@ class Transaction:
     def get_uuid(self):
         return self.uuid
 
-    def to_dict(self):
-        return {
-            'uuid': self.uuid,
-            'session_uuid': self.session_uuid,
-            'type': self.type_,
-            'bitmap': self.bitmap,
-            'card': self.card.to_dict(),
-            'number': self.number,
-            'rrn': self.rrn,
-            'text': self.text,
-            'terminal_uuid': self.terminal_uuid,
-            'rc': self.rc,
-            'datetime': self.datetime,
-            'crc': self.crc
-        }
-
 
 class Card:
     storage = []
 
-    def __init__(self, _pan: int, _exp_date: str, _cvv: int, _pin: int,
-                 _holder_fcs: str, _balance: float, _type: str):
+    def __init__(self, _PAN: int, _exp_date: str, _PIN: int,
+                 _cardholder_name: str, _balance: float):
         self.uuid = UUID.uuid(self.storage)
-        self.pan = _pan
+        self.PAN = _PAN
         self.exp_date = _exp_date
-        self.cvv = _cvv
-        self.pin = _pin
-        self.holder_fcs = _holder_fcs
+        self.PIN = _PIN
+        self.cardholder_name = _cardholder_name
         self.balance = _balance
-        self.type_ = _type
-
-    def valid(self):
-        return DateTime.is_later(
-            self.exp_date,
-            DateTime.datetime()
-        )
-
-    def to_dict(self):
-        return {
-            'uuid': self.uuid,
-            'pan': self.pan,
-            'exp_date': self.exp_date,
-            'cvc': self.cvc,
-            'pin': self.pin,
-            'holder_fcs': self.holder_fcs,
-            'balance': self.balance,
-            'type': self.type_
-        }

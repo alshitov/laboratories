@@ -18,6 +18,7 @@ class ClientLogger:
 
     @classmethod
     def log(cls, data: dict):
+        print('LOG', data)
         with open(cls._file(data['terminal_id']), 'a') as fin:
             fin.write(cls.template % (
                 DateTime.datetime(),

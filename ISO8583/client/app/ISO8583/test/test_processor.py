@@ -89,8 +89,6 @@ class TestProcessor(unittest.TestCase):
         copy.update({'RC': RC})
         if financial:
             copy.update(self.financial_common_transaction_data)
-        # 01601e 0020 0000000000077f4c737c410012060809251fc5e1f0
-        # 6016002000000001230000000000037aedf2340a0012060811063856731e
         return ''.join([
             copy.get('bitmap', ''),
             copy.get('transaction_id', ''),

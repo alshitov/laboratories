@@ -1,4 +1,5 @@
-from server import app, database, logger
+import db
+database = db.DB()
 from bitmap import Bitmap
 from enums import ResponseCodes
 from models import Session
@@ -8,9 +9,8 @@ import version
 import exceptions as e
 
 
-CARDHOLDER_NAME_LENGTH = 0
-TEXT_DATA_LENGTH = 0
 RRN = 0
+PIN_TRY_COUNTER = 0
 
 
 # ------- COMMON WRAPPERS -------
@@ -26,27 +26,50 @@ def handle_unregistered_terminal_id_error(f):
     def wrapper(transaction_data):
         terminal_id = transaction_data['terminal_id']
         session = database.get_session(terminal_id)
+
         if session is None:
             _process_unregistered_terminal_id(transaction_data)
-        f(transaction_data)
+
+        return f(transaction_data)
+
     return wrapper
+
+def handle_timeout(f):
+    def wrapper(transaction_data):
+        received_datetime = transaction_data['datetime']
+        now_datetime = DateTime.datetime()
+
+        if DateTime.is_timeout(now_datetime, received_datetime):
+            _process_timeout(transaction_data)
+
+        return f(transaction_data)
+
+    return wrapper
+
 # ------- COMMON WRAPPERS END -------
 
 # ------- MAIN -------
 def parse(transaction):
     bitmap = Bitmap.unhexlify(transaction[:version.BITMAP_LENGTH])
     fields = _get_transaction_fields(bitmap)
-    transaction_data = {
+    transaction_data = {}
+
+    # First of all, parse cardholder_name (if presented)
+    # because its length will affect other fields
+    if 4 in fields:
+        transaction_data['cardholder_name'] = _get_cardholder_name(fields, transaction)
+
+    # Mandatory fields
+    transaction_data.update({
         'transaction_id': _get_transaction_id(fields, transaction),
         'terminal_id': _get_terminal_id(fields, transaction),
         'datetime': _get_datetime(fields, transaction),
         'CRC': _get_CRC(fields, transaction)
-    }
+    })
 
+    # Optional fields
     if 3 in fields:
         transaction_data['PAN'] = _get_PAN(fields, transaction)
-    if 4 in fields:
-        transaction_data['cardholder_name'] = _get_cardholder_name(fields, transaction)
     if 5 in fields:
         transaction_data['expiry_date'] = _get_expiry_date(fields, transaction)
     if 6 in fields:
@@ -68,12 +91,8 @@ def dispatch(transaction_data):
         '0010': _process_test_rq,
         '0210': _process_balance_rq,
         '0430': _process_settlement_rq,
-        '0110': _process_sale_rq
-        # '0130': _process_refund_rs,
-        # '0111': _process_sale_reversal_rs,
-        # '0131': _process_refund_reversal_rs,
-        # '0510': _process_sale_upload_rs,
-        # '0530': _process_refund_upload_rs,
+        '0110': _process_sale_rq,
+        '0130': _process_refund_rs
     }
     try:
         return mapping[transaction_data['transaction_id']](transaction_data)
@@ -108,7 +127,16 @@ def transaction(transaction):
 
 
 def _copy_transaction(transaction_data):
-    global RRN
+    # Add RRN for sale_rs, refund_rs
+    if transaction_data['transaction_id'] in ['0110', '0140']:
+        global RRN
+        rrn = RRN
+    # Copy RRN for upload_rs
+    elif transaction_data['transaction_id'] in ['0510', '0530']:
+        rrn = transaction_data['RRN']
+    else:
+        rrn = ''
+
     return Transaction.transaction(
         bitmap=transaction_data['bitmap'],
         transaction_id=transaction_data['transaction_id'],
@@ -119,7 +147,7 @@ def _copy_transaction(transaction_data):
         PIN=transaction_data.get('PIN', ''),
         amount=transaction_data.get('amount', ''),
         transaction_no=transaction_data.get('transaction_no', ''),
-        RRN=RRN,
+        RRN=rrn,
         text_data=transaction_data.get('text_data', ''),
         RC=transaction_data.get('RC', '')
     )
@@ -128,40 +156,29 @@ def _copy_transaction(transaction_data):
 
 # ------- DATA GETTERS -------
 def _get_transaction_fields(bitmap):
-    """ Get fields presence from bitmap
-    Note:
-        -> 0 bit is never used
-        -> 1, 2, 11, 13 and 14 bits are always true
-        -> 12 bit is never presented
-    """
     bits = [int(b) for b in bitmap]
-    transaction_fields = [index for index, bit in enumerate(bits[3:11]) if bit]
-    transaction_fields.extend([2, 11, 13, 14])
-    return transaction_fields
+    always = [2, 11, 13, 14]
+
+    transaction_fields = [index + 3 for index, bit in enumerate(bits[3:11]) if bit]
+
+    for i in always:
+        if i not in transaction_fields:
+            transaction_fields.append(i)
+    try:
+        transaction_fields.remove(0)
+    except ValueError:
+        pass
+
+    return sorted(transaction_fields)
 
 
 def _to_data_offset(fields_present, field_index):
-    """ According to fields_present, calculate the
-    offset to the field with given index """
-
-    common_offset = 4
+    offset = 4
     for field_no in fields_present:
         if field_no < field_index \
             and field_no in list(version.__lengths__.keys()):
-            common_offset += version.__lengths__[field_no]
-
-    if field_index <= 5:
-        # Do not take CARDHOLDER_NAME_LENGTH into account
-        return common_offset
-
-    if 5 < field_index <= 10:
-        # Do take CARDHOLDER_NAME_LENGTH into account
-        return common_offset + CARDHOLDER_NAME_LENGTH
-
-    else:
-        # Do take both CARDHOLDER_NAME_LENGTH
-        # & TEXT_DATA_LENGTH into account
-        return common_offset + CARDHOLDER_NAME_LENGTH + TEXT_DATA_LENGTH
+            offset += version.__lengths__[field_no]
+    return offset
 
 
 def _get_transaction_id(fields, transaction_str):
@@ -195,13 +212,16 @@ def _get_PAN(fields, transaction_str):
 
 
 def _get_cardholder_name(fields, transaction_str):
-    global CARDHOLDER_NAME_LENGTH
-    # 2 digits number in hex starting at 24 position
-    CARDHOLDER_FCS_LENGTH = int(transaction_str[24:26], base=16)
-
-    length = CARDHOLDER_FCS_LENGTH * 2
+    cardholder_name_length = int(transaction_str[24:26]) + 2
     offset = _to_data_offset(fields, version.CARDHOLDER_NAME_INDEX)
-    cardholder_name = transaction_str[offset: offset + length]
+    cardholder_name_hex = transaction_str[offset + 2: offset + cardholder_name_length]
+    cardholder_name = ''.join([
+        chr(int(cardholder_name_hex[(i * 2):(i * 2) + 2], base=16))
+        for i in range(int(len(cardholder_name_hex) / 2))
+    ])
+    version.__lengths__.update({
+        version.CARDHOLDER_NAME_INDEX: cardholder_name_length
+    })
     return cardholder_name
 
 
@@ -236,15 +256,9 @@ def _get_RRN(fields, transaction_str):
 
 
 def _get_text_data(fields, transaction_str):
-    text_data_length_offest = _to_data_offset(fields, version.TEXT_DATA_INDEX)
-    global TEXT_DATA_LENGTH
-    # 3 digits number in hex
-    TEXT_DATA_LENGTH = \
-        transaction_str[text_data_length_offest: text_data_length_offest + 3]
-
-    offset = text_data_length_offest + 3
-    length = TEXT_DATA_LENGTH * 2
-    text_data = transaction_str[offset: offset + length]
+    offset = _to_data_offset(fields, version.TEXT_DATA_INDEX)
+    text_data = transaction_str[offset: offset + version.TEXT_DATA_LENGTH]
+    #breakpoint()
     return text_data
 # ------- DATA GETTERS END -------
 
@@ -315,9 +329,12 @@ def _process_resume_revise_error(transaction_data):
 # ------- SECONDARY PROCESSORS END -------
 
 # ------- PROCESSORS -------
+@handle_timeout
 def _process_test_rq(transaction_data):
-    terminal_id = transaction_data['terminal_id']
+    """ Handle TO, create session for terminal or
+    respond with '00' if one created earlier """
 
+    terminal_id = transaction_data['terminal_id']
     session = database.get_session(terminal_id)
     if session is None:
         database.post_session(Session(terminal_id))
@@ -328,7 +345,17 @@ def _process_test_rq(transaction_data):
 
 
 @handle_unregistered_terminal_id_error
+@handle_timeout
 def _process_balance_rq(transaction_data):
+    """ Handle TO & UTID, return card balance if:
+    1) Card is known to host (exists) & card data is valid;
+    2) Card is not: expired, lost or stolen;
+    3) Pin tries is less than 3; """
+
+    # Check transaction data and raise errors if datasets mismatch
+
+
+
     transaction_data['bitmap'] = Bitmap.balance_rs()
     transaction_data['transaction_id'] = action_codes['balance']
 
@@ -344,14 +371,19 @@ def _process_balance_rq(transaction_data):
 
 
 @handle_unregistered_terminal_id_error
+@handle_timeout
 def _process_settlement_rq(transaction_data):
     pass
 
 
 @handle_unregistered_terminal_id_error
+@handle_timeout
 def _process_sale_rq(transaction_data):
-    terminal_id = transaction_data['terminal_id']
+    pass
 
-    transaction_data['bitmap'] = Bitmap.sale_rs()
-    transaction_data['transaction_id'] = action_codes['sale']
+
+@handle_unregistered_terminal_id_error
+@handle_timeout
+def _process_refund_rs(transaction_data):
+    pass
 # ------- PROCESSORS END -------

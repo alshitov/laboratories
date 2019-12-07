@@ -6,7 +6,7 @@ from .request import Request
 from .transaction import Transaction, action_codes, to_log
 from .bitmap import Bitmap
 from .helpers import UUID
-from .processor import process, respond
+from .processor import process, copy_transaction_data
 
 
 class Terminal:
@@ -15,30 +15,33 @@ class Terminal:
 
     def __init__(self):
         self.id = UUID.uuid(self.storage)
-        self.transaction_no = 0
-        self.sales_count = 0
-        self.sales_amount = 0
-        self.refunds_count = 0
-        self.refunds_amount = 0
+        self.state = {
+            'transaction_no': 0,
+            'sales_count': 0,
+            'sales_amount': 0,
+            'refunds_count': 0,
+            'refunds_amount': 0,
+        }
+
         # Create session
         self.make_transaction('test')
         # Create log file
         ClientLogger.create(self.id)
 
     def get_uuid(self):
-        return self.uuid
+        return self.id
 
     def log(self, data):
         ClientLogger.log(data)
 
     def get_log(self):
-        ClientLogger.get(self.uuid)
+        ClientLogger.get(self.id)
 
     def query(self, data):
         return self.host + '/transaction?data=' + urllib.parse.quote(data)
 
     def make_transaction(self, action, data=None, from_table=False):
-        self.transaction_no += 1
+        self.state['transaction_no'] += 1
 
         bitmap = Bitmap.from_action(action)
         transaction_id = action_codes[action]
@@ -62,7 +65,7 @@ class Terminal:
                     expiry_date=data.get('expiry_date', ''),
                     PIN=data.get('PIN', ''),
                     amount=data.get('amount', ''),
-                    transaction_no=data.get('transaction_no', ''),
+                    transaction_no=self.state['transaction_no'],
                     RRN=data.get('RRN', ''),
                     text_data=data.get('text_data', ''),
                 )
@@ -82,13 +85,13 @@ class Terminal:
         print('Received from host: ', data)
 
         # Log action
-        if transaction_id in to_log:
-            self.log({
-            'terminal_uuid': self.get_uuid(),
-            'transaction': transaction_data,
-            'response': response
-        })
-        # Try to get trasaction string from host response
+        # if transaction_id in to_log:
+        #     self.log({
+        #         'terminal_uuid': self.get_uuid(),
+        #         'transaction': transaction_data,
+        #         'response': response
+        #     })
+        # Try to get transaction string from host response
         try:
             rs_transaction = data['result']['transaction']
         except KeyError:
@@ -97,13 +100,10 @@ class Terminal:
 
         # Define whether response leads to further actions by terminal
         if rs_transaction:
-            needs_answer, action, response = process(action, rs_transaction)
-            print('Parsed transaction: ', response)
-            print('Needs answer: ', needs_answer)
-            print('Further action: ', action)
-
+            further_action = process(action, rs_transaction)
             # Make new transaction if needed
-            if needs_answer:
-                new_transaction = respond(response)
+            if further_action:
+                print('Further action: ', further_action)
+                transaction_data = copy_transaction_data(rs_transaction)
                 # Loop [terminal <-> server] dialog
-                self.make_transaction(action, new_transaction)
+                self.make_transaction(further_action, transaction_data)

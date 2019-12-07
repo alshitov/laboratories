@@ -32,8 +32,5 @@ class DateTime:
         return dt.strftime(t, cls.exp_date) < dt.now()
 
     @classmethod
-    def is_later(cls, t2, t1):
-        return (
-            dt.strptime(t2, cls.iso)
-            - dt.strptime(t1, cls.iso)
-        ).total_seconds() > 0
+    def is_timeout(cls, t1, t2):
+        return (dt.strptime(t2, cls.iso) - dt.strptime(t1, cls.iso)).total_seconds() > 5

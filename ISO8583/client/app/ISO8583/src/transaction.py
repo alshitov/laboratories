@@ -77,7 +77,7 @@ class Transaction:
     def format_cardholder_name(cls, cardholder_name):
         """ Each letter to hex from ascii code """
         cardholder_name = cardholder_name.replace(' ', '')
-        return str(len(cardholder_name)) + \
+        return str(len(cardholder_name) * 2) + \
             ''.join([hex(ord(l))[2:] for l in cardholder_name])
 
     @classmethod
@@ -150,6 +150,22 @@ class Transaction:
             'RC': RC if RC else '',
             'datetime': DateTime.datetime()
         }
+
+        print('OF TRANSACTION', {
+            'bitmap': bitmap,
+            'transaction_id': transaction_id,
+            'PAN': PAN if PAN else '',
+            'cardholder_name': cls.format_cardholder_name(cardholder_name) if cardholder_name else '',
+            'expiry_date': expiry_date if expiry_date else '',
+            'PIN': PIN if PIN else '',
+            'amount': cls.format_amount(amount) if amount else '',
+            'transaction_no': cls.format_transaction_no(transaction_no) if transaction_no else '',
+            'RRN': cls.format_RRN(RRN) if RRN else '',
+            'text_data': cls.format_text_data(text_data) if text_data else '',
+            'terminal_id': terminal_id,
+            'RC': RC if RC else '',
+            'datetime': DateTime.datetime()
+        })
 
         data += cls.format_CRC(data)
 

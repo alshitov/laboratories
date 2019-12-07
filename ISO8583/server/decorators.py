@@ -40,11 +40,11 @@ def response_decorator(f):
                 'message': dbe.message
             })
 
-        except Exception as e:
-            return jsonify({
-                'error': e.args,
-                'code': 500,
-                'status': "EXCEPTION"
-            })
+        # except Exception as e:
+        #     return jsonify({
+        #         'error': e.args,
+        #         'code': 500,
+        #         'status': "EXCEPTION"
+        #     })
 
     return wrapper

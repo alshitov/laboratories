@@ -52,6 +52,7 @@ def handle_timeout(f):
 def parse(transaction):
     bitmap = Bitmap.unhexlify(transaction[:version.BITMAP_LENGTH])
     fields = _get_transaction_fields(bitmap)
+    print(fields)
     transaction_data = {}
 
     # First of all, parse cardholder_name (if presented)
@@ -77,6 +78,7 @@ def parse(transaction):
     if 7 in fields:
         transaction_data['amount'] = _get_amount(fields, transaction)
     if 8 in fields:
+        print('TR')
         transaction_data['transaction_no'] = _get_transaction_no(fields, transaction)
     if 9 in fields:
         transaction_data['RRN'] = _get_RRN(fields, transaction)
@@ -344,7 +346,7 @@ def _process_test_rq(transaction_data):
     return _process_accepted_and_implemented(transaction_data)
 
 
-@handle_unregistered_terminal_id_error
+# @handle_unregistered_terminal_id_error
 @handle_timeout
 def _process_balance_rq(transaction_data):
     """ Handle TO & UTID, return card balance if:
@@ -352,21 +354,31 @@ def _process_balance_rq(transaction_data):
     2) Card is not: expired, lost or stolen;
     3) Pin tries is less than 3; """
 
-    # Check transaction data and raise errors if datasets mismatch
-
-
-
     transaction_data['bitmap'] = Bitmap.balance_rs()
     transaction_data['transaction_id'] = action_codes['balance']
 
-    card = database.get_card(transaction_data['PAN'])
-    if card is None:
-        _process_invalid_pan(transaction_data)
-    if card.pin != transaction_data['PIN']:
-        _process_invalid_pin(transaction_data)
-    if DateTime.is_card_expired(card.exp_date):
-        _process_card_expired(transaction_data)
+    # Check card data and raise errors if datasets mismatch
+    PAN = transaction_data['PAN']
+    cardholder_name = transaction_data['cardholder_name']
+    expiry_date = transaction_data['expiry_date']
+    PIN = transaction_data['PIN']
 
+    card = database.get_card(PAN)
+
+    print(card.__dict__)
+    print(cardholder_name, card.cardholder_name)
+
+    if (card is None) or (cardholder_name != card.cardholder_name):
+        return _process_invalid_pan(transaction_data)
+    if DateTime.is_card_expired(expiry_date):
+        return _process_card_expired(transaction_data)
+    if card.PIN != PIN:
+        return _process_invalid_pin(transaction_data)
+
+    transaction_data['bitmap'] = Bitmap.balance_rs()
+    transaction_data['transaction_id'] = action_codes['balance']
+    transaction_data['amount'] = Transaction.format_amount(card.balance)
+    print('ORIG', transaction_data)
     return _process_accepted_and_implemented(transaction_data)
 
 

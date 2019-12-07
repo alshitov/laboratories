@@ -83,6 +83,12 @@ class Transaction:
         return hex(crc32(bytes(transaction, 'utf-8')))[2:]
 
     @classmethod
+    def format_cardholder_name(cls, cardholder_name):
+        cardholder_name = cardholder_name.replace(' ', '')
+        return str(len(cardholder_name) * 2) + \
+            ''.join([hex(ord(l))[2:] for l in cardholder_name])
+
+    @classmethod
     def transaction(cls,
                     bitmap,
                     transaction_id,

@@ -15,8 +15,6 @@ class UUID:
 
 class DateTime:
     iso = "%m%d%H%M%S"
-    exp_date = "%y%m"
-    formatted = "%m/%d %H:%M:%S"
 
     @classmethod
     def datetime(cls):
@@ -29,7 +27,11 @@ class DateTime:
 
     @classmethod
     def is_card_expired(cls, t):
-        return dt.strftime(t, cls.exp_date) < dt.now()
+        now = dt.now()
+        now_y = int(str(now.year)[2:])
+        now_m = now.month
+        return int(t) < int(str(now_y) + str(now_m))
+
 
     @classmethod
     def is_timeout(cls, t1, t2):

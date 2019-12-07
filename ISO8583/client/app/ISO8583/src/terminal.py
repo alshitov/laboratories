@@ -42,6 +42,7 @@ class Terminal:
 
     def make_transaction(self, action, data=None, from_table=False):
         self.state['transaction_no'] += 1
+        need_transaction_no = action in ['sale', 'refund', 'upload']
 
         bitmap = Bitmap.from_action(action)
         transaction_id = action_codes[action]
@@ -52,6 +53,7 @@ class Terminal:
             transaction_data = Transaction.transaction(
                 bitmap=bitmap,
                 transaction_id=transaction_id,
+                transaction_no=self.state['transaction_no'] if need_transaction_no else '',
                 terminal_id=self.id
             )
         else:
@@ -65,7 +67,7 @@ class Terminal:
                     expiry_date=data.get('expiry_date', ''),
                     PIN=data.get('PIN', ''),
                     amount=data.get('amount', ''),
-                    transaction_no=self.state['transaction_no'],
+                    transaction_no=self.state['transaction_no'] if need_transaction_no else '',
                     RRN=data.get('RRN', ''),
                     text_data=data.get('text_data', ''),
                 )
@@ -86,11 +88,11 @@ class Terminal:
 
         # Log action
         # if transaction_id in to_log:
-        #     self.log({
-        #         'terminal_uuid': self.get_uuid(),
-        #         'transaction': transaction_data,
-        #         'response': response
-        #     })
+        self.log({
+            'terminal_id': self.get_uuid(),
+            'transaction': transaction_data,
+            'response': response
+        })
         # Try to get transaction string from host response
         try:
             rs_transaction = data['result']['transaction']

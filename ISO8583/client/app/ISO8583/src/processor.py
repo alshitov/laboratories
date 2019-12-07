@@ -4,10 +4,9 @@ from . import version
 
 
 CARDHOLDER_NAME_LENGTH = 0
-TEXT_DATA_LENGTH = 0
 
 
-def parse(transaction):
+def parse(action, transaction):
     transaction_str = transaction[6:-4]
     bitmap = Bitmap.unhexlify(transaction_str[:version.BITMAP_LENGTH])
     fields = _get_transaction_fields(bitmap)
@@ -15,7 +14,9 @@ def parse(transaction):
 
 
 def process(action, rs_transaction):
-    print('RC', parse(rs_transaction))
+    if action in ['sale', 'refund', 'balance', 'upload']:
+        _handle_cardholder_name(rs_transaction)
+
     if action in ['sale', 'refund', 'settlement']:
         return {
             'sale96': 'sale_reversal',
@@ -23,7 +24,7 @@ def process(action, rs_transaction):
             'refund96': 'refund_reversal',
             'refund99': 'refund_upload',
             'settlement99': 'upload',
-        }[action + parse(rs_transaction)]
+        }[action + parse(action, rs_transaction)]
     else:
         return ''
 
@@ -47,30 +48,23 @@ def copy_transaction_data(transaction_data):
 
 
 def _to_data_offset(fields_present, field_index):
-    # Offset for bitmap
-    common_offset = 4
+    offset = 4
     for field_no in fields_present:
         if field_no < field_index \
             and field_no in list(version.__lengths__.keys()):
-            common_offset += version.__lengths__[field_no]
-            print(field_no, '->', version.__lengths__[field_no], '=>', common_offset )
+            offset += version.__lengths__[field_no]
+    return offset
 
-    if field_index <= 5:
-        # Do not take CARDHOLDER_NAME_LENGTH into account
-        return common_offset
 
-    if 5 < field_index <= 10:
-        # Do take CARDHOLDER_NAME_LENGTH into account
-        return common_offset + CARDHOLDER_NAME_LENGTH
-
-    else:
-        # Do take both CARDHOLDER_NAME_LENGTH
-        # & TEXT_DATA_LENGTH into account
-        return common_offset + CARDHOLDER_NAME_LENGTH + TEXT_DATA_LENGTH
+def _handle_cardholder_name(transaction_str):
+    cardholder_name_length = int(transaction_str[30:32])
+    version.__lengths__.update({
+        version.CARDHOLDER_NAME_INDEX: cardholder_name_length
+    })
 
 
 def _get_RC(fields, transaction_str):
-    print(version.RC_INDEX)
+    _handle_cardholder_name(fields, transaction_str)
     offset = _to_data_offset(fields, version.RC_INDEX)
     RC = transaction_str[offset: offset + version.RC_LENGTH]
     return RC

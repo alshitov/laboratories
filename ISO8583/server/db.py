@@ -42,8 +42,8 @@ class DB:
                 self.post_card(m.Card(
                     card_json['PAN'],
                     card_json['exp_date'],
-                    card_json['pin'],
-                    card_json['holder_fcs'],
+                    card_json['PIN'],
+                    card_json['cardholder_name'],
                     card_json['balance'],
                 ))
 

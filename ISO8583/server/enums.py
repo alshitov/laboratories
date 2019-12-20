@@ -14,4 +14,4 @@ class ResponseCodes(Enum):
     INVALID_PIN = '55'
     TIMEOUT = '96'
     UNREGISTERED_TERMINAL_ID = '98'
-    RESUME_REVISE_ERROR = '99'
+    REVISION_ERROR = '99'

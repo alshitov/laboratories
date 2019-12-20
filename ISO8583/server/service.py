@@ -1,5 +1,4 @@
-import db
-database = db.DB()
+from server import database
 from bitmap import Bitmap
 from enums import ResponseCodes
 from models import Session
@@ -26,13 +25,13 @@ def handle_unregistered_terminal_id_error(f):
     def wrapper(transaction_data):
         terminal_id = transaction_data['terminal_id']
         session = database.get_session(terminal_id)
-
         if session is None:
             _process_unregistered_terminal_id(transaction_data)
 
         return f(transaction_data)
 
     return wrapper
+
 
 def handle_timeout(f):
     def wrapper(transaction_data):
@@ -46,13 +45,32 @@ def handle_timeout(f):
 
     return wrapper
 
+
+def card_operation(f):
+    def wrapper(transaction_data):
+        PAN = transaction_data['PAN']
+        cardholder_name = transaction_data['cardholder_name']
+        expiry_date = transaction_data['expiry_date']
+        PIN = transaction_data['PIN']
+
+        card = database.get_card(PAN)
+
+        if (card is None) or (cardholder_name != card.cardholder_name):
+            return _process_invalid_pan(transaction_data)
+        if DateTime.is_card_expired(expiry_date):
+            return _process_card_expired(transaction_data)
+        if card.PIN != PIN:
+            return _process_invalid_pin(transaction_data)
+
+        return f(transaction_data)
+
+    return wrapper
 # ------- COMMON WRAPPERS END -------
 
 # ------- MAIN -------
 def parse(transaction):
     bitmap = Bitmap.unhexlify(transaction[:version.BITMAP_LENGTH])
     fields = _get_transaction_fields(bitmap)
-    print(fields)
     transaction_data = {}
 
     # First of all, parse cardholder_name (if presented)
@@ -78,7 +96,6 @@ def parse(transaction):
     if 7 in fields:
         transaction_data['amount'] = _get_amount(fields, transaction)
     if 8 in fields:
-        print('TR')
         transaction_data['transaction_no'] = _get_transaction_no(fields, transaction)
     if 9 in fields:
         transaction_data['RRN'] = _get_RRN(fields, transaction)
@@ -92,13 +109,22 @@ def dispatch(transaction_data):
     mapping = {
         '0010': _process_test_rq,
         '0210': _process_balance_rq,
-        '0430': _process_settlement_rq,
         '0110': _process_sale_rq,
-        '0130': _process_refund_rs
+        '0130': _process_refund_rs,
+        '0430': _process_settlement_rq,
     }
+
+    print(transaction_data)
+
+    if transaction_data['transaction_id'] == '0430':
+        print('DO')
+        return _process_settlement_rq(transaction_data)
+
     try:
         return mapping[transaction_data['transaction_id']](transaction_data)
     except KeyError:
+        print(transaction_data['transaction_id'], 'not found!')
+        transaction_data['bitmap'] = '0000'
         return _process_transaction_not_found(transaction_data)
 
 
@@ -260,7 +286,6 @@ def _get_RRN(fields, transaction_str):
 def _get_text_data(fields, transaction_str):
     offset = _to_data_offset(fields, version.TEXT_DATA_INDEX)
     text_data = transaction_str[offset: offset + version.TEXT_DATA_LENGTH]
-    #breakpoint()
     return text_data
 # ------- DATA GETTERS END -------
 
@@ -325,8 +350,8 @@ def _process_unregistered_terminal_id(transaction_data):
     return {'transaction': _copy_transaction(transaction_data)}
 
 
-def _process_resume_revise_error(transaction_data):
-    transaction_data['RC'] = ResponseCodes['RESUME_REVISE_ERROR'].value
+def _process_revision_error(transaction_data):
+    transaction_data['RC'] = ResponseCodes['REVISION_ERROR'].value
     return {'transaction': _copy_transaction(transaction_data)}
 # ------- SECONDARY PROCESSORS END -------
 
@@ -346,56 +371,81 @@ def _process_test_rq(transaction_data):
     return _process_accepted_and_implemented(transaction_data)
 
 
-# @handle_unregistered_terminal_id_error
+@handle_unregistered_terminal_id_error
 @handle_timeout
+@card_operation
 def _process_balance_rq(transaction_data):
-    """ Handle TO & UTID, return card balance if:
-    1) Card is known to host (exists) & card data is valid;
-    2) Card is not: expired, lost or stolen;
-    3) Pin tries is less than 3; """
-
     transaction_data['bitmap'] = Bitmap.balance_rs()
     transaction_data['transaction_id'] = action_codes['balance']
 
-    # Check card data and raise errors if datasets mismatch
-    PAN = transaction_data['PAN']
-    cardholder_name = transaction_data['cardholder_name']
-    expiry_date = transaction_data['expiry_date']
-    PIN = transaction_data['PIN']
+    card = database.get_card(transaction_data['PAN'])
 
-    card = database.get_card(PAN)
-
-    print(card.__dict__)
-    print(cardholder_name, card.cardholder_name)
-
-    if (card is None) or (cardholder_name != card.cardholder_name):
-        return _process_invalid_pan(transaction_data)
-    if DateTime.is_card_expired(expiry_date):
-        return _process_card_expired(transaction_data)
-    if card.PIN != PIN:
-        return _process_invalid_pin(transaction_data)
-
-    transaction_data['bitmap'] = Bitmap.balance_rs()
-    transaction_data['transaction_id'] = action_codes['balance']
     transaction_data['amount'] = Transaction.format_amount(card.balance)
-    print('ORIG', transaction_data)
     return _process_accepted_and_implemented(transaction_data)
 
 
 @handle_unregistered_terminal_id_error
 @handle_timeout
 def _process_settlement_rq(transaction_data):
-    pass
+    transaction_data['bitmap'] = Bitmap.settlement_rs()
+    transaction_data['transaction_id'] = action_codes['settlement']
+
+    terminal_id = transaction_data['terminal_id']
+    text_data = transaction_data['text_data']
+
+    session = database.get_session(terminal_id)
+    session_text_data = Transaction._format_text_data(
+        session.sales_count,
+        session.sales_amount,
+        session.refund_count,
+        session.refund_amount
+    )
+    if session_text_data != text_data:
+        _process_revision_error(transaction_data)
+
+    _process_accepted_and_implemented(transaction_data)
 
 
 @handle_unregistered_terminal_id_error
 @handle_timeout
+@card_operation
 def _process_sale_rq(transaction_data):
-    pass
+    transaction_data['bitmap'] = Bitmap.sale_rs()
+    terminal_id = transaction_data['terminal_id']
+
+    card = database.get_card(transaction_data['PAN'])
+    amount = transaction_data['amount']
+    sell_amount = int(amount[:-2]) + float(amount[-2:]) / 100
+
+    if card.balance < sell_amount:
+        return _process_insufficient_funds(transaction_data)
+
+    session = database.get_session(terminal_id)
+    session.add_sell(sell_amount)
+    card.buy(sell_amount)
+    database.save_state()
+
+    transaction_data['transaction_id'] = action_codes['sale']
+    return _process_accepted_and_implemented(transaction_data)
 
 
 @handle_unregistered_terminal_id_error
 @handle_timeout
+@card_operation
 def _process_refund_rs(transaction_data):
-    pass
+    transaction_data['bitmap'] = Bitmap.sale_rs()
+    terminal_id = transaction_data['terminal_id']
+
+    card = database.get_card(transaction_data['PAN'])
+    amount = transaction_data['amount']
+    refund_amount = int(amount[:-2]) + float(amount[-2:]) / 100
+
+    session = database.get_session(terminal_id)
+    session.add_refund(refund_amount)
+    card.deposit(refund_amount)
+    database.save_state()
+
+
+    transaction_data['transaction_id'] = action_codes['refund']
+    return _process_accepted_and_implemented(transaction_data)
 # ------- PROCESSORS END -------

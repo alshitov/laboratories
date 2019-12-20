@@ -63,7 +63,7 @@ class TestBitmap(unittest.TestCase):
             '7f96',
             '7f96',
             '7e16',
-            '7dd6',
+            '7dde',
             '6036',
         ]
 
@@ -89,7 +89,7 @@ class TestBitmap(unittest.TestCase):
 
     def test_upload_rq(self):
         result = Bitmap.upload_rq()
-        self.assertEqual(result, '7dd6')
+        self.assertEqual(result, '7dde')
 
     def test_settlement_rq(self):
         result = Bitmap.settlement_rq()

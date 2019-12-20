@@ -36,6 +36,7 @@ class Model(QtWidgets.QMainWindow, model_ui.Ui_Model):
         self.tableDataLabel.setText(self.table_values())
 
     def list_log(self):
+        self.terminalLogList.clear()
         try:
             log = src.ClientLogger.get(self.terminal.id)
             if log:
@@ -84,12 +85,9 @@ class Model(QtWidgets.QMainWindow, model_ui.Ui_Model):
             if len(exp_date_month) == 1:
                 exp_date_month = '0' + exp_date_month
 
-            if action == 'test':
-                data.update({
-                    'bitmap': '0010',
-                })
-            elif action == 'sale':
+            if action == 'sale':
                 amount = str(random.randint(1000, 1000000))
+                print('Sending transaction with: ', amount)
                 amount = '0' * (12 - len(amount)) + amount
                 data.update({
                     'PAN': str(self.panLineEdit.text()),

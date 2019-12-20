@@ -8,7 +8,7 @@ class Session:
         self.uuid = UUID.uuid(self.storage)
         self.sell_counter = 0
         self.sell_total = 0
-        self.refund_count = 0
+        self.refund_counter = 0
         self.refund_total = 0
         self.terminal_id = _terminal_id
         self.datetime = DateTime.datetime()
@@ -25,7 +25,7 @@ class Session:
 
     def add_refund(self, amount):
         self.refund_counter += 1
-        self.refund_total -= amount
+        self.refund_total += amount
 
     def to_dict(self):
         return {
@@ -72,3 +72,18 @@ class Card:
         self.PIN = _PIN
         self.cardholder_name = _cardholder_name
         self.balance = _balance
+
+    def buy(self, amount):
+        self.balance -= round(amount, 2)
+
+    def deposit(self, amount):
+        self.balance += amount
+
+    def to_dict(self):
+        return {
+            "PAN": self.PAN,
+            "exp_date": self.exp_date,
+            "PIN": self.PIN,
+            "cardholder_name": self.cardholder_name,
+            "balance": round(self.balance, 2)
+        }

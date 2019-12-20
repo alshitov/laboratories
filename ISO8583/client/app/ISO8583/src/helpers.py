@@ -11,11 +11,6 @@ class DateTime:
         return str(dt.strftime(dt.now(), cls.iso))
 
     @classmethod
-    def from_datetime(cls, t):
-        stamp = dt.strptime(t, cls.iso)
-        return dt.strftime(stamp, cls.formated)
-
-    @classmethod
     def is_later(cls, t2, t1):
         return (
             dt.strptime(t2, cls.iso)
@@ -27,6 +22,9 @@ class UUID:
     @classmethod
     def uuid(cls, storage: list):
         uuid = hex(random.getrandbits(40))[2:]
+
+        if len(uuid) == 9:
+            uuid = '0' + uuid
 
         if uuid in storage:
             return cls.uuid()

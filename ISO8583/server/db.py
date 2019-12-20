@@ -8,6 +8,7 @@ class DB:
     sessions = []
 
     def __init__(self):
+        print(' * Initializing Database...')
         self.load_test_data()
 
     def post_card(self, _card: m.Card):
@@ -47,4 +48,10 @@ class DB:
                     card_json['balance'],
                 ))
 
+    def save_state(self):
+        with open('test_data.json', 'w') as fin:
+            obj = {"cards": {}}
+            for i, card in enumerate(self.cards):
+                obj['cards'].update({i: card.to_dict()})
 
+            json.dump(obj, fin, ensure_ascii=False, indent=2, sort_keys=True)

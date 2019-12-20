@@ -103,22 +103,30 @@ class Transaction:
         'sales_count(3) sales_sum(12) refund_count(3) refund_sum(12)'
         Pad each entry to its desired length
         """
-        result = ''
+        return '%s%s%s%s' % (
+            cls.pad(str(sales_count).replace('.', ''), 3),
+            cls.pad(str(sales_sum).replace('.', ''), 12),
+            cls.pad(str(refund_count).replace('.', ''), 3),
+            cls.pad(str(refund_sum).replace('.', ''), 12)
+        )
 
-        for index, entry in enumerate([sales_count, sales_sum, refund_count, refund_sum]):
-            text_data_str = str(entry).replace('.', '')
-            zeros_cnt = int(3 + (((-1) ** (index + 1) + 1) * 4.5))
-
-            while len(text_data_str) < zeros_cnt:
-                text_data_str = '0' + text_data_str
-            else:
-                result += text_data_str + ' '
-
-        return result[:-1]
+        # OLD
+        # result = ''
+        # for index, entry in enumerate([sales_count, sales_sum, refund_count, refund_sum]):
+        #     text_data_str = str(entry).replace('.', '')
+        #     zeros_cnt = int(3 + (((-1) ** (index + 1) + 1) * 4.5))
+        #     while len(text_data_str) < zeros_cnt:
+        #         text_data_str = '0' + text_data_str
+        #     else:
+        #         result += text_data_str + ' '
+        # return result[:-1]
 
     @classmethod
     def format_CRC(cls, transaction):
-        return hex(crc32(bytes(transaction, 'utf-8')))[2:]
+        CRC = str(hex(crc32(bytes(transaction, 'utf-8')))[2:])
+        if len(CRC) == 7:
+            CRC = '0' + CRC
+        return CRC
 
     @classmethod
     def transaction(cls,
@@ -145,27 +153,11 @@ class Transaction:
             'amount': cls.format_amount(amount) if amount else '',
             'transaction_no': cls.format_transaction_no(transaction_no) if transaction_no else '',
             'RRN': cls.format_RRN(RRN) if RRN else '',
-            'text_data': cls.format_text_data(text_data) if text_data else '',
+            'text_data': text_data if text_data else '',
             'terminal_id': terminal_id,
             'RC': RC if RC else '',
             'datetime': DateTime.datetime()
         }
-
-        print('OF TRANSACTION', {
-            'bitmap': bitmap,
-            'transaction_id': transaction_id,
-            'PAN': PAN if PAN else '',
-            'cardholder_name': cls.format_cardholder_name(cardholder_name) if cardholder_name else '',
-            'expiry_date': expiry_date if expiry_date else '',
-            'PIN': PIN if PIN else '',
-            'amount': cls.format_amount(amount) if amount else '',
-            'transaction_no': cls.format_transaction_no(transaction_no) if transaction_no else '',
-            'RRN': cls.format_RRN(RRN) if RRN else '',
-            'text_data': cls.format_text_data(text_data) if text_data else '',
-            'terminal_id': terminal_id,
-            'RC': RC if RC else '',
-            'datetime': DateTime.datetime()
-        })
 
         data += cls.format_CRC(data)
 

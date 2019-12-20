@@ -3,21 +3,6 @@ from src.transaction import Transaction, action_codes, to_log
 
 
 class TestTransaction(unittest.TestCase):
-    def test_format_cardholder_name(self):
-        cardholder_name = 'LEONARDODAVINCI'
-        cardholder_name_w_spaces = 'LEONARDO DA VINCI'
-        result = '154c454f4e4152444f444156494e4349'
-
-        self.assertEqual(
-            Transaction.format_cardholder_name(cardholder_name),
-            result
-        )
-
-        self.assertEqual(
-            Transaction.format_cardholder_name(cardholder_name_w_spaces),
-            result
-        )
-
     def test_pad(self):
         strings = [
             '1', '12', '123', '1234', '12345', '123456', '1234567', '12345678',
@@ -139,3 +124,128 @@ class TestTransaction(unittest.TestCase):
                 string = strings[j]
                 result = Transaction.pad(string, length)
                 self.assertEqual(result, results[i][j])
+
+    # As long as Transaction.pad is tested, it does not make
+    # big sense in testing all the pad variants in further methods
+
+    def test_format_cardholder_name(self):
+        cardholder_name = 'LEONARDODAVINCI'
+        cardholder_name_w_spaces = 'LEONARDO DA VINCI'
+        result = '304c454f4e4152444f444156494e4349'
+
+        self.assertEqual(
+            Transaction.format_cardholder_name(cardholder_name),
+            result
+        )
+
+        self.assertEqual(
+            Transaction.format_cardholder_name(cardholder_name_w_spaces),
+            result
+        )
+
+    def test_format_amount(self):
+        amount = '123462'
+        result = '000000123462'
+        self.assertEqual(Transaction.format_amount(amount), result)
+
+    def test_format_transaction_no(self):
+        transaction_no = '123'
+        result = '0000000123'
+        self.assertEqual(Transaction.format_transaction_no(transaction_no), result)
+
+    def test_format_RRN(self):
+        RRN = '542'
+        result = '000000000542'
+        self.assertEqual(Transaction.format_RRN(RRN), result)
+
+    def test_format_text_data(self):
+        sales_count = 13
+        sales_sum   = 12341.55
+        refund_count = 3
+        refund_sum = 3253.12
+
+        result = '013000001234155003000000325312'
+        self.assertEqual(
+            Transaction.format_text_data(
+                sales_count,
+                sales_sum,
+                refund_count,
+                refund_sum
+            ),
+            result
+        )
+
+    def test_transaction(self):
+        # -----
+        # Positional set (bitmap, transaction_id, terminal_id)
+        bitmap = '6016'
+        transaction_id = '0020'
+        terminal_id = '7aedf2340a'
+
+        # Common financial set (PAN, cardholder_name, expiry_date, PIN)
+        PAN = "54024372342320346"
+        cardholder_name = "ERICBTHEPRESIDENT"
+        expiry_date = "2205"
+        PIN = "9873"
+        # -----
+
+        # Test set ()
+        result = Transaction.transaction(
+            bitmap=bitmap,
+            transaction_id=transaction_id,
+            terminal_id=terminal_id
+        )
+        self.assertEqual(result[:-22], "000201601600207aedf2340a")
+
+        # Sale/refund set (...positional set, ...common financial set, amount, transaction_no)
+        amount = 1325.43
+        transaction_no = 123
+
+        result = Transaction.transaction(
+            bitmap=bitmap,
+            transaction_id=transaction_id,
+            PAN=PAN,
+            cardholder_name=cardholder_name,
+            expiry_date=expiry_date,
+            PIN=PIN,
+            amount=amount,
+            transaction_no=transaction_no,
+            terminal_id=terminal_id
+        )
+        self.assertEqual(result[:-22], "0002016016002054024372342320346344552494342544845505245534944454e542205987300000013254300000001237aedf2340a")
+
+        # Balance set (...positional_set, ...common financial set)
+        result = Transaction.transaction(
+            bitmap=bitmap,
+            transaction_id=transaction_id,
+            PAN=PAN,
+            cardholder_name=cardholder_name,
+            expiry_date=expiry_date,
+            PIN=PIN,
+            terminal_id=terminal_id
+        )
+        self.assertEqual(result[:-22], "0002016016002054024372342320346344552494342544845505245534944454e54220598737aedf2340a")
+
+        # Upload set (...positional set, ...common financial set, transaction_no, RRN)
+        RRN = 3
+        result = Transaction.transaction(
+            bitmap=bitmap,
+            transaction_id=transaction_id,
+            PAN=PAN,
+            cardholder_name=cardholder_name,
+            expiry_date=expiry_date,
+            transaction_no=transaction_no,
+            RRN=RRN,
+            terminal_id=terminal_id
+        )
+        self.assertEqual(result[:-22], "0002016016002054024372342320346344552494342544845505245534944454e54220500000001230000000000037aedf2340a")
+
+        # Settlement set (text_data)
+        text_data = '01200003242760010000005672'
+        result = Transaction.transaction(
+            bitmap=bitmap,
+            transaction_id=transaction_id,
+            text_data=text_data,
+            terminal_id=terminal_id
+        )
+        self.assertEqual(result[:-22], "00020160160020012000032427600100000056727aedf2340a")

@@ -34,11 +34,11 @@ action_codes = {
     'balance': '0220',
     'settlement': '0440',
     'sale': '0120',
-    'refund': '0140'
-    # 'sale_reversal': '0121',
-    # 'refund_reversal': '0141',
-    # 'sale_upload': '0520',
-    # 'refund_upload': '0540'
+    'refund': '0140',
+    'sale_reversal': '0121',
+    'refund_reversal': '0141',
+    'sale_upload': '0520',
+    'refund_upload': '0540'
 }
 
 to_log = ['0120', '0140', '0121', '0141', '0520', '0540']
@@ -74,13 +74,21 @@ class Transaction:
         return '{0}{1}'.format('0' * (12 - len(amount_str)), amount_str)
 
     @classmethod
+    def format_transaction_no(cls, transaction_no):
+        transaction_no_str = str(transaction_no)
+        return '{0}{1}'.format('0' * (10 - len(transaction_no_str)), transaction_no_str)
+
+    @classmethod
     def format_RRN(cls, RRN):
         RRN_str = str(RRN)
         return '{0}{1}'.format('0' * (12 - len(RRN_str)), RRN_str)
 
     @classmethod
     def format_CRC(cls, transaction):
-        return hex(crc32(bytes(transaction, 'utf-8')))[2:]
+        CRC = str(hex(crc32(bytes(transaction, 'utf-8')))[2:])
+        if len(CRC) == 7:
+            CRC = '0' + CRC
+        return CRC
 
     @classmethod
     def format_cardholder_name(cls, cardholder_name):
@@ -103,22 +111,6 @@ class Transaction:
                     text_data=None,
                     RC=None):
 
-        print('TO TERMINAL', {
-            'bitmap': bitmap,
-            'transaction_id': transaction_id,
-            'PAN': PAN if PAN else '',
-            'cardholder_name': cls.format_cardholder_name(cardholder_name) if cardholder_name else '',
-            'expiry_date': expiry_date if expiry_date else '',
-            'PIN': PIN if PIN else '',
-            'amount': cls.format_amount(amount) if amount else '',
-            'transaction_no': cls.format_transaction_no(transaction_no) if transaction_no else '',
-            'RRN': cls.format_RRN(RRN) if RRN else '',
-            'text_data': cls.format_text_data(text_data) if text_data else '',
-            'terminal_id': terminal_id,
-            'RC': RC if RC else '',
-            'datetime': helpers.DateTime.datetime()
-        }, '\n')
-
         data = cls.data_template % {
             'bitmap': bitmap,
             'transaction_id': transaction_id,
@@ -129,7 +121,7 @@ class Transaction:
             'amount': cls.format_amount(amount) if amount else '',
             'transaction_no': cls.format_transaction_no(transaction_no) if transaction_no else '',
             'RRN': cls.format_RRN(RRN) if RRN else '',
-            'text_data': cls.format_text_data(text_data) if text_data else '',
+            'text_data': text_data if text_data else '',
             'terminal_id': terminal_id,
             'RC': RC if RC else '',
             'datetime': helpers.DateTime.datetime()

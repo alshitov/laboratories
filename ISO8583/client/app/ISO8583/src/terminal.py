@@ -46,8 +46,7 @@ class Terminal:
 
         bitmap = Bitmap.from_action(action)
         transaction_id = action_codes[action]
-
-        print('Raw data to host: ', data)
+        print("============", self.state['transaction_no'], "=============")
 
         if data is None:
             transaction_data = Transaction.transaction(
@@ -74,7 +73,7 @@ class Terminal:
             else:
                 transaction_data = data
 
-        print('Send to host: ', transaction_data)
+        print('Transaction to be sent:', transaction_data)
 
         # Make a request transaction
         request = Request.get(
@@ -87,7 +86,6 @@ class Terminal:
         print('Received from host: ', data)
 
         # Log action
-        # if transaction_id in to_log:
         self.log({
             'terminal_id': self.get_uuid(),
             'transaction': transaction_data,
@@ -108,4 +106,6 @@ class Terminal:
                 print('Further action: ', further_action)
                 transaction_data = copy_transaction_data(rs_transaction)
                 # Loop [terminal <-> server] dialog
-                self.make_transaction(further_action, transaction_data)
+                # self.make_transaction(further_action, transaction_data)
+
+        print("============", self.state['transaction_no'], "END", "==========")
